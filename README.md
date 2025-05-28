@@ -1,5 +1,5 @@
 # pg-management-project
-PG Management SpringBoot-React Project
+Property Renting/Selling SpringBoot-React Project
 
 # Steps to remember : 
 
