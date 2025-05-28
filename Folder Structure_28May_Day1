@@ -1,0 +1,18 @@
+│------------------------------------------------------------------------------------Folder Structure-----------------------------------------------------------------------------------│
+│                                                                           STAYEnCASA - Property Renting/Selling                                                                       │
+│------------------------------------------------------------------------------------Folder Structure-----------------------------------------------------------------------------------│
+
+src/
+├── main/
+│   ├── java/com/project/property
+│   │   ├── controller
+│   │   ├── service
+│   │   ├── repository
+│   │   ├── model/entity
+│   │   ├── dto
+│   │   ├── config (Security)
+│   │   └── PropertyApplication.java
+│   └── resources/
+│       ├── application.properties
+│       └── schema.sql / data.sql (optional)
+└── test/
