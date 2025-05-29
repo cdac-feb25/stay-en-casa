@@ -1,0 +1,36 @@
+{
+    "property" : {
+        "propertyId" : "uuid",
+        "title" : "String",
+        "description" : "String",
+        "type" : "Rent | Sale",
+        "category" : "Flat | Villa | Plot | Commercial",
+        "ownerId": "uid-1",
+        "price": 123456789,
+        "area": 12345.8765,
+        "bedrooms": 2,
+        "bathrooms": 1,
+        "floorNumber": 2,
+        "totalFloors": 4,
+        "furnishing": "Furnished | Semi-furnished | Un-Furnished",
+        "amenities": ["parking","lift","gym"],
+        "location": {
+            "latitude": "72.8623456",
+            "longitude": "45.87654",
+            "address": "exact-addres",
+            "locality": "near-akurdi-railway-station",
+            "city": "Pune",
+            "state": "Maharashtra",
+            "country": "India",
+            "pincode": 123456
+        },
+        "images": ["url-1","url-2"],
+        "isAvailable": true,
+        "listedAt": 12345678,
+        "updatedAt": 987654,
+        "viewCount": 23
+    }
+}
+
+
+//"isVerified" = false
