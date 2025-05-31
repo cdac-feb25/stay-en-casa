@@ -1,6 +1,7 @@
-{
-    "property" : {
-        "propertyId" : "uuid",
+[
+    {},
+    {
+        "propertyId" : "StayEn-casa_prop-id",
         "title" : "String",
         "description" : "String",
         "type" : "Rent | Sale",
@@ -29,8 +30,59 @@
         "listedAt": 12345678,
         "updatedAt": 987654,
         "viewCount": 23
-    }
-}
+    },
+    {},
+    {}
+]
 
 
 //"isVerified" = false
+
+/**
+    CREATING Indexes
+
+    @CompoundIndexes({
+        @CompoundIndex(
+            name = "city_type_price_available_idx", 
+            def = "{'location.city': 1, 'type': 1, 'price': 1, 'isAvailable': 1}"
+        ),
+        @CompoundIndex(),
+        @CompoundIndex(),
+    })
+    propertyRepository.findByLocationCityAndTypeAndPriceLessThanEqualAndIsAvailable(
+        "Mumbai", "rent", 30000.0, true
+    );
+
+
+    // Find by owner (e.g., for owner dashboard)
+    db.properties.createIndex({ ownerId: 1 });
+
+    // Filter by city
+    db.properties.createIndex({ "location.city": 1 });
+
+    // Filter by type (rent/sale)
+    db.properties.createIndex({ type: 1 });
+
+    // Filter by availability
+    db.properties.createIndex({ isAvailable: 1 });
+
+    // Filter or sort by price
+    db.properties.createIndex({ price: 1 });
+
+
+
+    // Filter: all available rental apartments in Mumbai under ₹30,000
+    db.properties.createIndex({
+        "location.city": 1,
+        type: 1,
+        price: 1,
+        isAvailable: 1
+    });
+
+    db.properties.find({
+        "location.city": "Mumbai",
+        type: "rent",
+        price: { $lte: 30000 },
+        isAvailable: true
+    });
+**/
