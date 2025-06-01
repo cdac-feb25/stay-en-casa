@@ -2,6 +2,7 @@
     {
         "uid": "uuid",
         "name": "Full-Name",
+        "email": "example@gmail.com",
         "phone": 9876543210,
         "address": "address",
         "profilePicture": "URL of photo stored on storage",

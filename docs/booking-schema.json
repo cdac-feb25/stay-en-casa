@@ -1,0 +1,15 @@
+[
+    {
+        "bookingId": "Stay-En-Casa-booking-id",
+        "buyerId": "uid-1",
+        "propertyId": "propid-1",
+        "bookingDate": 12345678,
+        "status": "PENDING | APPROVED | CANCELLED",
+        "createdAt": 986278364924,
+        "updatedAt": 879787430923
+    },
+    {},
+    {}
+]
+
+//"remarks" : "message"
