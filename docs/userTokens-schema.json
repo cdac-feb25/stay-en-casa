@@ -1,12 +1,18 @@
 [
     {
-        "uid": "uid-1 reference to uid of user-detail-schema",
         "email": "example@gmail.com",
-        "accessToken": "JWT Token with 15|30|60 min expiry",
-        "refreshToken": "JWT Token with 24 hour expiry",
-        "createdAt": 378563412134,
-        "updatedAt": 349857467568
-    },
+        "tokens": [
+            {
+                "deviceId": "device id",
+                "refreshToken": "JWT Token with 24 hour expiry",
+                "lastRefreshToken": "Last used JWT Token for replay detection",
+                "createdAt": 378563412134,
+                "updatedAt": 349857467568
+            },
+            {},
+            {}
+        ]
+    }
     {},
     {}
 ]
