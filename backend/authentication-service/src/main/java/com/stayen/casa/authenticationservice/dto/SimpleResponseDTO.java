@@ -7,15 +7,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ErrorResponseDTO {
-	
-	private LocalDateTime timestamp;
+public class SimpleResponseDTO {
 	
 	private String message;
+	
+	private LocalDateTime timestamp;
 
-	public ErrorResponseDTO(String message) {
-		this.timestamp = LocalDateTime.now();
+	public SimpleResponseDTO(String message) {
 		this.message = message;
+		this.timestamp = LocalDateTime.now();
 	}
 	
 }

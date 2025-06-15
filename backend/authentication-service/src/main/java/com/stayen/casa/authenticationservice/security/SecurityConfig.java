@@ -1,5 +1,6 @@
 package com.stayen.casa.authenticationservice.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,25 +20,16 @@ import com.stayen.casa.authenticationservice.security.utils.JwtUtils;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-	private final int SALTING_ROUND = 5;
-
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder(SALTING_ROUND);
-	}
-
-	@Bean
-	private JwtAuthFilter jwtAuthFilter(JwtUtils jwtUtils) {
-		return new JwtAuthFilter(jwtUtils);
-	}
-
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtAuthFilter jwtAuthFilter) throws Exception {
-		httpSecurity.csrf((csrf) -> csrf.disable()).httpBasic((basicAuth) -> basicAuth.disable())
+		httpSecurity
+				.csrf((csrf) -> csrf.disable())
+				.httpBasic((basicAuth) -> basicAuth.disable())
 				.formLogin((formLogin) -> formLogin.disable())
 				.sessionManagement((sessionManager) -> {
 					sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-				}).authorizeHttpRequests((httpRequest) -> {
+				})
+				.authorizeHttpRequests((httpRequest) -> {
 					httpRequest
 							.requestMatchers(
 									"/auth/test",
@@ -48,7 +40,8 @@ public class SecurityConfig {
 							.anyRequest().authenticated();
 				});
 
-		httpSecurity.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+		httpSecurity
+			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		
 		return httpSecurity.build();
 	}

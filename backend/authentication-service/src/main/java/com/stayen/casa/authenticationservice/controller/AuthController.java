@@ -4,17 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.stayen.casa.authenticationservice.config.MongoConfig;
+import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.dto.LoginRequestDTO;
-import com.stayen.casa.authenticationservice.dto.LogoutDTO;
 import com.stayen.casa.authenticationservice.dto.SignupRequestDTO;
 import com.stayen.casa.authenticationservice.exception.credential.InvalidCredentialException;
 import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
+import com.stayen.casa.authenticationservice.exception.token.TokenException;
 import com.stayen.casa.authenticationservice.service.UserCredentialService;
 
 /**
@@ -34,9 +37,9 @@ public class AuthController {
 	private final UserCredentialService userCredentialService;
 	
 	@Autowired
-	public AuthController(UserCredentialService userCredentialService, MongoConfig mongoConfig) {
-		this.userCredentialService = userCredentialService;
+	public AuthController(MongoConfig mongoConfig, UserCredentialService userCredentialService) {
 		this.mongoConfig = mongoConfig;
+		this.userCredentialService = userCredentialService;
 	}
 	
 	@GetMapping("/test")
@@ -59,9 +62,18 @@ public class AuthController {
 	}
 	
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(@RequestBody LogoutDTO logoutDTO) {
-//		return ResponseEntity.ok(logoutDTO);
-		return ResponseEntity.status(HttpStatus.OK).body(userCredentialService.logoutUser(logoutDTO));
+	public ResponseEntity<?> logout() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		System.out.println("isAuth : " + auth.isAuthenticated());
+		System.out.println("principal : " + auth.getPrincipal());
+		System.out.println("name : " + auth.getName());
+		
+//		if(auth.isAuthenticated() && auth.) {
+			return ResponseEntity.status(HttpStatus.OK).body(userCredentialService.logoutUser());			
+//		}
+		
+//		throw new TokenException("User unauthenticated !!!");
 	}
 	
 }

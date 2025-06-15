@@ -9,25 +9,18 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TokenResponseDTO extends BaseDTO {
+public class AuthErrorDTO {
 
-	private String accessToken;
+	private int errorCode;
 
-	private String refreshToken;
-
-	private TokenResponseDTO(JwtModel jwtModel, String accessToken, String refreshToken, LocalDateTime creationAt, LocalDateTime updatedAt) {
-		super(jwtModel.getEmail(), jwtModel.getDeviceId(), creationAt, updatedAt);
-		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
-	}
-
-	public static TokenResponseDTO from(JwtModel jwtModel, String accessToken, String refreshToken) {
-		return new TokenResponseDTO(jwtModel, accessToken, refreshToken, LocalDateTime.now(), LocalDateTime.now());
-	}
+	private String errorMessage;
 	
-	// TODO : when calling from refresh token, we will receive token creation/updation timestamp
-	public static TokenResponseDTO from(JwtModel jwtModel, String accessToken, String refreshToken, LocalDateTime creationAt, LocalDateTime updatedAt) {
-		return new TokenResponseDTO(jwtModel, accessToken, refreshToken, creationAt, updatedAt);
+	private LocalDateTime timestamp;
+	
+	public AuthErrorDTO(int errorCode, String errorMessage) {
+		this.errorCode = errorCode;
+		this.errorMessage = errorMessage;
+		this.timestamp = LocalDateTime.now();
 	}
 
 }

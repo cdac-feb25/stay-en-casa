@@ -1,14 +1,24 @@
 package com.stayen.casa.authenticationservice.exception.token;
 
-public class InvalidTokenException extends RuntimeException {
+import com.stayen.casa.authenticationservice.enums.TokenErrorCode;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class TokenException extends RuntimeException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public InvalidTokenException(String message) {
-		super(message);
+	private TokenErrorCode tokenErrorCode;
+	
+	public TokenException(TokenErrorCode tokenErrorCode) {
+		super(tokenErrorCode.getMessage());
+		this.tokenErrorCode = tokenErrorCode;
 	}
 	
 }

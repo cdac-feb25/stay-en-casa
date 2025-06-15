@@ -14,14 +14,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 //@AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-public abstract class BaseDTO {
-
-	private String email;
-	
-	private String deviceId;
+public abstract class BaseTimestampDTO {
 	
 	@CreatedDate
 	@JsonProperty(access = Access.READ_ONLY)
@@ -31,20 +27,14 @@ public abstract class BaseDTO {
 	@JsonProperty(access = Access.READ_ONLY)
 	private LocalDateTime updatedAt;
 	
-	public BaseDTO(String email, String deviceId) {
-		this.email = email;
-		this.deviceId = deviceId;
+	protected void currentTimestamp() {
+		this.createdAt = LocalDateTime.now();
+		this.updatedAt = LocalDateTime.now();
 	}
 	
-	public BaseDTO(String email, String deviceId, LocalDateTime createdAt, LocalDateTime updatedAt) {
-		this.email = email;
-		this.deviceId = deviceId;
+	protected void updateTimestamp(LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
 	
-	public void updateTimestamp(LocalDateTime createdAt, LocalDateTime updatedAt) {
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
 }

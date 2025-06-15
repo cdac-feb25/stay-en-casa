@@ -9,6 +9,8 @@ package com.stayen.casa.authenticationservice.dto;
  */
 public interface LoginLogoutDTO {
 
+	String uid();
+	
 	String getEmail();
 	
 	String getDeviceId();

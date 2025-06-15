@@ -1,20 +1,21 @@
 package com.stayen.casa.authenticationservice.service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.stayen.casa.authenticationservice.config.MongoConfig;
 import com.stayen.casa.authenticationservice.constant.ErrorConstant;
 import com.stayen.casa.authenticationservice.dto.AuthResponseDTO;
-import com.stayen.casa.authenticationservice.dto.BaseDTO;
+import com.stayen.casa.authenticationservice.dto.BaseTimestampDTO;
 import com.stayen.casa.authenticationservice.dto.LoginLogoutDTO;
 import com.stayen.casa.authenticationservice.dto.LoginRequestDTO;
-import com.stayen.casa.authenticationservice.dto.LogoutDTO;
 import com.stayen.casa.authenticationservice.dto.SignupRequestDTO;
-import com.stayen.casa.authenticationservice.dto.TokenResponseDTO;
+import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
+import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.entity.UserCredential;
 import com.stayen.casa.authenticationservice.entity.UserToken;
 import com.stayen.casa.authenticationservice.exception.credential.AccountAlreadyExistException;
@@ -26,6 +27,9 @@ import com.stayen.casa.authenticationservice.repository.UserTokenRepository;
 
 @Service
 public class UserCredentialServiceImpl implements UserCredentialService {
+	private static final String CLASS_NAME = UserCredentialServiceImpl.class.getSimpleName();
+
+//    private final MongoConfig mongoConfig;
 
 	private final UserCredentialRepository userCredentialRepository;
 	private final UserTokenService userTokenService;
@@ -37,6 +41,7 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 		this.userTokenService = userTokenService;
 		this.userCredentialRepository = userCredentialRepository;
 		this.passwordEncoder = passwordEncoder;
+//		this.mongoConfig = mongoConfig;
 	}
 	
 	/**
@@ -44,8 +49,8 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 * Logout Process 
 	 * 
 	 */
-	public LogoutDTO logoutUser(LogoutDTO logoutDTO) {
-		return userTokenService.invalidateDeviceToken(logoutDTO);
+	public SimpleResponseDTO logoutUser() {
+		return userTokenService.invalidateDeviceToken();
 	}
 	
 	
@@ -53,25 +58,25 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 * Validates the credentials of user with 
 	 * the raw information entered by user on front-end
 	 * 
-	 * @param loginLogoutDTO 
+	 * @param loginRequestDTO 
 	 * @return UserCredential validated user credential
 	 * @throws NoAccountFoundException if no account found with the given email
 	 * @throws InvalidCredentialException if credential not matched with the credential stored in database
 	 */
-	private UserCredential verifyLoggedInUser(LoginLogoutDTO loginLogoutDTO) {
-		Optional<UserCredential> credential = userCredentialRepository.findByEmail(loginLogoutDTO.getEmail());
+	private UserCredential verifyLoggedInUser(LoginRequestDTO loginRequestDTO) {
+		Optional<UserCredential> credential = userCredentialRepository.findByEmail(loginRequestDTO.getEmail());
 		
 		if(credential.isEmpty()) {
 			throw new NoAccountFoundException(ErrorConstant.NO_ACCOUNT_FOUND);
 		}
 		
-		if(loginLogoutDTO instanceof LoginRequestDTO) {
-			LoginRequestDTO loginRequestDTO = (LoginRequestDTO) loginLogoutDTO;
+//		if(loginRequestDTO instanceof LoginRequestDTO) {
+//			LoginRequestDTO loginRequestDTO = (LoginRequestDTO) loginRequestDTO;
 			
 			if(passwordEncoder.matches(loginRequestDTO.getPassword(), credential.get().getPasswordHash()) == false) {
 				throw new InvalidCredentialException(ErrorConstant.INVALID_CREDENTIAL);
 			}
-		}
+//		}
 		
 		return credential.get();
 	}
@@ -83,16 +88,16 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 * 
 	 */
 	@Override
-	public TokenResponseDTO loginUser(LoginRequestDTO loginRequestDTO) {
-		/**
-		 * Getting verified user credentials
-		 */
+	public AuthResponseDTO loginUser(LoginRequestDTO loginRequestDTO) {
+		// Getting verified user credentials
 		UserCredential credential = verifyLoggedInUser(loginRequestDTO);
+		System.out.println(CLASS_NAME + " : user verified");
 		
-		JwtModel jwtModel = new JwtModel(credential.getEmail(), loginRequestDTO.getDeviceId());
+		JwtModel jwtModel = new JwtModel(credential.getUid(), loginRequestDTO.getEmail(), loginRequestDTO.getDeviceId());
 		
-		TokenResponseDTO tokenResponseDTO = userTokenService.generateToken(jwtModel);
-		return tokenResponseDTO;
+		AuthResponseDTO authResponseDTO = userTokenService.generateToken(jwtModel);
+		System.out.println(CLASS_NAME + " : token generated");
+		return authResponseDTO;
 	}
 	
 	/**
@@ -113,7 +118,14 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 		
 		// TODO : optional, check if user is disabled or not
 		
-		return new UserCredential(signupRequestDTO.getEmail(), passwordEncoder.encode(signupRequestDTO.getPassword()));
+		/**
+		 * Creating new User based on 
+		 * Details received from registration form
+		 */
+		String newUid = UUID.nameUUIDFromBytes(signupRequestDTO.getEmail().getBytes()).toString();
+		String passwordHash = passwordEncoder.encode(signupRequestDTO.getPassword());
+		
+		return new UserCredential(newUid, signupRequestDTO.getEmail(), passwordHash);
 	}
 	
 
@@ -121,15 +133,17 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 * 
 	 */
 	@Override
-	public TokenResponseDTO registerNewUser(SignupRequestDTO signupRequestDTO) {
+	public AuthResponseDTO registerNewUser(SignupRequestDTO signupRequestDTO) {
 		UserCredential credential = createNewUserCredential(signupRequestDTO);
 		
+		System.out.println(CLASS_NAME + "New User Creation : ");
+		System.out.println(CLASS_NAME + "User cred : " + credential);
 		userCredentialRepository.save(credential);
 		
-		JwtModel jwtModel = new JwtModel(credential.getEmail(), signupRequestDTO.getDeviceId());
+		JwtModel jwtModel = new JwtModel(credential.getUid(), credential.getEmail(), signupRequestDTO.getDeviceId());
 		
-		TokenResponseDTO tokenResponseDTO = userTokenService.generateToken(jwtModel);
-		return tokenResponseDTO;
+		AuthResponseDTO authResponseDTO = userTokenService.generateToken(jwtModel);
+		return authResponseDTO;
 	}
 	
 }

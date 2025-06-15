@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import com.stayen.casa.authenticationservice.model.JwtModel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,21 +21,26 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserToken {
+public class UserToken extends BaseTimestampEntity {
 
 	@Id
-//	@Indexed(unique = true)
-	@Field(name = "email")
+	@Field(name = "uid")
+	private String uid;
+	
+	@Indexed(unique = true)
 	private String email;
 	
 	private List<DeviceToken> tokens = new ArrayList<>();
+
+	public UserToken(String uid, String email) {
+		super.currentTimestamp();
+		this.uid = uid;
+		this.email = email;
+	}
 	
-	/**
-	 * Constructor
-	 * 
-	 * @param email
-	 */
-	public UserToken(String email) {
+	public UserToken(String uid, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super.updateTimestamp(createdAt, updatedAt);
+		this.uid = uid;
 		this.email = email;
 	}
 	

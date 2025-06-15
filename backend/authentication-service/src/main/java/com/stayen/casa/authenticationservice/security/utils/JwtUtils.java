@@ -2,6 +2,8 @@ package com.stayen.casa.authenticationservice.security.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.stayen.casa.authenticationservice.constant.TokenConstant;
+import com.stayen.casa.authenticationservice.enums.TokenType;
 import com.stayen.casa.authenticationservice.model.JwtModel;
 
 import io.jsonwebtoken.Claims;
@@ -18,10 +21,6 @@ import io.jsonwebtoken.Jwts;
 
 @Component
 public class JwtUtils {
-	
-	private final String JWT_KEY_ALGORITHM_NAME = "HmacSHA256";
-	private final long ACCESS_TOKEN_EXPIRATION_TIME_MILLIS = 1000 * 60 * 15;  // 30 minutes
-	private final long REFRESH_TOKEN_EXPIRATION_TIME_MILLIS = 1000 * 60 * 60 * 24;  // 24 hours
 	
 	@Value("${jwt-secret-key}")
 	private String jwtSecretKey;
@@ -37,7 +36,7 @@ public class JwtUtils {
 	@Bean
 	private SecretKey getJwtSecretKey() {
 		byte[] jwtSecretKeyBytes = jwtSecretKey.getBytes(StandardCharsets.UTF_8);
-		return new SecretKeySpec(jwtSecretKeyBytes, JWT_KEY_ALGORITHM_NAME);
+		return new SecretKeySpec(jwtSecretKeyBytes, TokenConstant.JWT_KEY_ALGORITHM_NAME);
 	}
 	
 	/**
@@ -57,54 +56,112 @@ public class JwtUtils {
 		.getPayload();
 	}
 	
-	/**
-	 * <pre>
-	 * Generate a JWT Access Token
-	 * with Payload provided
-	 * with Expiration Time of 15 minutes
-	 * </pre>
-	 * 
-	 * @param jwtModel
-	 * @return new JWT Token
-	 */
-	public String generateAccessToken(JwtModel jwtModel) {
-		long currentTimeInMillis = System.currentTimeMillis();
-		long expirationTimeInMillis = currentTimeInMillis + ACCESS_TOKEN_EXPIRATION_TIME_MILLIS;
-		
-		return Jwts.builder()
-		.subject(jwtModel.getEmail())
-//		.claim("key", "value")  // for custom claims
-		.claim(TokenConstant.DEVICE_ID, jwtModel.getDeviceId())
-		.issuedAt(new Date(currentTimeInMillis))
-		.expiration(new Date(expirationTimeInMillis))
-		.issuer(TokenConstant.TOKEN_ISSUER)
-		.signWith(getJwtSecretKey())
-		.compact();
+	// TODO: used access token is getting used again and again
+	public void invalidateToken(String token) {
+//		Jwts.
 	}
 	
 	/**
-	 * <pre>
-	 * Generate a JWT Access Token
-	 * with Payload provided
-	 * with Expiration Time of 24 hours
-	 * </pre>
+	 * 
 	 * 
 	 * @param jwtModel
-	 * @return new JWT Token
+	 * @param tokenType
+	 * @return String - JWT token
 	 */
-	public String generateRefreshToken(JwtModel jwtModel) {
+	public String generateJwtToken(JwtModel jwtModel, TokenType tokenType) {
 		long currentTimeInMillis = System.currentTimeMillis();
-		long expirationTimeInMillis = currentTimeInMillis + REFRESH_TOKEN_EXPIRATION_TIME_MILLIS;
+		
+		long expirationTimeInMillis = currentTimeInMillis + tokenType.getValidity();
+		
+		Map<String, Object> claims = new HashMap<>();
+		claims.put(TokenConstant.EMAIL, jwtModel.getEmail());
+		claims.put(TokenConstant.DEVICE_ID, jwtModel.getDeviceId());
+		claims.put(TokenConstant.TOKEN_TYPE, tokenType);
 		
 		return Jwts.builder()
-		.subject(jwtModel.getEmail())
-//		.claim("key", "value")  // for custom claims
-		.claim(TokenConstant.DEVICE_ID, jwtModel.getDeviceId())
-		.issuedAt(new Date(currentTimeInMillis))
-		.expiration(new Date(expirationTimeInMillis))
-		.issuer(TokenConstant.TOKEN_ISSUER)
-		.signWith(getJwtSecretKey())
-		.compact();
+			.subject(jwtModel.getUid())
+			.claims(claims)
+			.issuedAt(new Date(currentTimeInMillis))
+			.expiration(new Date(expirationTimeInMillis))
+			.issuer(TokenConstant.TOKEN_ISSUER)
+			.signWith(getJwtSecretKey())
+			.compact();
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	/**
+//	 * <pre>
+//	 * Generate a JWT Access Token
+//	 * with Payload provided
+//	 * with Expiration Time of 15 minutes
+//	 * </pre>
+//	 * 
+//	 * @param jwtModel
+//	 * @return new JWT Token
+//	 */
+//	private String generateAccessToken(JwtModel jwtModel) {
+//		long currentTimeInMillis = System.currentTimeMillis();
+//		long expirationTimeInMillis = currentTimeInMillis + ACCESS_TOKEN_EXPIRATION_TIME_MILLIS;
+//		
+//		return Jwts.builder()
+//		.subject(jwtModel.getUid())
+////		.claim("key", "value")  // for custom claims
+//		.claim(TokenConstant.EMAIL, jwtModel.getEmail())
+//		.claim(TokenConstant.DEVICE_ID, jwtModel.getDeviceId())
+//		.issuedAt(new Date(currentTimeInMillis))
+//		.expiration(new Date(expirationTimeInMillis))
+//		.issuer(TokenConstant.TOKEN_ISSUER)
+//		.signWith(getJwtSecretKey())
+//		.compact();
+//	}
+//	
+//	/**
+//	 * <pre>
+//	 * Generate a JWT Access Token
+//	 * with Payload provided
+//	 * with Expiration Time of 24 hours
+//	 * </pre>
+//	 * 
+//	 * @param jwtModel
+//	 * @return new JWT Token
+//	 */
+//	private String generateRefreshToken(JwtModel jwtModel) {
+//		long currentTimeInMillis = System.currentTimeMillis();
+//		long expirationTimeInMillis = currentTimeInMillis + REFRESH_TOKEN_EXPIRATION_TIME_MILLIS;
+//		
+//		return Jwts.builder()
+//		.subject(jwtModel.getUid())
+////		.claim("key", "value")  // for custom claims
+//		.claim(TokenConstant.EMAIL, jwtModel.getEmail())
+//		.claim(TokenConstant.DEVICE_ID, jwtModel.getDeviceId())
+//		.issuedAt(new Date(currentTimeInMillis))
+//		.expiration(new Date(expirationTimeInMillis))
+//		.issuer(TokenConstant.TOKEN_ISSUER)
+//		.signWith(getJwtSecretKey())
+//		.compact();
+//	}
+//	
+//	private String generateTempToken(JwtModel jwtModel) {
+//		long currentTimeInMillis = System.currentTimeMillis();
+//		long expirationTimeInMillis = currentTimeInMillis;
+//		
+//		return Jwts.builder()
+//		.subject(jwtModel.getUid())
+////		.claim("key", "value")  // for custom claims
+//		.claim(TokenConstant.EMAIL, jwtModel.getEmail())
+//		.claim(TokenConstant.DEVICE_ID, jwtModel.getDeviceId())
+//		.issuedAt(new Date(currentTimeInMillis))
+//		.expiration(new Date(expirationTimeInMillis))
+//		.issuer(TokenConstant.TOKEN_ISSUER)
+//		.signWith(getJwtSecretKey())
+//		.compact();
+//	}
 	
 }

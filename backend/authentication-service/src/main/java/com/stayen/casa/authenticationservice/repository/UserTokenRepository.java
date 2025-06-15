@@ -9,7 +9,9 @@ import com.stayen.casa.authenticationservice.entity.UserToken;
 
 public interface UserTokenRepository extends MongoRepository<UserToken, String> {
 
-	Optional<UserToken> findByEmail(String email);
+	Optional<UserToken> findByUid(String uid);
+	
+//	Optional<UserToken> findByEmail(String email);
 	
 //	Optional<UserToken> findByEmailAndDevice(String email, String deviceId);
 	

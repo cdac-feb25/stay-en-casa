@@ -7,15 +7,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class JwtModel {
+public class User {
 	
 	private String uid;
 	
 	private String email;
 	
 	private String deviceId;
-	
-//	private String username;
-//	private String roles  // not required now
 
 }

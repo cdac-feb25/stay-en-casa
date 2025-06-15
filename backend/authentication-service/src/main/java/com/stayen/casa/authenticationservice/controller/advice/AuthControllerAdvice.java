@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.stayen.casa.authenticationservice.dto.ErrorResponseDTO;
+import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
 import com.stayen.casa.authenticationservice.exception.credential.AccountAlreadyExistException;
 import com.stayen.casa.authenticationservice.exception.credential.InvalidCredentialException;
 import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
