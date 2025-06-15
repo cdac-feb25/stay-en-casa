@@ -17,9 +17,11 @@ import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
 import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.entity.UserCredential;
 import com.stayen.casa.authenticationservice.entity.UserToken;
+import com.stayen.casa.authenticationservice.enums.TokenErrorCode;
 import com.stayen.casa.authenticationservice.enums.TokenType;
 import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
-import com.stayen.casa.authenticationservice.exception.credential.SessionNotFoundException;
+import com.stayen.casa.authenticationservice.exception.credential.NoActiveSessionFoundException;
+import com.stayen.casa.authenticationservice.exception.token.TokenException;
 import com.stayen.casa.authenticationservice.entity.DeviceToken;
 import com.stayen.casa.authenticationservice.model.JwtModel;
 import com.stayen.casa.authenticationservice.model.User;
@@ -49,22 +51,28 @@ public class UserTokenServiceImpl implements UserTokenService {
 	}
 	
 	@Override
-	public UserToken fetchUserToken(String uid) {
+	public UserToken fetchUserToken(String uid, RuntimeException throwException) {
 		return userTokenRepository.findByUid(uid).orElseThrow(() -> {
-			return new NoAccountFoundException(ErrorConstant.NO_ACCOUNT_FOUND);
+			return throwException;
 		});
 	}
 	
 	@Override
 	public SimpleResponseDTO invalidateDeviceToken() {
-		User user = UserConstant.getLoggedInUser();
+		User loggedInUser = UserConstant.getLoggedInUser();
 	
-		UserToken userToken = fetchUserToken(user.getUid());
+		UserToken userToken = fetchUserToken(
+				loggedInUser.getUid(), 
+				new NoAccountFoundException(ErrorConstant.NO_ACCOUNT_FOUND)
+		);
 		
-		if(userToken.removeDeviceToken(user.getDeviceId()) == false) {
-			throw new SessionNotFoundException(ErrorConstant.SESSION_NOT_FOUND);
+		if(userToken.removeDeviceToken(loggedInUser.getDeviceId()) == false) {
+			throw new NoActiveSessionFoundException(ErrorConstant.SESSION_NOT_FOUND);
 		}
 		
+		/**
+		 * Saving Removed Device Token
+		 */
 		userToken = userTokenRepository.save(userToken);
 		
 		return new SimpleResponseDTO(TokenConstant.LOGOUT_MSG);
@@ -85,18 +93,67 @@ public class UserTokenServiceImpl implements UserTokenService {
 		
 		String newAccessToken = jwtUtils.generateJwtToken(jwtModel, TokenType.ACCESS);
 		String newRefreshToken = jwtUtils.generateJwtToken(jwtModel, TokenType.REFRESH);
-		String tempToken = jwtUtils.generateJwtToken(jwtModel, TokenType.TEMP);
+		String lastRefreshToken = jwtUtils.generateJwtToken(jwtModel, TokenType.TEMP);
 
 		/**
 		 * 
 		 */
 		userToken.removeDeviceToken(jwtModel.getDeviceId());
+		userToken.addDeviceToken(new DeviceToken(jwtModel.getDeviceId(), newRefreshToken, lastRefreshToken));
 		
-		userToken.addDeviceToken(new DeviceToken(jwtModel.getDeviceId(), newRefreshToken, tempToken));
-		
+		/**
+		 * Saving New Access, Refresh Token
+		 */
 		userTokenRepository.save(userToken);
-
-		return AuthResponseDTO.from(jwtModel, newAccessToken, newRefreshToken);
+		return new AuthResponseDTO(jwtModel.getUid(), newAccessToken, newRefreshToken);
 	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public AuthResponseDTO refreshToken() {
+		User loggedInUser = UserConstant.getLoggedInUser();
+		
+		UserToken userToken = fetchUserToken(
+				loggedInUser.getUid(), 
+				new NoActiveSessionFoundException(ErrorConstant.SESSION_NOT_FOUND)
+		);
+		
+		//
+		return rotateAndGenerateRefreshToken(loggedInUser, userToken);
+	}
+	
+	private AuthResponseDTO rotateAndGenerateRefreshToken(User loggedInUser, UserToken userToken) {
+		
+		// TODO : this is never intercepted
+		// because if last refresh token is expired then it never got validated
+		if(userToken.isLastRefreshToken(loggedInUser.getToken())) {
+			
+			// TODO: Invalidate current login 
+			
+			throw new TokenException(TokenErrorCode.BLOCKED);
+		}
+		
+		if(userToken.ifRefreshAndRotated(loggedInUser.getToken())) {
+			JwtModel jwtModel = new JwtModel(loggedInUser.getUid(), loggedInUser.getEmail(), loggedInUser.getDeviceId());
+			
+			String newAccessToken = jwtUtils.generateJwtToken(jwtModel, TokenType.ACCESS);
+			String newRefreshToken = jwtUtils.generateJwtToken(jwtModel, TokenType.REFRESH);
+			
+			userToken.setNewRefreshToken(loggedInUser.getDeviceId(), newRefreshToken);
+			
+			/**
+			 * Saving Rotated Refresh Token
+			 */
+			userTokenRepository.save(userToken);
+			
+			return new AuthResponseDTO(loggedInUser.getUid(), newAccessToken, newRefreshToken);
+		} else {
+			throw new TokenException(TokenErrorCode.INVALID);
+		}
+	}
+	
+	
 
 }

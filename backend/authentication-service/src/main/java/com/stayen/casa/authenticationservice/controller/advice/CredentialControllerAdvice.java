@@ -9,13 +9,13 @@ import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
 import com.stayen.casa.authenticationservice.exception.credential.AccountAlreadyExistException;
 import com.stayen.casa.authenticationservice.exception.credential.InvalidCredentialException;
 import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
-import com.stayen.casa.authenticationservice.exception.credential.SessionNotFoundException;
+import com.stayen.casa.authenticationservice.exception.credential.NoActiveSessionFoundException;
 
 @RestControllerAdvice
 public class CredentialControllerAdvice {
 	
-	@ExceptionHandler(exception = SessionNotFoundException.class)
-	public ResponseEntity<?> handleSessionNotFoundException(SessionNotFoundException sessionNotFoundException) {
+	@ExceptionHandler(exception = NoActiveSessionFoundException.class)
+	public ResponseEntity<?> handleSessionNotFoundException(NoActiveSessionFoundException sessionNotFoundException) {
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
 				.body(new SimpleResponseDTO(sessionNotFoundException.getMessage()));

@@ -49,31 +49,17 @@ public class AuthController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-//		return ResponseEntity.ok("Hello World !!!");
-//		return ResponseEntity.ok(loginRequestDTO);
 		return ResponseEntity.ok(userCredentialService.loginUser(loginRequestDTO));
 	}
 	
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody SignupRequestDTO signupRequestDTO) {
-//		return ResponseEntity.ok("Hello World !!!");
-//		return ResponseEntity.ok(signupRequestDTO);
 		return ResponseEntity.status(HttpStatus.CREATED).body(userCredentialService.registerNewUser(signupRequestDTO));
 	}
 	
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
-		System.out.println("isAuth : " + auth.isAuthenticated());
-		System.out.println("principal : " + auth.getPrincipal());
-		System.out.println("name : " + auth.getName());
-		
-//		if(auth.isAuthenticated() && auth.) {
-			return ResponseEntity.status(HttpStatus.OK).body(userCredentialService.logoutUser());			
-//		}
-		
-//		throw new TokenException("User unauthenticated !!!");
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(userCredentialService.logoutUser());			
 	}
 	
 }

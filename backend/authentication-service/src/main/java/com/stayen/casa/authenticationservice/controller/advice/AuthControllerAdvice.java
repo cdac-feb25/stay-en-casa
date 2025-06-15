@@ -10,7 +10,7 @@ import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
 import com.stayen.casa.authenticationservice.exception.credential.AccountAlreadyExistException;
 import com.stayen.casa.authenticationservice.exception.credential.InvalidCredentialException;
 import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
-import com.stayen.casa.authenticationservice.exception.credential.SessionNotFoundException;
+import com.stayen.casa.authenticationservice.exception.credential.NoActiveSessionFoundException;
 
 @RestControllerAdvice
 public class AuthControllerAdvice {

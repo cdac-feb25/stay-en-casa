@@ -9,10 +9,12 @@ import com.stayen.casa.authenticationservice.model.JwtModel;
 
 public interface UserTokenService {
 	
-	UserToken fetchUserToken(String email);
+	UserToken fetchUserToken(String uid, RuntimeException throwException);
 	
 	SimpleResponseDTO invalidateDeviceToken();
 
 	AuthResponseDTO generateToken(JwtModel jwtModel);
+	
+	AuthResponseDTO refreshToken();
 	
 }

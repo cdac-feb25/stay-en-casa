@@ -11,8 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 @Getter
 @Setter
 @JsonPropertyOrder({"uid", "accessToken", "refreshToken", "createdAt", "updatedAt"})
@@ -24,23 +24,18 @@ public class AuthResponseDTO extends BaseTimestampDTO {
 	
 	private String refreshToken;
 	
-	private AuthResponseDTO from() {
+	public AuthResponseDTO(String uid, String accessToken, String refreshToken) {
 		super.currentTimestamp();
-		return this;
+		this.uid = uid;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
 	}
 	
-	private AuthResponseDTO from(LocalDateTime createdAt, LocalDateTime updatedAt) {
-		super.updateTimestamp(createdAt, updatedAt);
-		return this;
+	public AuthResponseDTO(String uid, String accessToken, String refreshToken, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super.updateTimestamp(createdAt, updatedAt);;
+		this.uid = uid;
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
 	}
 
-	public static AuthResponseDTO from(JwtModel jwtModel, String accessToken, String refreshToken) {
-		return new AuthResponseDTO(jwtModel.getUid(), accessToken, refreshToken)
-				.from();
-	}
-	
-	public static AuthResponseDTO from(JwtModel jwtModel, String accessToken, String refreshToken, LocalDateTime createdAt, LocalDateTime updatedAt) {
-		return new AuthResponseDTO(jwtModel.getUid(), accessToken, refreshToken)
-				.from(createdAt, updatedAt);
-	}
 }

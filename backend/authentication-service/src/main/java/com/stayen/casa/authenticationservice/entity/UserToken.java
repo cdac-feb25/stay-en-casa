@@ -3,6 +3,7 @@ package com.stayen.casa.authenticationservice.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -63,5 +64,67 @@ public class UserToken extends BaseTimestampEntity {
 	public void addDeviceToken(DeviceToken deviceToken) {
 		this.tokens.add(deviceToken);
 	}
+	
+	/**
+	 * Rotation of Refresh Token Process
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @param token
+	 * @return
+	 */
+	public boolean isLastRefreshToken(String token) {
+		return this.tokens
+				.stream()
+				.anyMatch((deviceToken) -> {
+					return deviceToken.getLastRefreshToken().equals(token);
+				});
+	}
+	
+	/**
+	 * Check and rotate current refresh token
+	 * 
+	 * @param token
+	 * @return true if token matched and rotated with lastRefreshToken, else false
+	 */
+	public boolean ifRefreshAndRotated(String token) {
+		return this.tokens
+				.stream()
+				.anyMatch((deviceToken) -> {
+					if(deviceToken.getRefreshToken().equals(token)) {
+						deviceToken.setLastRefreshToken(deviceToken.getRefreshToken());
+						return true;
+					}
+					return false;
+				});
+	}
+	
+	public void setNewRefreshToken(String deviceId, String newRefreshToken) {
+		this.tokens
+			.forEach((deviceToken) -> {
+				if(deviceToken.getDeviceId().equals(deviceId)) {
+					deviceToken.setRefreshToken(newRefreshToken);
+				}
+			});
+	}
+	
+	
+	
+	
+//	public String getRefreshTokenForDeviceId(String deviceId) {
+//		AtomicReference<String> refreshToken = new AtomicReference<>();
+//		
+//		this.tokens
+//			.stream()
+//			.filter((deviceToken) -> {
+//				return deviceToken.getDeviceId().equals(deviceId);
+//			})
+//			.forEach((deviceToken) -> {
+//				refreshToken.set(deviceToken.getRefreshToken());
+//			});
+//		
+//		return refreshToken.get();
+//	}
 	
 }

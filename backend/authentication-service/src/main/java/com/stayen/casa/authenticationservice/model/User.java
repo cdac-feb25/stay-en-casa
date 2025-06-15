@@ -14,5 +14,7 @@ public class User {
 	private String email;
 	
 	private String deviceId;
+	
+	private String token;
 
 }

@@ -7,12 +7,13 @@ import lombok.Setter;
 public enum TokenErrorCode {
 	
 	EMPTY(110, "Authorization header missing or invalid !!!"),
-	EXPIRED(112, "Token has expired !!!"),
+	EXPIRED(112, "Token has expired. Please log in again to continue. !!!"),
 	BLACKLISTED(113, "Token already used or invalidated !!!"),
-	
 	INVALID(114, "Invalid Token !!!"),
     MALFORMED(115, "Invalid token format !!!"),
-	UNSUPPORTED(116, "Token algorithm is invalid !!!");
+	UNSUPPORTED(116, "Token algorithm is invalid !!!"),
+	
+	BLOCKED(121, "Access denied. The token is no longer valid. Please log in again to continue. !!!");
 	
 	/**
 	 * 

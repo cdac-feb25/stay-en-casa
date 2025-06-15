@@ -40,12 +40,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	private static final String AUTH_HEADER_NAME = "Authorization";
 	private static final String AUTH_TOKEN_NAME = "Bearer ";
 
-	private static final List<String> EXCLUDED_PATH = List.of(
-		"/auth/login", 
-		"/auth/register"
-	);
-	
-	
 	private final JwtUtils jwtUtils;
 	private final ObjectMapper mapper;
 
@@ -53,11 +47,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	public JwtAuthFilter(JwtUtils jwtUtils, ObjectMapper mapper) {
 		this.jwtUtils = jwtUtils;
 		this.mapper = mapper; 
-	}
-	
-	private boolean isPathExcluded(String incomingPath) {
-		System.out.println(CLASS_NAME + " - Incoming Path : " + incomingPath);
-		return EXCLUDED_PATH.stream().anyMatch((path) -> path.equals(incomingPath));
 	}
 	
 	private void setAuthErrorResponse(HttpServletResponse response, TokenErrorCode tokenError) throws IOException {
@@ -70,8 +59,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
+		String requestPath = request.getServletPath();
 		
-		if(isPathExcluded(request.getServletPath())) {
+		if(TokenConstant.isPathExcluded(requestPath)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -97,9 +87,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			
 			Claims jwtClaims = jwtUtils.validateToken(token);
 			
-			TokenType tokenType = jwtClaims.get(TokenConstant.TOKEN_TYPE, TokenType.class);
+			TokenType tokenType = TokenType.valueOf(jwtClaims.get(TokenConstant.TOKEN_TYPE).toString());
+			/**
+			 * If token != ACCESS
+			 * 	then check is requested-path is refresh token path
+			 * 		if yes, proceed to controller
+			 * 		else, throw error
+			 */
 			if(tokenType != TokenType.ACCESS) {
-				throw new TokenException(TokenErrorCode.INVALID);
+
+				/**
+				 * If incoming path is NOT a refresh token path
+				 * we cannot proceed
+				 */
+				if(TokenConstant.isRefreshTokenPath(requestPath) == false) {
+					throw new TokenException(TokenErrorCode.INVALID);
+				}
+			} else {
+				
+				/**
+				 * If incoming path is refresh token path,
+				 * then we cannot proceed with access token
+				 */
+				if(TokenConstant.isRefreshTokenPath(requestPath)) {
+					throw new TokenException(TokenErrorCode.BLOCKED);
+				}
 			}
 
 //				if(isBlacklisted(jwtClaims)) {
@@ -112,7 +124,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			String email = jwtClaims.get(TokenConstant.EMAIL, String.class);
 			String deviceId = jwtClaims.get(TokenConstant.DEVICE_ID, String.class);
 
-			User user = new User(uid, email, deviceId);
+			User user = new User(uid, email, deviceId, token);
 
 			UsernamePasswordAuthenticationToken verifiedUser = new UsernamePasswordAuthenticationToken(uid, null, null);
 			verifiedUser.setDetails(user);
