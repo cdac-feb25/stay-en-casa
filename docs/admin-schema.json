@@ -1,6 +1,6 @@
 [
     {
-        "uid": "uuid",
+        "_id": "uuid",
         "name": "Full-Name",
         "email": "example@gmail.com",
         "phone": 9876543210,
