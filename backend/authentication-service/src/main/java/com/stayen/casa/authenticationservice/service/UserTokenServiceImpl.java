@@ -17,10 +17,10 @@ import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
 import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.entity.UserCredential;
 import com.stayen.casa.authenticationservice.entity.UserToken;
-import com.stayen.casa.authenticationservice.enums.TokenErrorCode;
+import com.stayen.casa.authenticationservice.enums.AuthError;
+import com.stayen.casa.authenticationservice.enums.TokenError;
 import com.stayen.casa.authenticationservice.enums.TokenType;
-import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
-import com.stayen.casa.authenticationservice.exception.credential.NoActiveSessionFoundException;
+import com.stayen.casa.authenticationservice.exception.credential.AuthException;
 import com.stayen.casa.authenticationservice.exception.token.TokenException;
 import com.stayen.casa.authenticationservice.entity.DeviceToken;
 import com.stayen.casa.authenticationservice.model.JwtModel;
@@ -59,15 +59,26 @@ public class UserTokenServiceImpl implements UserTokenService {
 	
 	@Override
 	public SimpleResponseDTO invalidateDeviceToken() {
+		/**
+		 * If no logged in user found from JWT Authorization
+		 * throws InvalidTokenException
+		 */
 		User loggedInUser = UserConstant.getLoggedInUser();
 	
+		/**
+		 * If no user token found
+		 */
 		UserToken userToken = fetchUserToken(
 				loggedInUser.getUid(), 
-				new NoAccountFoundException(ErrorConstant.NO_ACCOUNT_FOUND)
+				new AuthException(AuthError.NO_ACCOUNT_FOUND)
 		);
 		
+		/**
+		 * If token is valid, 
+		 * but user has already logged out.
+		 */
 		if(userToken.removeDeviceToken(loggedInUser.getDeviceId()) == false) {
-			throw new NoActiveSessionFoundException(ErrorConstant.SESSION_NOT_FOUND);
+			throw new AuthException(AuthError.SESSION_NOT_FOUND);
 		}
 		
 		/**
@@ -117,7 +128,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 		
 		UserToken userToken = fetchUserToken(
 				loggedInUser.getUid(), 
-				new NoActiveSessionFoundException(ErrorConstant.SESSION_NOT_FOUND)
+				new AuthException(AuthError.SESSION_NOT_FOUND)
 		);
 		
 		//
@@ -132,7 +143,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 			
 			// TODO: Invalidate current login 
 			
-			throw new TokenException(TokenErrorCode.BLOCKED);
+			throw new TokenException(TokenError.BLOCKED);
 		}
 		
 		if(userToken.ifRefreshAndRotated(loggedInUser.getToken())) {
@@ -150,7 +161,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 			
 			return new AuthResponseDTO(loggedInUser.getUid(), newAccessToken, newRefreshToken);
 		} else {
-			throw new TokenException(TokenErrorCode.INVALID);
+			throw new TokenException(TokenError.INVALID);
 		}
 	}
 	

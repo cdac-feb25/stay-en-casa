@@ -1,12 +1,11 @@
 package com.stayen.casa.authenticationservice.exception.token;
 
-import com.stayen.casa.authenticationservice.enums.TokenErrorCode;
+import com.stayen.casa.authenticationservice.enums.TokenError;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class TokenException extends RuntimeException {
 
 	/**
@@ -14,11 +13,11 @@ public class TokenException extends RuntimeException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private TokenErrorCode tokenErrorCode;
+	private TokenError tokenError;
 	
-	public TokenException(TokenErrorCode tokenErrorCode) {
-		super(tokenErrorCode.getMessage());
-		this.tokenErrorCode = tokenErrorCode;
+	public TokenException(TokenError tokenError) {
+		super(tokenError.getMessage());
+		this.tokenError = tokenError;
 	}
 	
 }

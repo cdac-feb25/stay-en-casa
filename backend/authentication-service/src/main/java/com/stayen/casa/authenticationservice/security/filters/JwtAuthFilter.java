@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stayen.casa.authenticationservice.constant.TokenConstant;
 import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
-import com.stayen.casa.authenticationservice.enums.TokenErrorCode;
+import com.stayen.casa.authenticationservice.enums.TokenError;
 import com.stayen.casa.authenticationservice.enums.TokenType;
 import com.stayen.casa.authenticationservice.exception.token.EmptyTokenException;
 import com.stayen.casa.authenticationservice.exception.token.TokenException;
@@ -29,6 +29,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		this.mapper = mapper; 
 	}
 	
-	private void setAuthErrorResponse(HttpServletResponse response, TokenErrorCode tokenError) throws IOException {
+	private void setAuthErrorResponse(HttpServletResponse response, TokenError tokenError) throws IOException {
 		response.setContentType("application/json");
 		
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -75,11 +76,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			System.out.println(CLASS_NAME + " - Auth Header : " + authHeader);
 			
 			if (authHeader == null) {
-				throw new TokenException(TokenErrorCode.EMPTY);
+				throw new TokenException(TokenError.EMPTY);
 			}
 			
 			if((authHeader.startsWith(AUTH_TOKEN_NAME)) == false) {
-				throw new TokenException(TokenErrorCode.INVALID);
+				throw new TokenException(TokenError.INVALID);
 			}
 			
 			String token = authHeader.substring(7);
@@ -101,7 +102,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				 * we cannot proceed
 				 */
 				if(TokenConstant.isRefreshTokenPath(requestPath) == false) {
-					throw new TokenException(TokenErrorCode.INVALID);
+					throw new TokenException(TokenError.INVALID);
 				}
 			} else {
 				
@@ -110,7 +111,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				 * then we cannot proceed with access token
 				 */
 				if(TokenConstant.isRefreshTokenPath(requestPath)) {
-					throw new TokenException(TokenErrorCode.BLOCKED);
+					throw new TokenException(TokenError.BLOCKED);
 				}
 			}
 
@@ -142,17 +143,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		 * IllegalArgumentException - if the jwt string is null or empty or only whitespace
 		 */
 		} catch (TokenException e) {
-			setAuthErrorResponse(response, e.getTokenErrorCode());
+			setAuthErrorResponse(response, e.getTokenError());
 		} catch (ExpiredJwtException e) {
-			setAuthErrorResponse(response, TokenErrorCode.EXPIRED);
+			setAuthErrorResponse(response, TokenError.EXPIRED);
+		}  catch (SignatureException e) {
+			setAuthErrorResponse(response, TokenError.MALFORMED);
 		} catch (MalformedJwtException e) {
-			setAuthErrorResponse(response, TokenErrorCode.MALFORMED);
+			setAuthErrorResponse(response, TokenError.MALFORMED);
 		} catch (UnsupportedJwtException e) {
-			setAuthErrorResponse(response, TokenErrorCode.UNSUPPORTED);
+			setAuthErrorResponse(response, TokenError.UNSUPPORTED);
 		} catch (Exception e) {
-			System.out.println("Exception class : " + e.getClass().getSimpleName());
+			System.out.println("Exception class : " + e.getClass());
 			System.out.println(CLASS_NAME + " - Exception Caught : " + e.getMessage());
-			setAuthErrorResponse(response, TokenErrorCode.INVALID);
+			setAuthErrorResponse(response, TokenError.INVALID);
 		}
 	}
 

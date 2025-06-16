@@ -18,9 +18,8 @@ import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
 import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.entity.UserCredential;
 import com.stayen.casa.authenticationservice.entity.UserToken;
-import com.stayen.casa.authenticationservice.exception.credential.AccountAlreadyExistException;
-import com.stayen.casa.authenticationservice.exception.credential.InvalidCredentialException;
-import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
+import com.stayen.casa.authenticationservice.enums.AuthError;
+import com.stayen.casa.authenticationservice.exception.credential.AuthException;
 import com.stayen.casa.authenticationservice.model.JwtModel;
 import com.stayen.casa.authenticationservice.repository.UserCredentialRepository;
 import com.stayen.casa.authenticationservice.repository.UserTokenRepository;
@@ -67,14 +66,14 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 		Optional<UserCredential> credential = userCredentialRepository.findByEmail(loginRequestDTO.getEmail());
 		
 		if(credential.isEmpty()) {
-			throw new NoAccountFoundException(ErrorConstant.NO_ACCOUNT_FOUND);
+			throw new AuthException(AuthError.NO_ACCOUNT_FOUND);
 		}
 		
 //		if(loginRequestDTO instanceof LoginRequestDTO) {
 //			LoginRequestDTO loginRequestDTO = (LoginRequestDTO) loginRequestDTO;
 			
 			if(passwordEncoder.matches(loginRequestDTO.getPassword(), credential.get().getPasswordHash()) == false) {
-				throw new InvalidCredentialException(ErrorConstant.INVALID_CREDENTIAL);
+				throw new AuthException(AuthError.INVALID_CREDENTIAL);
 			}
 //		}
 		
@@ -113,7 +112,7 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 		Optional<UserCredential> credential = userCredentialRepository.findByEmail(signupRequestDTO.getEmail());
 
 		if(credential.isPresent()) {
-			throw new AccountAlreadyExistException(ErrorConstant.ACCOUNT_ALREADY_EXIST);
+			throw new AuthException(AuthError.ACCOUNT_ALREADY_EXIST);
 		}
 		
 		// TODO : optional, check if user is disabled or not

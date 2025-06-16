@@ -15,8 +15,6 @@ import com.stayen.casa.authenticationservice.config.MongoConfig;
 import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.dto.LoginRequestDTO;
 import com.stayen.casa.authenticationservice.dto.SignupRequestDTO;
-import com.stayen.casa.authenticationservice.exception.credential.InvalidCredentialException;
-import com.stayen.casa.authenticationservice.exception.credential.NoAccountFoundException;
 import com.stayen.casa.authenticationservice.exception.token.TokenException;
 import com.stayen.casa.authenticationservice.service.UserCredentialService;
 
@@ -59,7 +57,7 @@ public class AuthController {
 	
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout() {
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(userCredentialService.logoutUser());			
+		return ResponseEntity.ok(userCredentialService.logoutUser());			
 	}
 	
 }

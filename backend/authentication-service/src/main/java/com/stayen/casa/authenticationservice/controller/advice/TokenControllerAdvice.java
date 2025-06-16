@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
 import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
-import com.stayen.casa.authenticationservice.enums.TokenErrorCode;
+import com.stayen.casa.authenticationservice.enums.TokenError;
 import com.stayen.casa.authenticationservice.exception.token.EmptyTokenException;
 import com.stayen.casa.authenticationservice.exception.token.TokenException;
 
@@ -25,10 +25,11 @@ public class TokenControllerAdvice {
 
 	@ExceptionHandler(TokenException.class)
 	public ResponseEntity<?> handleTokenException(TokenException tokenException) {
-		TokenErrorCode tokenErrorCode = tokenException.getTokenErrorCode();
+		TokenError tokenError = tokenException.getTokenError();
+		
 		return ResponseEntity
 				.status(HttpStatus.UNAUTHORIZED)
-				.body(new AuthErrorDTO(tokenErrorCode.getCode(), tokenErrorCode.getMessage()));
+				.body(new AuthErrorDTO(tokenError.getCode(), tokenError.getMessage()));
 	}
 	
 }
