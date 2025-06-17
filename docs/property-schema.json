@@ -2,7 +2,7 @@
     {},
     {
         "propertyId" : "StayEn-casa_prop-id",
-        "title" : "String",
+        "propertyName" : "String",
         "description" : "String",
         "type" : "Rent | Sale",
         "category" : "Flat | Villa | Plot | Commercial",
