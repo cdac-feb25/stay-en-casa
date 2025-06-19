@@ -19,23 +19,4 @@ public class TokenConstant {
 	
 	public static final int SALTING_ROUND = 5;
 	
-	private static final List<String> EXCLUDED_PATH = List.of(
-		"/auth/login", 
-		"/auth/register"
-	);
-	
-	private static final List<String> ONLY_REFRESH_TOKEN_PATH = List.of(
-		"/auth/token/refresh"
-	);
-	
-	public static boolean isPathExcluded(String incomingPath) {
-		System.out.println(CLASS_NAME + " - Incoming Path : " + incomingPath);
-		return EXCLUDED_PATH.stream().anyMatch((path) -> path.equals(incomingPath));
-	}
-	
-	public static boolean isRefreshTokenPath(String incomingPath) {
-		System.out.println(CLASS_NAME + " - Incoming Refresh Path : " + incomingPath);
-		return ONLY_REFRESH_TOKEN_PATH.stream().anyMatch((path) -> path.equals(incomingPath));
-	}
-	
 }

@@ -15,6 +15,6 @@ public class UserConstant {
 			return (User)auth.getDetails();
 		}
 		
-		throw new TokenException(TokenError.INVALID);
+		throw new TokenException(TokenError.INVALID_USER);
 	}
 }

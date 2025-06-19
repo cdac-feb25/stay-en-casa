@@ -13,10 +13,12 @@ public enum TokenError {
 	BLACKLISTED(1003, "This token is invalid or has already been invalidated."),
 	
 	INVALID(1004, "Invalid authorization token."),
-    
-	MALFORMED(1005, "Malformed authorization. The authorization token format is invalid or corrupted."),
 	
-	UNSUPPORTED(1006, "The algorithm used in the authorization token is not supported."),
+	INVALID_USER(1005, "Invalid user details provided in authorization token."),
+    
+	MALFORMED(1006, "Malformed authorization. The authorization token format is invalid or corrupted."),
+	
+	UNSUPPORTED(1007, "The algorithm used in the authorization token is not supported."),
 	
 	
 	BLOCKED(1010, "Access denied. The token is no longer valid. Please log in again to continue. !!!");

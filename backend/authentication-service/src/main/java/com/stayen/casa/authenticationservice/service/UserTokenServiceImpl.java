@@ -30,6 +30,7 @@ import com.stayen.casa.authenticationservice.security.utils.JwtUtils;
 
 @Service
 public class UserTokenServiceImpl implements UserTokenService {
+	private static final String CLASS_NAME = UserTokenServiceImpl.class.getSimpleName();
 
 	private final JwtUtils jwtUtils;
 	private final UserTokenRepository userTokenRepository;
@@ -137,11 +138,20 @@ public class UserTokenServiceImpl implements UserTokenService {
 	
 	private AuthResponseDTO rotateAndGenerateRefreshToken(User loggedInUser, UserToken userToken) {
 		
-		// TODO : this is never intercepted
-		// because if last refresh token is expired then it never got validated
+		/**
+		 * It never intercept any token that has already expired,
+		 * 
+		 * If and only if lastRefreshToken is valid and un-expired,
+		 * then only we block that user, 
+		 * in offence of replay action of tokens
+		 */
 		if(userToken.isLastRefreshToken(loggedInUser.getToken())) {
+			System.out.println(CLASS_NAME + " - BLOCKED -- due to using Last refresh token");
 			
-			// TODO: Invalidate current login 
+			/**
+			 * Invalidating the login for the deviceId found in the token
+			 */
+			invalidateDeviceToken();
 			
 			throw new TokenException(TokenError.BLOCKED);
 		}
@@ -161,7 +171,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 			
 			return new AuthResponseDTO(loggedInUser.getUid(), newAccessToken, newRefreshToken);
 		} else {
-			throw new TokenException(TokenError.INVALID);
+			throw new AuthException(AuthError.SESSION_NOT_FOUND);
 		}
 	}
 	

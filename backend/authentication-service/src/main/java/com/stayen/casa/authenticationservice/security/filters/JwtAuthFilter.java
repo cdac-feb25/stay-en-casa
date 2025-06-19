@@ -50,23 +50,71 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 		this.mapper = mapper; 
 	}
 	
+	private static final List<String> EXCLUDED_PATH = List.of(
+		"/auth/login", 
+		"/auth/register"
+	);
+	
+	private static final List<String> ONLY_REFRESH_TOKEN_PATH = List.of(
+		"/auth/token/refresh"
+	);
+	
+	/**
+	 * Verify whether to apply JWT filter
+	 * on the request
+	 * 
+	 * @param incomingPath
+	 * @return
+	 */
+	private static boolean isPathExcluded(String incomingPath) {
+		return EXCLUDED_PATH.stream().anyMatch((path) -> path.equalsIgnoreCase(incomingPath));
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param incomingPath
+	 * @return
+	 */
+	private static boolean isRefreshTokenPath(String incomingPath) {
+		return ONLY_REFRESH_TOKEN_PATH.stream().anyMatch((path) -> path.equalsIgnoreCase(incomingPath));
+	}
+	
+	
+	/**
+	 * Setting the response header, status, and message to return
+	 * only when authentication failed.
+	 */
 	private void setAuthErrorResponse(HttpServletResponse response, TokenError tokenError) throws IOException {
 		response.setContentType("application/json");
 		
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.getWriter().write(mapper.writeValueAsString(new AuthErrorDTO(tokenError.getCode(), tokenError.getMessage())));
 	}
+	
+	/**
+	 * Verifying the incoming request 
+	 * whether to apply JWT Filter on those request or not.
+	 * 
+	 * Here we check if the end-point they wanted to access can be skipped or not
+	 * 
+	 * @return true if the request need not to be authenticated, else false
+	 */
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+		if(isPathExcluded(request.getServletPath())) {
+			System.out.println(CLASS_NAME + " - Skipped Incoming Path : " + request.getServletPath());
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		String requestPath = request.getServletPath();
+		String incomingRequestPath = request.getServletPath().trim();
+		System.out.println(CLASS_NAME + " - Verifying Incoming Path : " + request.getServletPath());
 		
-		if(TokenConstant.isPathExcluded(requestPath)) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-
 		/**
 		 * Getting Header data from HttpRequest if exists
 		 */
@@ -89,31 +137,50 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			Claims jwtClaims = jwtUtils.validateToken(token);
 			
 			TokenType tokenType = TokenType.valueOf(jwtClaims.get(TokenConstant.TOKEN_TYPE).toString());
+			System.out.println(CLASS_NAME + " - Token Type : " + tokenType);
+			
 			/**
-			 * If token != ACCESS
-			 * 	then check is requested-path is refresh token path
-			 * 		if yes, proceed to controller
-			 * 		else, throw error
+			 * ACCESS token cannot be used to refresh tokens, 
+			 * even if it is valid JWT
 			 */
-			if(tokenType != TokenType.ACCESS) {
-
-				/**
-				 * If incoming path is NOT a refresh token path
-				 * we cannot proceed
-				 */
-				if(TokenConstant.isRefreshTokenPath(requestPath) == false) {
-					throw new TokenException(TokenError.INVALID);
-				}
-			} else {
-				
-				/**
-				 * If incoming path is refresh token path,
-				 * then we cannot proceed with access token
-				 */
-				if(TokenConstant.isRefreshTokenPath(requestPath)) {
-					throw new TokenException(TokenError.BLOCKED);
-				}
+			if(tokenType == TokenType.TEMP || 
+					tokenType == TokenType.ACCESS && isRefreshTokenPath(incomingRequestPath)) {
+				System.out.println(CLASS_NAME + " - BLOCKED -- Using ACCESS token for refreshing");
+				throw new TokenException(TokenError.BLOCKED);
 			}
+			
+			
+			/**
+			 * REFRESH token is only allowed for
+			 * /auth/token/refresh, or specified in ONLY_REFRESH_TOKEN_PATH 
+			 * And 
+			 * All the other request path should not be allowed
+			 */
+			if(tokenType == TokenType.REFRESH && isRefreshTokenPath(incomingRequestPath) == false) {
+				System.out.println(CLASS_NAME + " - INVALID -- Using REFRESH token for general purpose");
+				throw new TokenException(TokenError.INVALID);
+			}
+			
+			
+//			if(tokenType != TokenType.ACCESS) {
+//
+//				/**
+//				 * If incoming path is NOT a refresh token path
+//				 * we cannot proceed
+//				 */
+//				if(isRefreshTokenPath(requestPath) == false) {
+//					throw new TokenException(TokenError.INVALID);
+//				}
+//			} else {
+//				
+//				/**
+//				 * If incoming path is refresh token path,
+//				 * then we cannot proceed with access token
+//				 */
+//				if(isRefreshTokenPath(requestPath)) {
+//					throw new TokenException(TokenError.BLOCKED);
+//				}
+//			}
 
 //				if(isBlacklisted(jwtClaims)) {
 //					throw new TokenException(TokenErrorCode.BLACKLISTED);

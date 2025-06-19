@@ -12,7 +12,7 @@ public enum AuthError {
 	
 	NO_ACCOUNT_FOUND(1201, "We couldn’t find an account matching this email."),
 	
-	SESSION_NOT_FOUND(1202, "No active session found. You are already signed out."),
+	SESSION_NOT_FOUND(1202, "No active session found. Please login to continue."),
 	
 	ACCOUNT_ALREADY_EXIST(1203, "Account already exists. Please try logging in or use a different email."),
 	

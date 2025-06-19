@@ -86,7 +86,8 @@ public class UserToken extends BaseTimestampEntity {
 	 * Check and rotate current refresh token
 	 * 
 	 * @param token
-	 * @return true if token matched and rotated with lastRefreshToken, else false
+	 * @return false if no device token found or rotation is not possible, 
+	 * 		   <br/>true if token matched and rotated with lastRefreshToken, 
 	 */
 	public boolean ifRefreshAndRotated(String token) {
 		return this.tokens
