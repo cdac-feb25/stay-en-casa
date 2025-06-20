@@ -11,7 +11,7 @@ public class Location {
 	/**
      * Latitude coordinate of the property (ranges from -90 to 90).
      */
-	private double lattitude;
+	private double latitude;
 	
 	/**
      * Longitude coordinate of the property (ranges from -180 to 180).

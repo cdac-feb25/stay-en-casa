@@ -1,10 +1,16 @@
 package com.stayen.casa.propertyservice.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.stayen.casa.propertyservice.dto.LocationRequest;
+import com.stayen.casa.propertyservice.enums.AreaUnit;
+import com.stayen.casa.propertyservice.enums.Furnishing;
+import com.stayen.casa.propertyservice.enums.ListingType;
+import com.stayen.casa.propertyservice.enums.PropertyCategory;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -61,6 +67,11 @@ public class PropertyEntity {
 	private double area;
 	
 	/**
+	 * Unit of Area of Property listed like Sq.Ft., Sq.Yard, Sq.m and so on.
+	 */
+	private AreaUnit unit;
+	
+	/**
      * Number of bedrooms in the property.
      */
 	private int bedrooms;
@@ -93,7 +104,7 @@ public class PropertyEntity {
 	/**
      * Location details including coordinates and address.
      */
-	private Location location;
+	private LocationRequest location;
 	
 	/**
      * List of image URLs representing the property.
@@ -108,12 +119,12 @@ public class PropertyEntity {
 	/**
      * Timestamp when the property was listed.
      */
-	private LocalDate listedAt;
+	private LocalDateTime listedAt;
 	
 	/**
      * Timestamp when the property was last updated.
      */
-	private LocalDate updatedAt;
+	private LocalDateTime updatedAt;
 	
 	/**
      * Number of times the listing has been viewed.

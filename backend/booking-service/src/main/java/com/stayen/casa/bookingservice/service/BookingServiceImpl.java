@@ -36,26 +36,26 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public APIResponse createBooking(BookingRequest bookingRequest) 
 	{
-		//1. Check if the property is already Booked
+		//Check if the property is already Booked
 		Optional<BookingEntity> existingBooking = bookingRepository.findByPropertyIdAndStatus(bookingRequest.getPropertyId()
 				,BookingStatus.CONFIRMED);
 		if(existingBooking.isPresent())
 			throw new IllegalStateException("Property Already Booked");
 		
-		//2. Map the request to entity
+		//Map the request to entity
 		BookingEntity bookingEntity = modelMapper.map(bookingRequest, BookingEntity.class);
 		
 		// Set default status as PENDING
 	    bookingEntity.setStatus(BookingStatus.PENDING);
 		
-		//3. Set Additional Fields
+		//Set Additional Fields
 		bookingEntity.setCreatedAt(LocalDateTime.now());
 	    bookingEntity.setUpdatedAt(LocalDateTime.now());
 		
-		//4. Save to Database
+		//Save to Database
 		bookingRepository.save(bookingEntity);
 		
-		//5. Return the Booking Confirmation Message
+		//Return the Booking Confirmation Message
 		return new APIResponse("Booking Confirmed!!!! Your Booking ID: "+bookingEntity.getBookingId());
 	}
 
