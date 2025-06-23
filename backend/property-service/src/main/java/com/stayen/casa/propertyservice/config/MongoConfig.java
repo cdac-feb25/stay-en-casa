@@ -15,7 +15,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
 /*
- * MongoDB Configuration for Booking Service.
+ * MongoDB Configuration for Property Service.
  * Configures MongoClient with custom TimeOut Settings
  */
 

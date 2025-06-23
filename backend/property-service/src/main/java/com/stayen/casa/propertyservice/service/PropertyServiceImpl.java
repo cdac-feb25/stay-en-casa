@@ -3,6 +3,7 @@ package com.stayen.casa.propertyservice.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,11 @@ public class PropertyServiceImpl implements PropertyService {
 		//Map the Property Details to entity
 		PropertyEntity propertyEntity = modelMapper.map(propertyDetails, PropertyEntity.class);
 		
+		//Generate random unique Property ID
+		String uuid = "prop-"+UUID.randomUUID();
+		
+		propertyEntity.setPropertyId(uuid);
+		
 		//Set Additional Field
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
 		
@@ -54,5 +60,7 @@ public class PropertyServiceImpl implements PropertyService {
 		//5. Return the Listing Confirmation Message
 		return new APIResponse("Property is Listed!!!!! Your Property ID: "+propertyEntity.getPropertyId());
 	}
+	
+	
 
 }
