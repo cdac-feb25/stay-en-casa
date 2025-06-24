@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.stayen.casa.propertyservice.dto.LocationRequest;
 import com.stayen.casa.propertyservice.enums.AreaUnit;
 import com.stayen.casa.propertyservice.enums.Furnishing;
 import com.stayen.casa.propertyservice.enums.ListingType;
@@ -104,7 +103,7 @@ public class PropertyEntity {
 	/**
      * Location details including coordinates and address.
      */
-	private LocationRequest location;
+	private Location location;
 	
 	/**
      * List of image URLs representing the property.

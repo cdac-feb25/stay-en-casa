@@ -2,17 +2,19 @@ package com.stayen.casa.propertyservice.dto;
 
 import java.util.List;
 
+import com.stayen.casa.propertyservice.customValidator.ValidPropertyDetails;
 import com.stayen.casa.propertyservice.enums.AreaUnit;
 import com.stayen.casa.propertyservice.enums.Furnishing;
 import com.stayen.casa.propertyservice.enums.ListingType;
 import com.stayen.casa.propertyservice.enums.PropertyCategory;
-import com.stayen.casa.propertyservice.customValidator.ValidPropertyDetails;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * DTO used to create or update property listings.
@@ -20,6 +22,8 @@ import lombok.Data;
 
 @ValidPropertyDetails
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PropertyRequest {
 
 	@NotBlank(message = "Property Name is Required")

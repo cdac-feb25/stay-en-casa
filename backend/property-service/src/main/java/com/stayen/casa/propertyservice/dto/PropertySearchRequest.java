@@ -28,13 +28,13 @@ import lombok.NoArgsConstructor;
 public class PropertySearchRequest {
 	
 	//Basic Property Details
-	private String title;
+	private String propertyName;
 
 	private ListingType listingType;		//RENT OR SALE
 	
 	private Furnishing furnishing;			//FURNISHED, UNFURNISHED, etc.
 	
-	private PropertyCategory category;		//FLAT, PLOT, VILLA etc.
+	private PropertyCategory propertyCategory;		//FLAT, PLOT, VILLA etc.
 	
 	//Price Range
 	@Min(value = 0,message = "Minimum Price must be Positive")
