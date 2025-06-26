@@ -27,6 +27,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class BookingController {
 
+	// Injecting the BookingService to handle business logic
 	private final BookingService bookingService;
 	
 	/*

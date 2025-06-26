@@ -9,6 +9,12 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
+/**
+ * Custom annotation to validate property details based on category.
+ * 
+ * This annotation should be placed on the {@link PropertyRequest} class.
+ */
+
 @Documented
 @Constraint(validatedBy = PropertyDetailsValidator.class)
 @Target(ElementType.TYPE)

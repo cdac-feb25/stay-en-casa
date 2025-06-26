@@ -21,7 +21,7 @@ import lombok.ToString;
 @ToString
 public class BookingResponse {
 
-	 @Schema(description = "Unique ID of the booking")
+	 	@Schema(description = "Unique ID of the booking")
 	    private String bookingId;
 
 	    @Schema(description = "User ID of the buyer who made the booking")

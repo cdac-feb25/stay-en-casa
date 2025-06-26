@@ -31,8 +31,12 @@ public class PropertyCustomRepositoryImpl implements PropertyCustomRepository {
 		
 		if(searchFields.getListingType()!=null)
 		{
-			filters.add(Criteria.where("furnishing").is(searchFields.getListingType()));
+			filters.add(Criteria.where("listingType").is(searchFields.getListingType()));
 		}
+		
+		 if (searchFields.getFurnishing() != null) {
+	            filters.add(Criteria.where("furnishing").is(searchFields.getFurnishing()));
+	        }
 		
 		if(searchFields.getPropertyCategory()!=null)
 		{
@@ -41,13 +45,13 @@ public class PropertyCustomRepositoryImpl implements PropertyCustomRepository {
 		
 		if(searchFields.getMinPrice()!=null && searchFields.getMaxPrice()!=null)
 		{
-			filters.add(Criteria.where("price").gte(searchFields.getMinPrice()).lte(searchFields.getMaxPrice()));
+			filters.add(Criteria.where("price").gte(searchFields.getMinPrice().doubleValue()).lte(searchFields.getMaxPrice().doubleValue()));
 		}else if(searchFields.getMinPrice()!=null)
 		{
-			filters.add(Criteria.where("price").gte(searchFields.getMinPrice()));
+			filters.add(Criteria.where("price").gte(searchFields.getMinPrice().doubleValue()));
 		}else if(searchFields.getMaxPrice()!=null)
 		{
-			filters.add(Criteria.where("price").lte(searchFields.getMaxPrice()));
+			filters.add(Criteria.where("price").lte(searchFields.getMaxPrice().doubleValue()));
 		}
 		
 		if(searchFields.getMinArea()!=null && searchFields.getMaxArea()!=null)
@@ -68,22 +72,22 @@ public class PropertyCustomRepositoryImpl implements PropertyCustomRepository {
 		
 		if(searchFields.getBedrooms()!=null)
 		{
-			filters.add(Criteria.where("bedrooms").is(searchFields.getBedrooms()));
+			filters.add(Criteria.where("bedrooms").gte(searchFields.getBedrooms()));
 		}
 		
 		if(searchFields.getBathrooms()!=null)
 		{
-			filters.add(Criteria.where("bathrooms").is(searchFields.getBathrooms()));
+			filters.add(Criteria.where("bathrooms").gte(searchFields.getBathrooms()));
 		}
 		
 		if(searchFields.getAmenities()!=null && !searchFields.getAmenities().isEmpty())
 		{
-			filters.add(Criteria.where("amenities").all(searchFields.getAmenities()));
+			filters.add(Criteria.where("amenities").in(searchFields.getAmenities()));
 		}
 		
 		if(searchFields.getTotalFloors()!=null)
 		{
-			filters.add(Criteria.where("totalFloors").is(searchFields.getTotalFloors()));
+			filters.add(Criteria.where("totalFloors").gte(searchFields.getTotalFloors()));
 		}
 		
 		if(searchFields.getCity()!=null && !searchFields.getCity().isBlank())

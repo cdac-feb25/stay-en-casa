@@ -13,8 +13,13 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = RangeValidator.class)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+
+/**
+ * Custom annotation to validate min-max ranges in PropertySearchRequest,
+ * such as area and price ranges.
+ */
 public @interface ValidRange {
-String message() default "Invalid Property Details for Selected Category";
+String message() default "Minimum value cannot be greater than maximum value.";
 	
 	Class<?>[] groups() default {};
 	

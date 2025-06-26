@@ -8,12 +8,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.stayen.casa.bookingservice.customException.BookingNotFoundException;
 import com.stayen.casa.bookingservice.dto.APIResponse;
 import com.stayen.casa.bookingservice.dto.BookingRequest;
 import com.stayen.casa.bookingservice.dto.BookingResponse;
 import com.stayen.casa.bookingservice.entity.BookingEntity;
 import com.stayen.casa.bookingservice.entity.BookingStatus;
+import com.stayen.casa.bookingservice.exception.BookingNotFoundException;
 import com.stayen.casa.bookingservice.repository.BookingRepository;
 
 import lombok.AllArgsConstructor;

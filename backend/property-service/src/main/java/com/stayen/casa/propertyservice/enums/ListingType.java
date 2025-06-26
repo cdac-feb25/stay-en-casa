@@ -9,6 +9,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum ListingType {
 
+	/**
+     * Property is available for rent.
+     */
 	RENT,
+	
+	/**
+     * Property is available for sale.
+     */
 	SALE
 }

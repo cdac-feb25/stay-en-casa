@@ -56,16 +56,32 @@ public class PropertyServiceImpl implements PropertyService {
 		//Map the Property Details to entity
 		PropertyEntity propertyEntity = modelMapper.map(propertyDetails, PropertyEntity.class);
 		
+		//Set Owner ID
+		propertyEntity.setOwnerId(ownerID);
+		
 		//Generate random unique Property ID
-		String uuid = "prop-"+UUID.randomUUID();
+		String uuid = "prop-"+UUID.randomUUID().toString().replace("-", "");
 		
 		propertyEntity.setPropertyId(uuid);
+		
+		//Make property as available while listing
+		propertyEntity.setAvailable(true);
 		
 		//Set Additional Field
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
 		
+		propertyEntity.setListedAt(LocalDateTime.now());
+		
 		//Save to Database
-		propertyRepository.save(propertyEntity);
+		try {
+			
+			propertyRepository.save(propertyEntity);
+			
+		} catch (Exception e) {
+			
+			throw new PropertyException(PropertyError.PROPERTY_CREATION_FAILED);
+			
+		}
 		
 		//5. Return the Listing Confirmation Message
 		return new APIResponse("Property is Listed!!!!! Your Property ID: "+propertyEntity.getPropertyId());
@@ -91,7 +107,17 @@ public class PropertyServiceImpl implements PropertyService {
 		
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
 		
-		propertyRepository.save(propertyEntity);
+		
+		
+		try {
+			
+			propertyRepository.save(propertyEntity);
+			
+		} catch (Exception e) {
+			
+			throw new PropertyException(PropertyError.PROPERTY_UPDATE_FAILED);
+			
+		}
 		
 		// Map entity to response
 		return modelMapper.map(propertyEntity, PropertyResponse.class);
@@ -106,7 +132,12 @@ public class PropertyServiceImpl implements PropertyService {
 		//Change the Availability of Property
 		propertyEntity.setAvailable(!propertyEntity.isAvailable());
 		
+		propertyEntity.setUpdatedAt(LocalDateTime.now());
+		
+		
 		propertyRepository.save(propertyEntity);
+		
+		
 		
 		return modelMapper.map(propertyEntity,PropertyResponse.class);
 	}
@@ -204,11 +235,30 @@ public class PropertyServiceImpl implements PropertyService {
 		
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
 		
-		propertyRepository.save(propertyEntity);
+		
+		try {
+			
+			propertyRepository.save(propertyEntity);
+			
+		} catch (Exception e) {
+			
+			throw new PropertyException(PropertyError.PROPERTY_UPDATE_FAILED);
+			
+		}
+		
 		
 		return modelMapper.map(propertyEntity, PropertyResponse.class);
 	}
 	
+	/**
+	 * Helper method that updates the fields of an existing Location entity with the non-null values 
+	 * provided in the LocationUpdateRequest.
+	 *
+	 * Only fields that are not null in the request will be updated.
+	 *
+	 * @param existingLocation The current Location object to be updated.
+	 * @param updatedLocations The update request containing new field values.
+	 */
 	public void updateLocationFields(Location existingLocation, LocationUpdateRequest updatedLocations)
 	{
 		
@@ -260,15 +310,29 @@ public class PropertyServiceImpl implements PropertyService {
 		
 		List<PropertyEntity> properties =  customRepository.searchProperties(searchFields);
 		
+		if(properties.isEmpty())
+		{
+			throw new PropertyException(PropertyError.PROPERTY_SEARCH_FAILED);
+		}
+		
 		return properties.stream().map(p-> modelMapper.map(p, PropertyResponse.class)).collect(Collectors.toList());
 	}
 
 	@Override
 	public APIResponse deletePropertyById(String propertyId) {
-		PropertyEntity property = propertyRepository.findById(propertyId)
-				.orElseThrow(()-> new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
 		
-		propertyRepository.delete(property);
+		PropertyEntity property = propertyRepository.findById(propertyId)
+	            .orElseThrow(() -> new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
+		
+		try {
+			
+			propertyRepository.deleteById(propertyId);
+			
+		} catch (Exception e) {
+			
+			throw new PropertyException(PropertyError.PROPERTY_DELETION_FAILED);
+			
+		}
 		
 		return new APIResponse("Property with ID: "+propertyId+" Deleted Successfully");
 	}

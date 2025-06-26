@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.stayen.casa.propertyservice.enums.AreaUnit;
 import com.stayen.casa.propertyservice.enums.Furnishing;
 import com.stayen.casa.propertyservice.enums.ListingType;
 import com.stayen.casa.propertyservice.enums.PropertyCategory;
@@ -48,6 +49,9 @@ public class PropertyResponse {
     
 	@Schema(description = "Area of the Property")
     private Double area;
+	
+	@Schema(description = "Unit of Area of Property listed")
+	private AreaUnit unit;
     
 	@Schema(description = "No. of Bedrooms")
     private Integer bedrooms;
@@ -74,7 +78,7 @@ public class PropertyResponse {
     private List<String> images;
     
 	@Schema(description = "Availability status of the Property")
-    private Boolean isAvailable;
+    private Boolean available;
     
 	@Schema(description = "Timestamp when the Property was Listed")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

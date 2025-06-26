@@ -86,12 +86,12 @@ public class PropertyEntity {
 	private int floorNumber;
 	
 	/**
-     * Total number of floors in the building.
+     * Total number of floors in the building or Villa.
      */
 	private int totalFloors;
 	
 	/**
-     * Furnishing status - Furnished, Semi-Furnished, or Un-Furnished.
+     * Furnishing status - Furnished, Semi-Furnished, or UnFurnished.
      */
 	private Furnishing furnishing;
 	

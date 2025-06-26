@@ -1,4 +1,4 @@
-package com.stayen.casa.bookingservice.customExceptionController;
+package com.stayen.casa.bookingservice.exception;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.stayen.casa.bookingservice.customException.BookingNotFoundException;
 import com.stayen.casa.bookingservice.dto.APIResponse;
 
 

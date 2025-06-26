@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+//DTO :  Reponse DTO : to send API response from REST Server ---> Rest Client
+
 @Getter
 @Setter
 @NoArgsConstructor
