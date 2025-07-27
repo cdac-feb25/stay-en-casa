@@ -11,7 +11,7 @@ public class UserConstant {
     public static User getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if(!(auth.getDetails() instanceof User)) {
+        if(auth == null || auth.getDetails() == null) {
             throw new TokenException(TokenError.INVALID_USER);
         }
 
