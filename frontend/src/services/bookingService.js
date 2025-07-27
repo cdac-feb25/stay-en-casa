@@ -88,7 +88,7 @@ export const getBookingDetailsByPropertyId = async (propertyId) => {
  */
 export const updateBookingStatusByBookingId = async (bookingId, status) => {
     try {
-        const response = await axios.put(`${BASE_URL}/${bookingId}/status`, { status });
+        const response = await axios.patch(`${BASE_URL}/${bookingId}/status`, { status });
         return response.data;
     } catch (error) {
         console.error("Error updating Booking Status of a Property: ",error);

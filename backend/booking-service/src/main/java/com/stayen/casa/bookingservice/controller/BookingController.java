@@ -98,9 +98,9 @@ public class BookingController {
 	 * @return ResponseEntity with a success message
 	 */
 	@PatchMapping("/{bookingId}/status")
-	public ResponseEntity<?> updateBookingStatusByBookingId(@PathVariable String bookingId,@Valid @RequestBody UpdateStatusRequest status)
+	public ResponseEntity<?> updateBookingStatusByBookingId(@PathVariable String bookingId,@Valid @RequestBody UpdateStatusRequest request)
 	{
-		BookingStatus newStatus = BookingStatus.valueOf(status.getStatus().toUpperCase());
+		BookingStatus newStatus = BookingStatus.valueOf(request.getStatus().toUpperCase());
 		
 		return ResponseEntity.status(HttpStatus.OK).body(bookingService.updateBookingStatusByBookingId(bookingId, newStatus));
 	}

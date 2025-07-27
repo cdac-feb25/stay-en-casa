@@ -2,8 +2,8 @@
 // Page to create a new Booking using form
 
 import React, { useEffect, useState } from "react";
-import { createBooking } from "../../services/bookingService";
 import { useParams } from "react-router-dom";
+import { createBooking } from "../services/bookingService";
 
 /**
  * BookingPage component is responsible for handling the creation of a new booking.
