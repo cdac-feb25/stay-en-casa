@@ -58,7 +58,7 @@ public class BookingController {
 	 * @return BookingResponse for the given ID
 	 */
 	@GetMapping("/{bookingId}")
-	public ResponseEntity<?> getBookingDetailsDetailsById(@PathVariable String bookingId){
+	public ResponseEntity<?> getBookingDetailsById(@PathVariable String bookingId){
 		
 		return ResponseEntity.status(HttpStatus.OK).body(bookingService.getBookingDetailsById(bookingId));
 	}
@@ -71,7 +71,7 @@ public class BookingController {
 	 * @return list of BookingResponse for the given buyer
 	 */
 	@GetMapping("/buyer/{buyerId}")
-	public ResponseEntity<?> getBookingDetailsDetailsByBuyerId(@PathVariable String buyerId){
+	public ResponseEntity<?> getBookingDetailsByBuyerId(@PathVariable String buyerId){
 		
 		return ResponseEntity.status(HttpStatus.OK).body(bookingService.getBookingsByBuyerId(buyerId));
 	}
@@ -84,7 +84,7 @@ public class BookingController {
 	 * @return list of BookingResponse for the given property
 	 */
 	@GetMapping("/property/{propertyId}")
-	public ResponseEntity<?> getBookingDetailsDetailsByPropertyId(@PathVariable String propertyId){
+	public ResponseEntity<?> getBookingDetailsByPropertyId(@PathVariable String propertyId){
 		
 		return ResponseEntity.status(HttpStatus.OK).body(bookingService.getBookingsByPropertyID(propertyId));
 	}
