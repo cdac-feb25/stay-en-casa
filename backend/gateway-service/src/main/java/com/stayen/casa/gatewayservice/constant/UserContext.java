@@ -6,7 +6,7 @@ import com.stayen.casa.gatewayservice.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class UserConstant {
+public class UserContext {
 
     public static User getLoggedInUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

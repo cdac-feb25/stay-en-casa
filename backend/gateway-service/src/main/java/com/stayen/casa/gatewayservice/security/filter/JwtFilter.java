@@ -1,8 +1,9 @@
 package com.stayen.casa.gatewayservice.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stayen.casa.gatewayservice.constant.Endpoints;
 import com.stayen.casa.gatewayservice.constant.TokenConstant;
-import com.stayen.casa.gatewayservice.dto.AuthErrorDTO;
+import com.stayen.casa.gatewayservice.dto.ErrorResponseDTO;
 import com.stayen.casa.gatewayservice.enums.TokenError;
 import com.stayen.casa.gatewayservice.enums.TokenType;
 import com.stayen.casa.gatewayservice.exception.TokenException;
@@ -16,8 +17,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -31,14 +34,16 @@ public class JwtFilter extends OncePerRequestFilter {
     private final ObjectMapper mapper;
 
     private static final List<String> EXCLUDED_PATH = List.of(
-            "/api/v1/auth/login",
-            "/api/v1/auth/signup"
+            (Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN),  // "/api/v1/auth/login"
+//            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN),  // "/api/v1/auth/token/refresh"
+            (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP)  // "/api/v1/auth/signup"
     );
 
     private static final List<String> ONLY_REFRESH_TOKEN_PATH = List.of(
-            "/api/v1/auth/token/refresh"
+            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN)  // "/api/v1/auth/token/refresh"
     );
 
+    @Autowired
     public JwtFilter(JwtUtils jwtUtils, ObjectMapper mapper) {
         this.jwtUtils = jwtUtils;
         this.mapper = mapper;
@@ -71,8 +76,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private void setAuthErrorResponse(HttpServletResponse response, TokenError tokenError) throws IOException {
         response.setContentType("application/json");
+
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.getWriter().write(mapper.writeValueAsString(new AuthErrorDTO(tokenError)));
+//        try(PrintWriter writer = response.getWriter()) {
+//            writer.write(mapper.writeValueAsString(new ErrorResponseDTO(tokenError)));
+//        }
+        response.getWriter().write(mapper.writeValueAsString(new ErrorResponseDTO(tokenError)));
     }
 
     @Override
@@ -90,16 +99,7 @@ public class JwtFilter extends OncePerRequestFilter {
         System.out.println(CLASS_NAME + " - Request Intercepted.... " + incomingRequestPath);
 
         try {
-            String authHeader = request.getHeader(TokenConstant.AUTH_HEADER_NAME);
-
-            if (authHeader == null) {
-                throw new TokenException(TokenError.EMPTY);
-            }
-            if(authHeader.startsWith(TokenConstant.AUTH_TOKEN_NAME) == false) {
-                throw new TokenException(TokenError.INVALID);
-            }
-
-            String token = authHeader.substring(7);
+            String token = extractToken(request);
             Claims jwtClaims = jwtUtils.validateToken(token);
 
             TokenType tokenType = TokenType.valueOf(jwtClaims.get(TokenConstant.TOKEN_TYPE, String.class));
@@ -111,8 +111,8 @@ public class JwtFilter extends OncePerRequestFilter {
              */
             if(tokenType == TokenType.TEMP ||
                     tokenType == TokenType.ACCESS && isRefreshTokenPath(incomingRequestPath)) {
-                System.out.println(CLASS_NAME + " - BLOCKED -- Using ACCESS token for refreshing");
-                throw new TokenException(TokenError.BLOCKED);
+                System.out.println(CLASS_NAME + " - Invalid -- Using ACCESS token for refreshing");
+                throw new TokenException(TokenError.INVALID);
             }
 
 
@@ -122,7 +122,7 @@ public class JwtFilter extends OncePerRequestFilter {
              * And
              * All the other request path should not be allowed
              */
-            if(tokenType == TokenType.REFRESH && isRefreshTokenPath(incomingRequestPath) == false) {
+            if(tokenType == TokenType.REFRESH && !isRefreshTokenPath(incomingRequestPath)) {
                 System.out.println(CLASS_NAME + " - INVALID -- Using REFRESH token for general purpose");
                 throw new TokenException(TokenError.INVALID);
             }
@@ -132,8 +132,9 @@ public class JwtFilter extends OncePerRequestFilter {
             String deviceId = jwtClaims.get(TokenConstant.DEVICE_ID, String.class);
 
             User user = new User(uid, email, deviceId, token);
+            List<GrantedAuthority> authorities = List.of();
 
-            UsernamePasswordAuthenticationToken verifiedUser = new UsernamePasswordAuthenticationToken(uid, null, null);
+            UsernamePasswordAuthenticationToken verifiedUser = new UsernamePasswordAuthenticationToken(uid, null, authorities);
             verifiedUser.setDetails(user);
 
             SecurityContextHolder.getContext().setAuthentication(verifiedUser);
@@ -142,9 +143,10 @@ public class JwtFilter extends OncePerRequestFilter {
              * proceed with further filter chain
              */
             System.out.println(CLASS_NAME + " - JWT Verified / User saved....");
-            filterChain.doFilter(request, response);
 
-        } catch (TokenException e) {
+            filterChain.doFilter(request, response);
+        }
+        catch (TokenException e) {
             /**
              * Intercepting
              * EMPTY, INVALID, BLOCKED
@@ -161,5 +163,18 @@ public class JwtFilter extends OncePerRequestFilter {
             System.out.println(CLASS_NAME + " - Exception message : " + e.getMessage());
             setAuthErrorResponse(response, TokenError.INVALID);
         }
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String authHeader = request.getHeader(TokenConstant.AUTH_HEADER_NAME);
+
+        if (authHeader == null) {
+            throw new TokenException(TokenError.EMPTY);
+        }
+        if(authHeader.startsWith(TokenConstant.AUTH_TOKEN_NAME) == false) {
+            throw new TokenException(TokenError.INVALID);
+        }
+
+        return authHeader.substring(7);
     }
 }

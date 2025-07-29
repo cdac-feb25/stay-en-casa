@@ -30,6 +30,13 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+
+	<!--  Apache HttpClient for RestTemplate  -->
+<!--		<dependency>-->
+<!--			<groupId>org.apache.httpcomponents.client5</groupId>-->
+<!--			<artifactId>httpclient5</artifactId>-->
+<!--		</dependency>-->
+	<!--  Apache HttpClient for RestTemplate  -->
 	
 	<!-- swagger dependency for Spring Boot 3  -->
 		<dependency>

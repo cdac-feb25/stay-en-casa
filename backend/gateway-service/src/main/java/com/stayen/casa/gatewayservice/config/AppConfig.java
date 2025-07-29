@@ -6,15 +6,29 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.stayen.casa.gatewayservice.security.filter.JwtFilter;
 import com.stayen.casa.gatewayservice.security.utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 
-@Component
+import java.io.IOException;
+import java.net.URI;
+
+
+@Configuration
 public class AppConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
 
+        /**
+         * To allow Jackson to use Java 8 DateTime API
+         * and to stop Jackson default deserialization of DateTime API into milliseconds(e.g., 1722163800000)
+         * instead show DateTime as human-readable format
+         */
         mapper
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -25,6 +39,13 @@ public class AppConfig {
     @Bean
     public JwtFilter jwtFilter(JwtUtils jwtUtils, ObjectMapper mapper) {
         return new JwtFilter(jwtUtils, mapper);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+//        RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate;
     }
 
 }

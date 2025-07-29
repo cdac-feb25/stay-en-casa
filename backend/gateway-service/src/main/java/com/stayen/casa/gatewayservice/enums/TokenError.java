@@ -67,7 +67,7 @@ public enum TokenError {
      * Last Refresh Token is used instead of Current Refresh Token
      * </pre>
      */
-    BLOCKED(1010, "Access denied. The token is no longer valid. Please log in again to continue. !!!");
+    BLOCKED(1010, "Access blocked. The token is not valid. Please log in again to continue. !!!");
 
     private int code;
     private String message;

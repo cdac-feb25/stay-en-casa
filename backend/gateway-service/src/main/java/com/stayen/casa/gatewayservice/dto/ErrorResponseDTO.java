@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class AuthErrorDTO {
+public class ErrorResponseDTO {
 
     private int errorCode;
 
@@ -16,7 +16,7 @@ public class AuthErrorDTO {
 
     private LocalDateTime timestamp;
 
-    public AuthErrorDTO(TokenError tokenError) {
+    public ErrorResponseDTO(TokenError tokenError) {
         this.errorCode = tokenError.getCode();
         this.errorMessage = tokenError.getMessage();
         this.timestamp = LocalDateTime.now();
