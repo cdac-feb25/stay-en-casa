@@ -1,5 +1,6 @@
 package com.stayen.casa.userservice.controller;
 
+import com.stayen.casa.userservice.constant.Endpoints;
 import com.stayen.casa.userservice.constant.UserContext;
 import com.stayen.casa.userservice.dto.UserProfileDTO;
 import com.stayen.casa.userservice.model.User;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users/profile")
+@RequestMapping(Endpoints.USER_BASE_URL + Endpoints.USER_PROFILE)
 public class UserProfileController {
 
 	private final UserProfileService userProfileService;

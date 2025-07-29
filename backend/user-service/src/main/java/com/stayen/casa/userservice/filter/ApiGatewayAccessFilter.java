@@ -2,6 +2,7 @@ package com.stayen.casa.userservice.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stayen.casa.userservice.constant.EnvConstant;
+import com.stayen.casa.userservice.constant.HeaderConstant;
 import com.stayen.casa.userservice.dto.ErrorResponseDTO;
 import com.stayen.casa.userservice.enums.CommonError;
 import jakarta.servlet.FilterChain;
@@ -16,13 +17,13 @@ import java.io.IOException;
 
 public class ApiGatewayAccessFilter extends OncePerRequestFilter {
 
-    private final String trustedOrigin;
+    private final String internalServiceAuthKey;
 
     private final ObjectMapper mapper;
 
     @Autowired
     public ApiGatewayAccessFilter(EnvConstant envConstant, ObjectMapper mapper) {
-        this.trustedOrigin = envConstant.getApiGatewayServiceBaseUrl();
+        this.internalServiceAuthKey = envConstant.getInternalServiceAuthKey();
         this.mapper = mapper;
     }
 
@@ -33,19 +34,20 @@ public class ApiGatewayAccessFilter extends OncePerRequestFilter {
 	private void setErrorResponse(HttpServletResponse response, CommonError commonError) throws IOException {
 		response.setContentType("application/json");
 
-		response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		response.setStatus(HttpStatus.FORBIDDEN.value());
 		response.getWriter().write(mapper.writeValueAsString(new ErrorResponseDTO(commonError)));
 	}
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // TODO: uncomment below code for CORS
-//        String origin = request.getHeader("Origin");
-//
-//        if(origin != null && origin.equalsIgnoreCase(trustedOrigin)) {
+        String authKey = request.getHeader(HeaderConstant.AUTH_KEY);
+        System.out.println("ApiGatewayAccess filter :: authKey = " + authKey);
+
+        if(authKey != null && authKey.equals(internalServiceAuthKey)) {
             filterChain.doFilter(request, response);
-//        } else {
-//            setErrorResponse(response, CommonError.ORIGIN_NOT_ALLOWED);
-//        }
+        } else {
+            setErrorResponse(response, CommonError.ORIGIN_NOT_ALLOWED);
+        }
     }
 }

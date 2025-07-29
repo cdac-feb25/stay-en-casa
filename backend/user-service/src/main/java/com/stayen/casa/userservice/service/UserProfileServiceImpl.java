@@ -2,8 +2,7 @@ package com.stayen.casa.userservice.service;
 
 import com.stayen.casa.userservice.dto.UserProfileDTO;
 import com.stayen.casa.userservice.entity.UserProfile;
-import com.stayen.casa.userservice.enums.AuthError;
-import com.stayen.casa.userservice.exception.GeneralException;
+import com.stayen.casa.userservice.enums.ProfileError;
 import com.stayen.casa.userservice.exception.ProfileException;
 import com.stayen.casa.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     public UserProfileDTO fetchUserProfile(String uid) {
         UserProfile userProfile = userRepository
                 .findById(uid)
-                .orElseThrow(() -> new ProfileException(AuthError.NO_ACCOUNT_FOUND));
+                .orElseThrow(() -> new ProfileException(ProfileError.NO_PROFILE_FOUND));
 
         return new UserProfileDTO(userProfile);
     }
@@ -34,7 +33,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     public UserProfileDTO createUserProfile(UserProfileDTO userProfileDTO) {
         Optional<UserProfile> anyPrevProfile = userRepository.findById(userProfileDTO.getUid());
         if(anyPrevProfile.isPresent()) {
-            throw new ProfileException(AuthError.ACCOUNT_ALREADY_EXIST);
+            throw new ProfileException(ProfileError.PROFILE_ALREADY_CREATED);
         }
 
         UserProfile userProfile = new UserProfile(userProfileDTO);
@@ -43,12 +42,12 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public UserProfileDTO updateUserProfile(String uid, UserProfileDTO userProfileDTO) {
+    public UserProfileDTO updateUserProfile(String uid, UserProfileDTO updatedUserProfileDTO) {
         UserProfile userProfile = userRepository
                 .findById(uid)
-                .orElseThrow(() -> new ProfileException(AuthError.NO_ACCOUNT_FOUND));
+                .orElseThrow(() -> new ProfileException(ProfileError.NO_PROFILE_FOUND));
 
-        userProfile.update(userProfileDTO);
+        userProfile.update(updatedUserProfileDTO);
 
         userProfile = userRepository.save(userProfile);
         return new UserProfileDTO(userProfile);

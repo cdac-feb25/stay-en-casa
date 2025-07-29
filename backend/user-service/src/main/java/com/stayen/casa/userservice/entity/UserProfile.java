@@ -64,11 +64,11 @@ public class UserProfile extends BaseTimestampEntity {
     /**
      * Uid, Email cannot be updated
      */
-    public void update(UserProfileDTO userProfileDTO) {
-        this.name = userProfileDTO.getName();
-        this.phoneNo = userProfileDTO.getPhoneNo();
-        this.address = userProfileDTO.getAddress();
-        this.photoUrl = userProfileDTO.getPhotoUrl();
+    public void update(UserProfileDTO updatedUserProfileDTO) {
+        this.name = updatedUserProfileDTO.getName();
+        this.phoneNo = updatedUserProfileDTO.getPhoneNo();
+        this.address = updatedUserProfileDTO.getAddress();
+        this.photoUrl = updatedUserProfileDTO.getPhotoUrl();
         this.setUpdatedAt(LocalDateTime.now());
     }
 }

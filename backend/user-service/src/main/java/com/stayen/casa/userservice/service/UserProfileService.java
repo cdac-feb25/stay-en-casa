@@ -8,7 +8,7 @@ public interface UserProfileService {
 
     UserProfileDTO createUserProfile(UserProfileDTO userProfileDTO);
 
-    UserProfileDTO updateUserProfile(String uid, UserProfileDTO userProfileDTO);
+    UserProfileDTO updateUserProfile(String uid, UserProfileDTO updatedUserProfileDTO);
 
 
 }

@@ -1,6 +1,6 @@
 package com.stayen.casa.userservice.constant;
 
-import com.stayen.casa.userservice.enums.AuthError;
+import com.stayen.casa.userservice.enums.ProfileError;
 import com.stayen.casa.userservice.exception.GeneralException;
 import com.stayen.casa.userservice.model.User;
 import org.springframework.security.core.Authentication;
@@ -13,7 +13,7 @@ public class UserContext {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if(auth == null || auth.getDetails() == null) {
-            throw new GeneralException(AuthError.NO_ACCOUNT_FOUND);
+            throw new GeneralException(ProfileError.NO_PROFILE_FOUND);
         }
 
         System.out.println(CLASS_NAME + " - User : " + auth.getPrincipal());

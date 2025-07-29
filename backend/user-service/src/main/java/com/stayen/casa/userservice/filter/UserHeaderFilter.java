@@ -1,6 +1,8 @@
 package com.stayen.casa.userservice.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stayen.casa.userservice.constant.Endpoints;
+import com.stayen.casa.userservice.constant.HeaderConstant;
 import com.stayen.casa.userservice.dto.ErrorResponseDTO;
 import com.stayen.casa.userservice.enums.CommonError;
 import com.stayen.casa.userservice.model.User;
@@ -16,22 +18,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class UserContextFilter extends OncePerRequestFilter {
+public class UserHeaderFilter extends OncePerRequestFilter {
 
-    private static final Map<String, String> PATH_ALLOWED_FOR_NO_USER_HEADER;
+    private static final Map<String, String> PATH_METHOD_ALLOWED_WITHOUT_USER_HEADER;
     static {
-        PATH_ALLOWED_FOR_NO_USER_HEADER = new HashMap<>();
-        PATH_ALLOWED_FOR_NO_USER_HEADER.put("/users/profile", "POST");
+        PATH_METHOD_ALLOWED_WITHOUT_USER_HEADER = new HashMap<>();
+        PATH_METHOD_ALLOWED_WITHOUT_USER_HEADER.put((Endpoints.USER_BASE_URL + Endpoints.USER_PROFILE), "POST"); // creating new profile
     }
 
     private ObjectMapper mapper;
 
     @Autowired
-    public UserContextFilter(ObjectMapper mapper) {
+    public UserHeaderFilter(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
@@ -39,11 +42,13 @@ public class UserContextFilter extends OncePerRequestFilter {
      * Setting the response header, status, and message to return
      * only when request header does not have user specific details
      */
-    private void setErrorResponse(HttpServletResponse response, CommonError commonError) throws IOException {
+    private void setErrorResponse(HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
 
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.getWriter().write(mapper.writeValueAsString(new ErrorResponseDTO(commonError)));
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        try(PrintWriter writer = response.getWriter()) {
+            writer.write(mapper.writeValueAsString(new ErrorResponseDTO(CommonError.USER_DETAIL_NOT_FOUND)));
+        }
     }
 
     @Override
@@ -51,18 +56,17 @@ public class UserContextFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         String method = request.getMethod();
 
-        return PATH_ALLOWED_FOR_NO_USER_HEADER.entrySet()
+        return PATH_METHOD_ALLOWED_WITHOUT_USER_HEADER
+                .entrySet()
                 .stream()
-                .anyMatch((entry) -> {
-                    return (path.equalsIgnoreCase(entry.getKey()) && method.equalsIgnoreCase(entry.getValue()));
-                });
+                .anyMatch((entry) -> (path.equalsIgnoreCase(entry.getKey()) && method.equalsIgnoreCase(entry.getValue())));
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String uid = request.getHeader("User-Id");
-        String email = request.getHeader("User-Email");
-        String deviceId = request.getHeader("User-Device-Id");
+        String uid = request.getHeader(HeaderConstant.USER_ID);
+        String email = request.getHeader(HeaderConstant.USER_EMAIL);
+        String deviceId = request.getHeader(HeaderConstant.USER_DEVICE_ID);
 
         if(uid != null && email != null && deviceId != null && !uid.isBlank() && !email.isBlank() && !deviceId.isBlank()) {
             User user = new User(uid, email, deviceId);
@@ -71,9 +75,10 @@ public class UserContextFilter extends OncePerRequestFilter {
             verifiedUser.setDetails(user);
 
             SecurityContextHolder.getContext().setAuthentication(verifiedUser);
+
             filterChain.doFilter(request, response);
         } else {
-            setErrorResponse(response, CommonError.USER_DETAIL_NOT_FOUND);
+            setErrorResponse(response);
         }
     }
 }

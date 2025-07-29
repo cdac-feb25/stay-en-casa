@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnvConstant {
 
-    @Value("${api-gateway-service-base-url}")
-    private String apiGatewayServiceBaseUrl;
+    @Value("${internal-service-auth-key}")
+    private String internalServiceAuthKey;
 
 }
