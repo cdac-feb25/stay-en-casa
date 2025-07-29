@@ -15,6 +15,4 @@ public class User {
 	
 	private String deviceId;
 	
-	private String token;
-
 }

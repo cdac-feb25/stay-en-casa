@@ -1,27 +1,35 @@
-package com.stayen.casa.authenticationservice.security;
+package com.stayen.casa.authenticationservice.config;
 
+import com.stayen.casa.authenticationservice.filter.ApiGatewayAccessFilter;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.stayen.casa.authenticationservice.security.filters.JwtAuthFilter;
-import com.stayen.casa.authenticationservice.security.utils.JwtUtils;
+import java.util.List;
 
 @Component
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
+	private final ApiGatewayAccessFilter apiGatewayAccessFilter;
+
+	@Autowired
+	public SecurityConfig(ApiGatewayAccessFilter apiGatewayAccessFilter) {
+		this.apiGatewayAccessFilter = apiGatewayAccessFilter;
+	}
+
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtAuthFilter jwtAuthFilter) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 				.csrf((csrf) -> csrf.disable())
 				.httpBasic((basicAuth) -> basicAuth.disable())
@@ -29,20 +37,22 @@ public class SecurityConfig {
 				.sessionManagement((sessionManager) -> {
 					sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 				})
+				.cors((cors) -> {
+					cors.configurationSource(new CorsConfigurationSource() {
+						@Override
+						public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+							CorsConfiguration config = new CorsConfiguration();
+							config.setAllowedOrigins(List.of("http://localhost:9090"));
+							return config;
+						}
+					});
+				})
 				.authorizeHttpRequests((httpRequest) -> {
 					httpRequest
-							.requestMatchers(
-									"/auth/test",
-									"/auth/register/**", "/auth/login/**", 
-									"/swagger-ui/**", "/swagger-ui.html", 
-									"/v3/api-docs/**", "/webjars/**"
-									).permitAll()
-							.anyRequest().authenticated();
-				});
+							.anyRequest().permitAll();
+				})
+				.addFilterBefore(apiGatewayAccessFilter, UsernamePasswordAuthenticationFilter.class);
 
-		httpSecurity
-			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-		
 		return httpSecurity.build();
 	}
 }

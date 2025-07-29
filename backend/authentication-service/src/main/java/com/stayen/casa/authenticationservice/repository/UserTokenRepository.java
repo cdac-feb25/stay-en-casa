@@ -11,8 +11,4 @@ public interface UserTokenRepository extends MongoRepository<UserToken, String> 
 
 	Optional<UserToken> findByUid(String uid);
 	
-//	Optional<UserToken> findByEmail(String email);
-	
-//	Optional<UserToken> findByEmailAndDevice(String email, String deviceId);
-	
 }

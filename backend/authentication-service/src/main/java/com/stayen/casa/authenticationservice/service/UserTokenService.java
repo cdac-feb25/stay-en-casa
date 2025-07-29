@@ -1,9 +1,9 @@
 package com.stayen.casa.authenticationservice.service;
 
-import com.stayen.casa.authenticationservice.dto.AuthResponseDTO;
+import com.stayen.casa.authenticationservice.dto.AuthTokenResponseDTO;
+import com.stayen.casa.authenticationservice.dto.LogoutRequestDTO;
+import com.stayen.casa.authenticationservice.dto.RefreshTokenRequestDTO;
 import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
-import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
-import com.stayen.casa.authenticationservice.entity.UserCredential;
 import com.stayen.casa.authenticationservice.entity.UserToken;
 import com.stayen.casa.authenticationservice.model.JwtModel;
 
@@ -11,10 +11,10 @@ public interface UserTokenService {
 	
 	UserToken fetchUserToken(String uid, RuntimeException throwException);
 	
-	SimpleResponseDTO invalidateDeviceToken();
+	SimpleResponseDTO invalidateDeviceToken(LogoutRequestDTO logoutRequestDTO);
 
-	AuthResponseDTO generateToken(JwtModel jwtModel);
+	AuthTokenResponseDTO generateToken(JwtModel jwtModel);
 	
-	AuthResponseDTO refreshToken();
+	AuthTokenResponseDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO);
 	
 }

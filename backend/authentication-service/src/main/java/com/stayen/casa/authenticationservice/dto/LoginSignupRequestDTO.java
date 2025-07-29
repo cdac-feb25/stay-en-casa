@@ -2,7 +2,6 @@ package com.stayen.casa.authenticationservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,18 +11,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({"email", "password", "deviceId", "createdAt", "updatedAt"})
-public class LoginRequestDTO extends BaseTimestampDTO {
-	
+public class LoginSignupRequestDTO extends BaseTimestampDTO {
+
 	private String email;
-	
+
 	private String password;
-	
+
 	private String deviceId;
 
-	public LoginRequestDTO(String email, String deviceId, String password) {
+	public LoginSignupRequestDTO(String email, String deviceId, String password) {
 		this.email = email;
 		this.password = password;
 		this.deviceId = deviceId;
 	}
-	
+
 }

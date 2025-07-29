@@ -1,7 +1,5 @@
 package com.stayen.casa.authenticationservice.constant;
 
-import java.util.List;
-
 public class TokenConstant {
 	private static final String CLASS_NAME = TokenConstant.class.getSimpleName();
 

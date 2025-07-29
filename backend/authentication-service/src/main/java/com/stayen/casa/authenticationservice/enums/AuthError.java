@@ -3,20 +3,17 @@ package com.stayen.casa.authenticationservice.enums;
 import lombok.Getter;
 
 @Getter
-public enum AuthError {
+public enum AuthError implements GenericError {
 	
-//	public static final String NO_ACCOUNT_FOUND = "We couldn’t find an account matching this email.";
-//	public static final String SESSION_NOT_FOUND = "No active session found. You are already signed out.";
-//	public static final String ACCOUNT_ALREADY_EXIST = "Account already exists. Please try logging in or use a different email.";
-//	public static final String INVALID_CREDENTIAL = "Login failed. The email or password is incorrect.";
+	NO_ACCOUNT_FOUND(1201, "We could not find an account matching this email."),
 	
-	NO_ACCOUNT_FOUND(1201, "We couldn’t find an account matching this email."),
-	
-	SESSION_NOT_FOUND(1202, "No active session found. Please login to continue."),
+	SESSION_NOT_FOUND(1202, "No active session found. Please log in to continue."),
 	
 	ACCOUNT_ALREADY_EXIST(1203, "Account already exists. Please try logging in or use a different email."),
 	
-	INVALID_CREDENTIAL(1204, "Login failed. The email or password is incorrect.");
+	INVALID_CREDENTIAL(1204, "Login failed. The email or password is incorrect."),
+
+	UID_EMAIL_NOT_MATCHING(1205, "Authentication  failed. Please ensure your user ID and email are correct.");
 
 	/**
 	 * 

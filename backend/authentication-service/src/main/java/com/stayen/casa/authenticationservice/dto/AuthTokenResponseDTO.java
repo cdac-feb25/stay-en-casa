@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({"uid", "accessToken", "refreshToken", "createdAt", "updatedAt"})
-public class AuthResponseDTO extends BaseTimestampDTO {
+public class AuthTokenResponseDTO extends BaseTimestampDTO {
 
 	private String uid;
 	
@@ -24,14 +24,14 @@ public class AuthResponseDTO extends BaseTimestampDTO {
 	
 	private String refreshToken;
 	
-	public AuthResponseDTO(String uid, String accessToken, String refreshToken) {
+	public AuthTokenResponseDTO(String uid, String accessToken, String refreshToken) {
 		super.currentTimestamp();
 		this.uid = uid;
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
 	}
 	
-	public AuthResponseDTO(String uid, String accessToken, String refreshToken, LocalDateTime createdAt, LocalDateTime updatedAt) {
+	public AuthTokenResponseDTO(String uid, String accessToken, String refreshToken, LocalDateTime createdAt, LocalDateTime updatedAt) {
 		super.updateTimestamp(createdAt, updatedAt);;
 		this.uid = uid;
 		this.accessToken = accessToken;

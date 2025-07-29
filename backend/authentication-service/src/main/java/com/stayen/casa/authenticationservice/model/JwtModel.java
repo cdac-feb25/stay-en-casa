@@ -15,7 +15,4 @@ public class JwtModel {
 	
 	private String deviceId;
 	
-//	private String username;
-//	private String roles  // not required now
-
 }

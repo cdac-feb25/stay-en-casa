@@ -3,17 +3,12 @@ package com.stayen.casa.authenticationservice.entity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.stayen.casa.authenticationservice.model.JwtModel;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -56,9 +51,8 @@ public class UserToken extends BaseTimestampEntity {
 	 * @return true if any token were removed, else false
 	 */
 	public boolean removeDeviceToken(String deviceId) {
-		return this.tokens.removeIf((deviceToken) -> {
-			return deviceToken.getDeviceId().equals(deviceId);
-		});
+		return this.tokens
+				.removeIf((deviceToken) -> deviceToken.getDeviceId().equals(deviceId));
 	}
 	
 	public void addDeviceToken(DeviceToken deviceToken) {
@@ -67,9 +61,6 @@ public class UserToken extends BaseTimestampEntity {
 	
 	/**
 	 * Rotation of Refresh Token Process
-	 * 
-	 * 
-	 * 
 	 * 
 	 * @param token
 	 * @return
@@ -89,18 +80,25 @@ public class UserToken extends BaseTimestampEntity {
 	 * @return false if no device token found or rotation is not possible, 
 	 * 		   <br/>true if token matched and rotated with lastRefreshToken, 
 	 */
-	public boolean ifRefreshAndRotated(String token) {
+	public boolean findTokenAndRotate(String token) {
 		return this.tokens
 				.stream()
 				.anyMatch((deviceToken) -> {
 					if(deviceToken.getRefreshToken().equals(token)) {
-						deviceToken.setLastRefreshToken(deviceToken.getRefreshToken());
+						deviceToken.setLastRefreshToken(token);
 						return true;
 					}
 					return false;
 				});
 	}
-	
+
+	/**
+	 * Updating newly generated refresh token,
+	 * for future use of refreshing the token
+	 *
+	 * @param deviceId
+	 * @param newRefreshToken
+	 */
 	public void setNewRefreshToken(String deviceId, String newRefreshToken) {
 		this.tokens
 			.forEach((deviceToken) -> {

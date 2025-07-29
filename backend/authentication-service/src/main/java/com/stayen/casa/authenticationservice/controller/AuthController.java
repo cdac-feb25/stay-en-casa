@@ -1,21 +1,12 @@
 package com.stayen.casa.authenticationservice.controller;
 
+import com.stayen.casa.authenticationservice.constant.Endpoints;
+import com.stayen.casa.authenticationservice.dto.LogoutRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.stayen.casa.authenticationservice.config.MongoConfig;
-import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
-import com.stayen.casa.authenticationservice.dto.LoginRequestDTO;
-import com.stayen.casa.authenticationservice.dto.SignupRequestDTO;
-import com.stayen.casa.authenticationservice.exception.token.TokenException;
+import org.springframework.web.bind.annotation.*;
+import com.stayen.casa.authenticationservice.dto.LoginSignupRequestDTO;
 import com.stayen.casa.authenticationservice.service.UserCredentialService;
 
 /**
@@ -27,16 +18,13 @@ import com.stayen.casa.authenticationservice.service.UserCredentialService;
  * </pre>
  */
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(Endpoints.Auth.BASE_URL) // http://localhost:9091/api/v1/auth/XXX
 public class AuthController {
 
-    private final MongoConfig mongoConfig;
-	
 	private final UserCredentialService userCredentialService;
 	
 	@Autowired
-	public AuthController(MongoConfig mongoConfig, UserCredentialService userCredentialService) {
-		this.mongoConfig = mongoConfig;
+	public AuthController(UserCredentialService userCredentialService) {
 		this.userCredentialService = userCredentialService;
 	}
 	
@@ -45,19 +33,24 @@ public class AuthController {
 		return "Hello World !!!";
 	}
 	
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-		return ResponseEntity.ok(userCredentialService.loginUser(loginRequestDTO));
+	@PostMapping(Endpoints.Auth.LOGIN)
+	public ResponseEntity<?> login(@RequestBody LoginSignupRequestDTO loginSignupRequestDTO) {
+		System.out.println(loginSignupRequestDTO);
+		return ResponseEntity
+				.ok(userCredentialService.loginUser(loginSignupRequestDTO));
 	}
 	
-	@PostMapping("/register")
-	public ResponseEntity<?> register(@RequestBody SignupRequestDTO signupRequestDTO) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(userCredentialService.registerNewUser(signupRequestDTO));
+	@PostMapping(Endpoints.Auth.SIGNUP)
+	public ResponseEntity<?> register(@RequestBody LoginSignupRequestDTO loginSignupRequestDTO) {
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(userCredentialService.signupUser(loginSignupRequestDTO));
 	}
 	
-	@PostMapping("/logout")
-	public ResponseEntity<?> logout() {
-		return ResponseEntity.ok(userCredentialService.logoutUser());			
+	@PostMapping(Endpoints.Auth.LOGOUT)
+	public ResponseEntity<?> logout(@RequestBody LogoutRequestDTO logoutRequestDTO) {
+		return ResponseEntity
+				.ok(userCredentialService.logoutUser(logoutRequestDTO));
 	}
 	
 }

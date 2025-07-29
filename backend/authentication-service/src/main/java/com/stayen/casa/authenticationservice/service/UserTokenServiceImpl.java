@@ -1,32 +1,25 @@
 package com.stayen.casa.authenticationservice.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
+import com.stayen.casa.authenticationservice.dto.LogoutRequestDTO;
+import com.stayen.casa.authenticationservice.dto.RefreshTokenRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.stayen.casa.authenticationservice.constant.TokenConstant;
-import com.stayen.casa.authenticationservice.constant.ErrorConstant;
-import com.stayen.casa.authenticationservice.constant.UserConstant;
-import com.stayen.casa.authenticationservice.dto.AuthResponseDTO;
+import com.stayen.casa.authenticationservice.dto.AuthTokenResponseDTO;
 import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
-import com.stayen.casa.authenticationservice.dto.AuthErrorDTO;
-import com.stayen.casa.authenticationservice.entity.UserCredential;
 import com.stayen.casa.authenticationservice.entity.UserToken;
 import com.stayen.casa.authenticationservice.enums.AuthError;
 import com.stayen.casa.authenticationservice.enums.TokenError;
 import com.stayen.casa.authenticationservice.enums.TokenType;
-import com.stayen.casa.authenticationservice.exception.credential.AuthException;
-import com.stayen.casa.authenticationservice.exception.token.TokenException;
+import com.stayen.casa.authenticationservice.exception.AuthException;
+import com.stayen.casa.authenticationservice.exception.TokenException;
 import com.stayen.casa.authenticationservice.entity.DeviceToken;
 import com.stayen.casa.authenticationservice.model.JwtModel;
-import com.stayen.casa.authenticationservice.model.User;
 import com.stayen.casa.authenticationservice.repository.UserTokenRepository;
-import com.stayen.casa.authenticationservice.security.utils.JwtUtils;
+import com.stayen.casa.authenticationservice.utils.JwtUtils;
 
 @Service
 public class UserTokenServiceImpl implements UserTokenService {
@@ -52,40 +45,34 @@ public class UserTokenServiceImpl implements UserTokenService {
 	}
 	
 	@Override
-	public UserToken fetchUserToken(String uid, RuntimeException throwException) {
-		return userTokenRepository.findByUid(uid).orElseThrow(() -> {
-			return throwException;
-		});
+	public UserToken fetchUserToken(String uid, RuntimeException exception) {
+		return userTokenRepository
+				.findByUid(uid)
+				.orElseThrow(() -> exception);
 	}
 	
 	@Override
-	public SimpleResponseDTO invalidateDeviceToken() {
-		/**
-		 * If no logged in user found from JWT Authorization
-		 * throws InvalidTokenException
-		 */
-		User loggedInUser = UserConstant.getLoggedInUser();
-	
+	public SimpleResponseDTO invalidateDeviceToken(LogoutRequestDTO logoutRequestDTO) {
 		/**
 		 * If no user token found
 		 */
 		UserToken userToken = fetchUserToken(
-				loggedInUser.getUid(), 
+				logoutRequestDTO.getUid(),
 				new AuthException(AuthError.NO_ACCOUNT_FOUND)
 		);
 		
 		/**
 		 * If token is valid, 
-		 * but user has already logged out.
+		 * but user has already logged out (or no device session found).
 		 */
-		if(userToken.removeDeviceToken(loggedInUser.getDeviceId()) == false) {
+		if(userToken.removeDeviceToken(logoutRequestDTO.getDeviceId()) == false) {
 			throw new AuthException(AuthError.SESSION_NOT_FOUND);
 		}
 		
 		/**
 		 * Saving Removed Device Token
 		 */
-		userToken = userTokenRepository.save(userToken);
+		userTokenRepository.save(userToken);
 		
 		return new SimpleResponseDTO(TokenConstant.LOGOUT_MSG);
 	}
@@ -93,86 +80,88 @@ public class UserTokenServiceImpl implements UserTokenService {
 
 	/**
 	 * Generating new tokens (Access + Refresh),
-	 * 
+	 *
 	 * and saving it in DB
-	 * 
+	 *
 	 * @param jwtModel
 	 * @return TokenResponseDTO
 	 */
 	@Override
-	public AuthResponseDTO generateToken(JwtModel jwtModel) {
+	public AuthTokenResponseDTO generateToken(JwtModel jwtModel) {
 		UserToken userToken = getOrDefaultUserToken(jwtModel);
-		
+
 		String newAccessToken = jwtUtils.generateJwtToken(jwtModel, TokenType.ACCESS);
 		String newRefreshToken = jwtUtils.generateJwtToken(jwtModel, TokenType.REFRESH);
 		String lastRefreshToken = jwtUtils.generateJwtToken(jwtModel, TokenType.TEMP);
 
 		/**
-		 * 
+		 *
 		 */
 		userToken.removeDeviceToken(jwtModel.getDeviceId());
 		userToken.addDeviceToken(new DeviceToken(jwtModel.getDeviceId(), newRefreshToken, lastRefreshToken));
-		
+
 		/**
 		 * Saving New Access, Refresh Token
 		 */
 		userTokenRepository.save(userToken);
-		return new AuthResponseDTO(jwtModel.getUid(), newAccessToken, newRefreshToken);
+		return new AuthTokenResponseDTO(jwtModel.getUid(), newAccessToken, newRefreshToken);
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
-	public AuthResponseDTO refreshToken() {
-		User loggedInUser = UserConstant.getLoggedInUser();
-		
+	public AuthTokenResponseDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO) {
 		UserToken userToken = fetchUserToken(
-				loggedInUser.getUid(), 
+				refreshTokenRequestDTO.getUid(),
 				new AuthException(AuthError.SESSION_NOT_FOUND)
 		);
-		
+
+		if(userToken.getEmail().equals(refreshTokenRequestDTO.getEmail()) == false) {
+			throw new AuthException(AuthError.UID_EMAIL_NOT_MATCHING);
+		}
+
 		//
-		return rotateAndGenerateRefreshToken(loggedInUser, userToken);
+		return rotateAndGenerateRefreshToken(refreshTokenRequestDTO, userToken);
 	}
-	
-	private AuthResponseDTO rotateAndGenerateRefreshToken(User loggedInUser, UserToken userToken) {
+
+	private AuthTokenResponseDTO rotateAndGenerateRefreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO, UserToken userToken) {
 		
 		/**
-		 * It never intercept any token that has already expired,
+		 * It never intercepts any token that has already expired,
 		 * 
 		 * If and only if lastRefreshToken is valid and un-expired,
 		 * then only we block that user, 
 		 * in offence of replay action of tokens
 		 */
-		if(userToken.isLastRefreshToken(loggedInUser.getToken())) {
+		if(userToken.isLastRefreshToken(refreshTokenRequestDTO.getRefreshToken())) {
 			System.out.println(CLASS_NAME + " - BLOCKED -- due to using Last refresh token");
 			
 			/**
 			 * Invalidating the login for the deviceId found in the token
 			 */
-			invalidateDeviceToken();
+			invalidateDeviceToken(new LogoutRequestDTO(refreshTokenRequestDTO.getUid(), refreshTokenRequestDTO.getDeviceId()));
 			
 			throw new TokenException(TokenError.BLOCKED);
 		}
 		
-		if(userToken.ifRefreshAndRotated(loggedInUser.getToken())) {
-			JwtModel jwtModel = new JwtModel(loggedInUser.getUid(), loggedInUser.getEmail(), loggedInUser.getDeviceId());
-			
-			String newAccessToken = jwtUtils.generateJwtToken(jwtModel, TokenType.ACCESS);
-			String newRefreshToken = jwtUtils.generateJwtToken(jwtModel, TokenType.REFRESH);
-			
-			userToken.setNewRefreshToken(loggedInUser.getDeviceId(), newRefreshToken);
-			
-			/**
-			 * Saving Rotated Refresh Token
-			 */
-			userTokenRepository.save(userToken);
-			
-			return new AuthResponseDTO(loggedInUser.getUid(), newAccessToken, newRefreshToken);
-		} else {
+		if(userToken.findTokenAndRotate(refreshTokenRequestDTO.getRefreshToken()) == false) {
 			throw new AuthException(AuthError.SESSION_NOT_FOUND);
 		}
+
+		JwtModel jwtModel = new JwtModel(refreshTokenRequestDTO.getUid(), refreshTokenRequestDTO.getEmail(), refreshTokenRequestDTO.getDeviceId());
+
+		String newAccessToken = jwtUtils.generateJwtToken(jwtModel, TokenType.ACCESS);
+		String newRefreshToken = jwtUtils.generateJwtToken(jwtModel, TokenType.REFRESH);
+
+		userToken.setNewRefreshToken(refreshTokenRequestDTO.getDeviceId(), newRefreshToken);
+
+		/**
+		 * Saving Rotated Refresh Token
+		 */
+		userTokenRepository.save(userToken);
+
+		return new AuthTokenResponseDTO(refreshTokenRequestDTO.getUid(), newAccessToken, newRefreshToken);
 	}
 	
 	
