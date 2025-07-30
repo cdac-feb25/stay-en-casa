@@ -1,0 +1,46 @@
+Custom Error Code Documentation :: 
+
+Token related Error Codes :: 
+
+	1001  :	 EMPTY(1001, "Authorization header missing or invalid."),
+
+    1002  :  EXPIRED(1002, "Token has expired. Please log in again to continue."),
+
+	1003  :  BLACKLISTED(1003, "This token is invalid or has already been invalidated."),
+
+	1004  :  INVALID(1004, "Invalid authorization token."),
+
+	1005  :  INVALID_USER(1005, "Invalid user details provided in authorization token."),
+ 
+	1006  :  MALFORMED(1006, "Malformed authorization. The authorization token format is invalid or corrupted."),
+
+	1007  :  UNSUPPORTED(1007, "The algorithm used in the authorization token is not supported."),
+
+	1010  :  BLOCKED(1010, "Access denied. The token is no longer valid. Please log in again to continue. !!!");
+
+
+Auth related Error Codes ::
+
+	1201  :  NO_ACCOUNT_FOUND(1201, "We could not find an account matching this email."),
+	
+	1202  :  SESSION_NOT_FOUND(1202, "No active session found. Please log in to continue."),
+	
+	1203  :  ACCOUNT_ALREADY_EXIST(1203, "Account already exists. Please try logging in or use a different email."),
+	
+	1204  :  INVALID_CREDENTIAL(1204, "Login failed. The email or password is incorrect."),
+
+	1205  :  UID_EMAIL_NOT_MATCHING(1205, "Authentication  failed. Please ensure your user ID and email are correct.");
+
+
+Profile related Error Codes :: 
+
+	1301  :  NO_ACCOUNT_FOUND(1301, "We could not find an account matching the given user id. Please try logging in using a different email."),
+
+    1302  :  PROFILE_ALREADY_CREATED(1302, "Profile already created. If you like to make changes, please update your existing profile.");
+
+
+Common Error Codes :: 
+	
+	2001  :  ORIGIN_NOT_ALLOWED(2001, "Request rejected. Origin is not authorized to access this resource."),
+
+    2002  :  USER_DETAIL_NOT_FOUND(2002, "Request rejected. User detail not found in header. Must have all of these (uid, email and device id).");
