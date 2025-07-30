@@ -5,9 +5,12 @@ import com.stayen.casa.gatewayservice.constant.BodyConstant;
 import com.stayen.casa.gatewayservice.constant.Endpoints;
 import com.stayen.casa.gatewayservice.constant.EnvConstant;
 import com.stayen.casa.gatewayservice.constant.UserContext;
+import com.stayen.casa.gatewayservice.dto.AuthTokenResponseDTO;
 import com.stayen.casa.gatewayservice.helper.RestTemplateHelper;
 import com.stayen.casa.gatewayservice.model.User;
+import com.stayen.casa.gatewayservice.validator.ResponseValidator;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,14 +23,14 @@ import java.util.Map;
 public class AuthServiceController {
     private static final String CLASS_NAME = AuthServiceController.class.getSimpleName();
 
-    private final RestTemplateHelper restTemplateHelper;
-    private final ObjectMapper mapper;
+    private final String appDomain;
     private final String authServiceDomain;
+    private final RestTemplateHelper restTemplateHelper;
 
-    public AuthServiceController(RestTemplateHelper restTemplateHelper, ObjectMapper mapper, EnvConstant envConstant) {
-        this.restTemplateHelper = restTemplateHelper;
-        this.mapper = mapper;
+    public AuthServiceController(EnvConstant envConstant, RestTemplateHelper restTemplateHelper) {
+        this.appDomain = envConstant.getAppDomain();
         this.authServiceDomain = envConstant.getAuthServiceDomain();
+        this.restTemplateHelper = restTemplateHelper;
     }
 
     @PostMapping("/test")
@@ -36,19 +39,26 @@ public class AuthServiceController {
     }
 
     @PostMapping(Endpoints.Auth.LOGIN)
-    public ResponseEntity<?> login(@RequestBody Map<String, Object> originalBody) {
+    public ResponseEntity<?> login(@RequestBody Map<String, Object> receivedPayload) {
         String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN;
 
-        return restTemplateHelper.POST(url, originalBody, String.class);
+//        return restTemplateHelper.POST(url, receivedPayload, String.class);
+        ResponseEntity<AuthTokenResponseDTO> response = restTemplateHelper.POST(url, receivedPayload, AuthTokenResponseDTO.class);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(ResponseValidator.getHeaderWithJwtRefreshTokenCookies(appDomain, response))
+                .body(response.getBody());
     }
 
     @PostMapping(Endpoints.Auth.SIGNUP)
-    public ResponseEntity<?> signup(@RequestBody Map<String, Object> originalBody) {
+    public ResponseEntity<?> signup(@RequestBody Map<String, Object> receivedPayload) {
         String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP;
-        System.out.println(originalBody);
+        System.out.println(receivedPayload);
 
-//        return restTemplateHelper.POST("http://localhost:9090/api/v1/auth/test", originalBody, String.class);
-        return restTemplateHelper.POST(url, originalBody, String.class);
+//        return restTemplateHelper.POST("http://localhost:9090/api/v1/auth/test", receivedPayload, String.class);
+        return restTemplateHelper.POST(url, receivedPayload, String.class);
     }
 
     @PostMapping(Endpoints.Auth.LOGOUT)

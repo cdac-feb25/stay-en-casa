@@ -1,6 +1,19 @@
 package com.stayen.casa.gatewayservice.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum TokenType {
+
+    /**
+     * 1000 * 60 ==> 1 minute  (60,000)
+     *
+     * 1000 * 60 * 15 ==> 15 minutes  (9,00,000)
+     *
+     * 1000 * 60 * 60 ==> 60 minutes / 1 hour  (36,00,000)
+     *
+     * 1000 * 60 * 60 * 24 ==> 24 hours  (8,64,00,000)
+     */
 
     /**
      * <pre>
@@ -9,7 +22,7 @@ public enum TokenType {
      * with 15 minutes validity
      * </pre>
      */
-    ACCESS,
+    ACCESS(900000),
 
     /**
      * <pre>
@@ -18,7 +31,7 @@ public enum TokenType {
      * with 24 hours validity
      * </pre>
      */
-    REFRESH,
+    REFRESH(86400000),
 
     /**
      * <pre>
@@ -27,6 +40,12 @@ public enum TokenType {
      * with 1 milli-second validity
      * </pre>
      */
-    TEMP;
+    TEMP(1000);
+
+    private long validity;
+
+    private TokenType(long validity) {
+        this.validity = validity;
+    }
 
 }

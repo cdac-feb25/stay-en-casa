@@ -2,6 +2,7 @@ package com.stayen.casa.gatewayservice.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stayen.casa.gatewayservice.constant.Endpoints;
+import com.stayen.casa.gatewayservice.constant.HeaderConstant;
 import com.stayen.casa.gatewayservice.constant.TokenConstant;
 import com.stayen.casa.gatewayservice.dto.ErrorResponseDTO;
 import com.stayen.casa.gatewayservice.enums.TokenError;
@@ -25,7 +26,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class JwtFilter extends OncePerRequestFilter {
     private static final String CLASS_NAME = JwtFilter.class.getSimpleName();
@@ -33,10 +36,10 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final ObjectMapper mapper;
 
-    private static final List<String> EXCLUDED_PATH = List.of(
+    private static final List<String> PATH_EXCLUDED_FROM_JWT_FILTER = List.of(
             (Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN),  // "/api/v1/auth/login"
-//            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN),  // "/api/v1/auth/token/refresh"
             (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP)  // "/api/v1/auth/signup"
+//            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN),  // "/api/v1/auth/token/refresh"
     );
 
     private static final List<String> ONLY_REFRESH_TOKEN_PATH = List.of(
@@ -56,8 +59,8 @@ public class JwtFilter extends OncePerRequestFilter {
      * @param incomingPath
      * @return
      */
-    private static boolean isPathExcluded(String incomingPath) {
-        return EXCLUDED_PATH
+    private static boolean isPathExcludedFromJwtFilter(String incomingPath) {
+        return PATH_EXCLUDED_FROM_JWT_FILTER
                 .stream()
                 .anyMatch((path) -> path.equalsIgnoreCase(incomingPath));
     }
@@ -78,16 +81,14 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//        try(PrintWriter writer = response.getWriter()) {
-//            writer.write(mapper.writeValueAsString(new ErrorResponseDTO(tokenError)));
-//        }
         response.getWriter().write(mapper.writeValueAsString(new ErrorResponseDTO(tokenError)));
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        if(isPathExcluded(request.getServletPath())) {
+        if(isPathExcludedFromJwtFilter(request.getServletPath())) {
             System.out.println(CLASS_NAME + " - Request Skipped from authentication.... " + request.getServletPath());
+            printHeaderReceived(request);
             return true;
         }
         return false;
@@ -98,8 +99,15 @@ public class JwtFilter extends OncePerRequestFilter {
         String incomingRequestPath = request.getServletPath();
         System.out.println(CLASS_NAME + " - Request Intercepted.... " + incomingRequestPath);
 
+        printHeaderReceived(request);
         try {
-            String token = extractToken(request);
+            String token;
+            if(isRefreshTokenPath(incomingRequestPath)) {
+                token = extractTokenFromCookie(request);
+            } else {
+                token = extractTokenFromAuthHeader(request);
+            }
+
             Claims jwtClaims = jwtUtils.validateToken(token);
 
             TokenType tokenType = TokenType.valueOf(jwtClaims.get(TokenConstant.TOKEN_TYPE, String.class));
@@ -158,14 +166,17 @@ public class JwtFilter extends OncePerRequestFilter {
             setAuthErrorResponse(response, TokenError.MALFORMED);
         } catch (UnsupportedJwtException e) {
             setAuthErrorResponse(response, TokenError.UNSUPPORTED);
+        } catch (NullPointerException e) {
+            setAuthErrorResponse(response, TokenError.EMPTY);
         } catch (Exception e) {
             System.out.println(CLASS_NAME + " - Exception class : " + e.getClass());
             System.out.println(CLASS_NAME + " - Exception message : " + e.getMessage());
+            e.printStackTrace();
             setAuthErrorResponse(response, TokenError.INVALID);
         }
     }
 
-    private String extractToken(HttpServletRequest request) {
+    private String extractTokenFromAuthHeader(HttpServletRequest request) {
         String authHeader = request.getHeader(TokenConstant.AUTH_HEADER_NAME);
 
         if (authHeader == null) {
@@ -177,4 +188,29 @@ public class JwtFilter extends OncePerRequestFilter {
 
         return authHeader.substring(7);
     }
+
+    private String extractTokenFromCookie(HttpServletRequest request) {
+        AtomicReference<String> authCookie = new AtomicReference<>();
+        Arrays.stream(request.getCookies())
+                .forEach((cookie) -> {
+                    if(cookie.getName().equals(HeaderConstant.REFRESH_TOKEN_COOKIE)) {
+                        authCookie.set(cookie.getValue());
+                    }
+                });
+
+        if(authCookie.get() == null || authCookie.get().isBlank()) {
+            throw new TokenException(TokenError.EMPTY);
+        }
+
+        return authCookie.get();
+    }
+
+    private void printHeaderReceived(HttpServletRequest request) {
+        request.getHeaderNames()
+                .asIterator()
+                .forEachRemaining((headerName) -> {
+                    System.out.println("Header :: " + headerName + " = " + request.getHeader(headerName));
+                });
+    }
+
 }
