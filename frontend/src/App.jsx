@@ -9,6 +9,7 @@ import MyBookingsPage from './pages/MyBookingsPage';
 import Navbar from './components/Navbar';
 import BookingDetailsPage from './pages/BookingDetailsPage';
 import UpdateBookingStatus from './pages/UpdateBookingStatus';
+import AllPropertiesPage from './pages/AllPropertiesPage';
 
 function App() {
   React.useEffect(() => {
@@ -29,6 +30,7 @@ function App() {
       <Route path="/my-bookings" element={<MyBookingsPage />} />
       <Route path="/booking/:bookingId" element={<BookingDetailsPage />} />
       <Route path='/update-booking/:bookingId' element={<UpdateBookingStatus />} />
+       <Route path="/properties" element={<AllPropertiesPage />} />
     </Routes>
     </>
   )
