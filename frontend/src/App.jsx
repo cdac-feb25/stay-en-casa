@@ -19,6 +19,7 @@ import LocalStorageHelper from './utils/LocalStorageHelper';
 import Navigate from './services/NavigationService';
 import ErrorDialog from './components/ErrorDialog';
 import { GlobalVariable, useGlobalState } from './pages/GlobalProvider';
+import AllPropertiesPage from './pages/AllPropertiesPage';
 
 function App() {
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ function App() {
           <Route path={AppRoutes.myBookings} element={<MyBookingsPage />} />
           <Route path={AppRoutes.bookingById} element={<BookingDetailsPage />} />
           <Route path={AppRoutes.updateBookingById} element={<UpdateBookingStatus />} />
+          <Route path={AppRoutes.properties} element={ <AllPropertiesPage /> } />
         </Routes>
       </Box>
 

@@ -21,6 +21,7 @@ const AppRoutes = {
     myBookings: "/my-bookings",
     bookingById: "/booking/:bookingId",
     updateBookingById: "/update-booking/:bookingId",
+    properties: "/properties",
 };
 
 export default AppRoutes;

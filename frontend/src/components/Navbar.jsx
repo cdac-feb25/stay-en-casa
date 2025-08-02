@@ -59,7 +59,25 @@ const Navbar = () => {
         </Row>
       </nav>
 
-      <HomeAccountMenu anchorEl={ anchorEl } setAnchorEl={ setAnchorEl } />
+      {/* 
+          @Utkarsh-1709
+          All the menu items are shifted here, 
+          do the necessary changes
+
+          >>>>>> Your code that is yet to be shifted
+
+          <Link to="/">Booking</Link> |{" "}
+          <Link to="/my-bookings">My Bookings</Link> |{" "}
+          <Link to="/properties">All Properties</Link>
+
+          <<<<<<
+
+          afterward delete the comment
+      */}
+      <HomeAccountMenu 
+        anchorEl={ anchorEl } 
+        setAnchorEl={ setAnchorEl } 
+      />
     </>
   );
 };
