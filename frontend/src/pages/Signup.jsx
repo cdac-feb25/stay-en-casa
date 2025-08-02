@@ -1,6 +1,6 @@
 import Container from '../components/Container.jsx';
 import CustomButton from '../components/CustomButton.jsx';
-import { Box, TextField, Typography, Link, Divider } from '@mui/material';
+import { Box, TextField, Typography, Link, Divider, Backdrop, CircularProgress } from '@mui/material';
 import DividerWithText from '../components/DividerWithText.jsx';
 import AppConstant from '../utils/AppConstant.js';
 import AppRoutes from '../utils/AppRoutes.js';
@@ -14,12 +14,10 @@ import AssetHelper from '../utils/AssetHelper.js';
 function Signup() {
     const navigate = useNavigate();
     
+    const [ isLoading, setIsLoading ] = React.useState(false);
     const [ errorMsg, setErrorMsg ] = React.useState("");
-    
     const [ showError, setShowError ] = React.useState(false);
-    
     const [ showPasswordComparison, setShowPasswordComparison ] = React.useState(false);
-    
     const [ isPasswordMatched, setPasswordMatched ] = React.useState(true);
 
     const passwordMsg = {
@@ -75,7 +73,7 @@ function Signup() {
 
                 <form 
                     id={IdHelper.signupForm}
-                    onSubmit={ handleSignupFormSubmit(navigate, setErrorMsg, setShowError) }
+                    onSubmit={ handleSignupFormSubmit(setIsLoading, setErrorMsg, setShowError) }
                 >
                     <TextField
                         id={IdHelper.signupEmail}
@@ -134,9 +132,11 @@ function Signup() {
                 <Typography sx={{ color: Colors.white }}>
                     Already have an account ? <Link href={AppRoutes.login} style={{ fontSize: "1em" }}> Login</Link>
                 </Typography>
-                {/* <CustomLink text={"Already have an account? Login"} url={AppRoutes.login} /> */}
-                
             </Container>
+
+            <Backdrop open={isLoading} >
+                <CircularProgress />
+            </Backdrop>
         </div>
     );
 }

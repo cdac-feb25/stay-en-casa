@@ -66,11 +66,6 @@ async function updateUserProfile(profile) {
                 console.log("error from service : " + error);
                 const resError = ApiActionHelper.getErrorObject(error);
                 setProfileUpdateError(resError.message);
-                
-                // TODO: remove timeout in release
-                setTimeout(() => {
-                    ApiCaller.logout();
-                }, 1500);
             });
         }
     });

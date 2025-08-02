@@ -41,9 +41,6 @@ function EditProfile() {
     const [ showDialog, setShowDialog ] = React.useState(false);
     const [ showProgress, setShowProgress ] = React.useState(false);
 
-    // const [ selectedFile, setSelectedFile ] = React.useState({});
-    // const [ showPhotoError, setShowPhotoError ] = React.useState(false);
-
     const titleStyle = {
         fontSize: "1.2em",
     };
@@ -72,26 +69,6 @@ function EditProfile() {
                 break;
         }
     }
-
-    // const handleSelectedPhoto = (event) => {
-    //     const file = getFileObject(event);
-    //     console.log(file);
-
-    //     if(file) {
-    //         if(file.type.startsWith("image/")) {
-    //             setShowPhotoError(false);
-    //             const localUrl = URL.createObjectURL(file);
-                
-    //             setSelectedFile({ ...selectedFile, localUrl, file });
-    //         } else {
-    //             setShowPhotoError(true);
-
-    //             setSelectedFile({});
-    //         }
-    //     } else {
-    //         setSelectedFile({});
-    //     }
-    // }
 
     function getPhotoUrl() {
         if(loggedInUser.photoUrl) {
@@ -234,77 +211,6 @@ function EditProfile() {
             <Backdrop open={showProgress} >
                 <CircularProgress color="" />
             </Backdrop>
-
-            {/* 
-                Hidden React Component
-            */}
-            {/* <input 
-                type="file" 
-                ref={ choosePhotoInput } 
-                accept="image/*"
-                // onChange={ handleProfilePhoto(setProfile) } 
-                hidden
-                multiple
-            /> */}
-
-            {/* <Dialog open={ showDialog } fullWidth={true} >
-                <DialogTitle textAlign={"center"} fontSize={"1.4em"} >
-                    Choose your Profile Photo
-                </DialogTitle>
-
-                <DialogContent>
-                    {
-                        showPhotoError  
-                        ?   <Typography color={Colors.error} >
-                                Please select a valid photo [ .png | .jpg | .webp ]
-                            </Typography> 
-                        :   (
-                                selectedFile.localUrl 
-                                ?   <Box
-                                        component="img"
-                                        src={ selectedFile.localUrl }
-                                        sx={{ 
-                                            width: "200px",
-                                            height: "auto" 
-                                        }} 
-                                    /> 
-                                :   null
-                            )
-                    }
-                    
-                    <Input 
-                        type="file" 
-                        accept="image/*"
-                        fullWidth={true}
-                        sx={{
-                            mt: 2,
-                            mb: 1,
-                        }}
-                        onChange={ handleSelectedPhoto }
-                    />
-                    
-                    <Row justifyContent="space-evenly" marginTop={3} >
-                        <CustomButton 
-                            title="Cancel" 
-                            bgColor={Colors.error}
-                            textColor={Colors.white}
-                            fullWidth={false}
-                            onPress={ () => {
-                                setShowDialog(false);
-                                setSelectedFile({});
-                            }} 
-                        />
-                        <CustomButton 
-                            title="Upload"
-                            disabled={showPhotoError} 
-                            bgColor={Colors.success}
-                            textColor={Colors.white}
-                            fullWidth={false} 
-                            onPress={ handleProfilePhoto(profile) }
-                        />
-                    </Row>
-                </DialogContent>
-            </Dialog> */}
 
         </React.Fragment>
     );

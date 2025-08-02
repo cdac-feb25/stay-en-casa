@@ -27,6 +27,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiCircularProgress: {
+      styleOverrides: {
+        root: {
+          color: Colors.primary,
+        }
+      }
+    },
     MuiLink: {
       styleOverrides: {
         root: {

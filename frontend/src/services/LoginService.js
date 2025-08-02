@@ -5,13 +5,15 @@ import ApiActionHelper from "../utils/ApiActionHelper";
 import { getResponseError as getResponseErrorData } from "../types/ResponseError";
 import Navigate from "./NavigationService";
 
-function handleLoginFormSubmit(setErrorMsg, setShowError) {
+function handleLoginFormSubmit(setIsLoading, setErrorMsg, setShowError) {
 
     /**
      * @param {Event} event
      */
     return async (event) => {
         // return async function startLogin(event) {
+        setIsLoading(true);
+
         setShowError(false);
         event.preventDefault();
 
@@ -23,12 +25,6 @@ function handleLoginFormSubmit(setErrorMsg, setShowError) {
         console.log(`email : ${email}`);
         console.log(`password : ${password}`);
 
-        /**
-         * TODO:
-         * - if login fail
-         * - if login is successful
-         * -- if profile not found 
-         */
         await ApiCaller.login({email, password})
             .then( async (_) => {
                 setShowError(false);
@@ -57,6 +53,8 @@ function handleLoginFormSubmit(setErrorMsg, setShowError) {
                 setErrorMsg(errorMessage);
                 setShowError(true);
             });
+
+        setIsLoading(false);
     }
 }
 

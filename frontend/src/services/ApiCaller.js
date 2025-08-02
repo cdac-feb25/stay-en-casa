@@ -84,7 +84,7 @@ class ApiCaller {
             });
     }
 
-    static async signup({email, password}) {
+    static async signup({ email, password }) {
         if(!email || !password) {
             throw new Error("Invalid email / password while calling Axios Helper");
         }

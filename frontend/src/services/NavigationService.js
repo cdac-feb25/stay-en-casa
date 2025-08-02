@@ -25,12 +25,14 @@ class Navigate {
             window.location.replace(path);
         }
         
-        this.#navigate(
-            path, {
-                state: state,
-                replace: clearBrowserStack
-            }
-        );
+        // TODO: navigating via window obj
+        window.location.replace(path);
+        // this.#navigate(
+        //     path, {
+        //         state: state,
+        //         replace: clearBrowserStack
+        //     }
+        // );
     }
 
     static goBack() {
