@@ -1,14 +1,13 @@
-function SizedBox({ width, height, children }) {
-    const style = {
-        display: children ? 'inline-block' : 'block',
-        width: width ?? 'auto',
-        height: height ?? 'auto',
-    };
-    
+import { Box } from "@mui/material";
+
+function SizedBox({ width, height }) {
     return (
-        <div style={style}>
-            {children}
-        </div>
+        <>
+            <Box sx={{
+                width: width,
+                height: height,
+            }} />
+        </>
     );
 }
 

@@ -8,6 +8,7 @@ import App from './App.jsx';
 import Colors from './utils/Colors.js';
 import { colors } from '@mui/material';
 import { BrowserRouter } from 'react-router-dom';
+import { GlobalProvider } from './pages/GlobalProvider.jsx';
 
 const rootElement = document.getElementById('root');
 
@@ -19,10 +20,18 @@ const theme = createTheme({
     color: Colors.white,
   },
   components: {
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontSize: "0.9em",
+        },
+      },
+    },
     MuiLink: {
       styleOverrides: {
         root: {
           color: Colors.white,
+          fontSize: "0.9em",
           textDecoration: 'none',
           ':hover': {
             color: Colors.primary
@@ -42,6 +51,29 @@ const theme = createTheme({
         }
       }
     },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: Colors.white,
+          backgroundColor: Colors.background,
+          "&:hover": {
+            color: Colors.primary,
+            // backgroundColor: Colors.white,
+          },
+        },
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          color: Colors.background,
+          ":hover": {
+            backgroundColor: Colors.primary,
+            color: Colors.white,
+          }
+        }
+      }
+    },
     MuiTextField: {
       defaultProps: {
         fullWidth: true,
@@ -50,7 +82,7 @@ const theme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          fontSize: '0.8em',
+          fontSize: '0.9em',
           color: '#ccc', // default label color
           '&.Mui-focused': {
             color: Colors.primary, // label color when focused
@@ -85,7 +117,9 @@ root.render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <App />
+        <GlobalProvider>
+          <App /> 
+        </GlobalProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>,

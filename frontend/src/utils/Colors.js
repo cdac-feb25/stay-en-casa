@@ -16,8 +16,9 @@ const Colors = {
     success: '#4CAF50',           // Green for success messages
     error: '#E53935',             // Red for error messages
     white: '#ffffff',
+    black: '#000000',
     blue: '#003479ff',
-    grey: '#635f5fff',
+    grey: '#645e5eff',
 };
 
 export default Colors;

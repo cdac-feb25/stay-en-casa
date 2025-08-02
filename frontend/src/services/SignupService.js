@@ -1,19 +1,35 @@
-import { signupInputFieldIds } from "../pages/Signup";
-import AxiosHelper from "../utils/AxiosHelper";
+import ApiCaller from "./ApiCaller";
+import AppRoutes from "../utils/AppRoutes";
 
-class SignupHelper {
-    
-    static async handleSignup() {
-        const email = document.getElementById(signupInputFieldIds.email).value;
-        const password = document.getElementById(signupInputFieldIds.password).value;
-    
-        console.log(`email: ${email}`);
-        console.log(`password: ${password}`);
-    
-        AxiosHelper.login();
-    }
+function handleSignupFormSubmit(navigate, setErrorMsg, setShowError) {
 
+    /**
+     * @param {Event} event
+     */
+    return async (event) => {
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        const { email, password, confirmPassword } = Object.fromEntries(formData.entries);
+
+        /**
+         * TODO:
+         * - if signup fail
+         * - if signup is successful
+         * -- create profile 
+         */
+        if(password === confirmPassword) {
+            await ApiCaller.signup()
+                .then((response) => {
+                    navigate(AppRoutes.editProfile);
+                })
+                .catch((error) => {
+
+                });
+        }
+    };
 }
 
-
-export default SignupHelper;
+export default handleSignupFormSubmit;

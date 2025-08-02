@@ -1,13 +1,29 @@
-import AppLogo from '../assets/stay_en_casa-nobg.png';
 import Container from '../components/Container.jsx';
-import MyButton from '../components/Button';
+import CustomButton from '../components/CustomButton.jsx';
 import SizedBox from '../components/SizedBox.jsx';
 import { Box, TextField, Typography, Link, Divider } from '@mui/material';
 import { LoginOutlined } from '@mui/icons-material';
 import DividerWithText from '../components/DividerWithText.jsx';
 import AppConstant from '../utils/AppConstant.js';
+import AppRoutes from '../utils/AppRoutes.js';
+import IdHelper from '../utils/IdHelper.js';
+import { handleLoginFormSubmit } from '../services/LoginService.js';
+import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import Colors from '../utils/Colors.js';
+import AssetHelper from '../utils/AssetHelper.js';
+import UserContext from '../utils/UserContext.js';
+import LocalStorageHelper from '../utils/LocalStorageHelper.js';
+import Navigate from '../services/NavigationService.js';
+import RedirectionHelper from '../services/RedirectionHelper.js';
 
 function Login() {
+    RedirectionHelper.fromLogin();
+
+    const navigate = useNavigate();
+    const [ errorMsg, setErrorMsg ] = React.useState("");
+    const [ showError, setShowError ] = React.useState(false);
+
     return (
         <div style={{
             height: '100vh',
@@ -17,7 +33,7 @@ function Login() {
             <Container style={{width: '100%'}}>
                 <Box
                     component="img"
-                    src={AppLogo}
+                    src={AssetHelper.appIconWithName}
                     alt="Box Image"
                     sx={{ 
                         width: 200, 
@@ -26,54 +42,63 @@ function Login() {
                      }}
                 />
                 
-                <Typography sx={{mb: 5, fontSize: '1.35em'}}>
+                <Typography sx={{mb: 4, fontSize: '1.35em'}}>
                     {AppConstant.loginTagline}
                 </Typography>
-                
-                <TextField
-                    variant='outlined'
-                    label='Email'
-                    placeholder='your@gmail.com'
-                    type='email'
-                    sx={{ mb: 2 }}
-                >
-                </TextField>
 
-                <TextField
-                    variant='outlined'
-                    label='Password'
-                    placeholder='********'
-                    type='password'
-                    sx={{ mb: 3 }}
+                <Typography 
+                    id={IdHelper.loginErrorDiv}
+                    style={{marginBottom: "15px", fontSize: '0.8em', color: Colors.error}}
+                    hidden={showError === false}
                 >
-                </TextField>
+                    {errorMsg}
+                </Typography>
                 
-                <MyButton title="Login" />
+                <form 
+                    id={IdHelper.loginForm}
+                    onSubmit={ handleLoginFormSubmit(navigate, setErrorMsg, setShowError) }
+                >
+                    <TextField
+                        id={IdHelper.loginEmail}
+                        name='email'
+                        variant='outlined'
+                        label='Email'
+                        placeholder='your@gmail.com'
+                        type='email'
+                        autoComplete='username'
+                        required={true}
+                        sx={{ mb: 2 }}
+                    >
+                    </TextField>
 
-                <LinkText text={"Forgot your password ?"} url={''} />
+                    <TextField
+                        id={IdHelper.loginPassword}
+                        name='password'
+                        variant='outlined'
+                        label='Password'
+                        placeholder='********'
+                        type='password'
+                        autoComplete='current-password'
+                        sx={{ mb: 3 }}
+                        required={true}
+                    >
+                    </TextField>
+
+                    <CustomButton title="Login" type='submit' />
+                </form>
+
+                <Link href={AppRoutes.forgotPassword}>Forgot your password ?</Link>
+                {/* <CustomLink text={"Forgot your password ?"} url={AppRoutes.forgotPassword} /> */}
 
                 <DividerWithText text={'or'} />
-
-                <LinkText text={"Don't have an account? Sign up"} url={'/signup'} />
+                
+                <Typography sx={{ color: Colors.white }}>
+                    Don't have an account ? <Link href={AppRoutes.signup} style={{ fontSize: "1em" }}> Sign up</Link>
+                </Typography>
+                {/* <CustomLink text={"Don't have an account? Sign up"} url={AppRoutes.signup} /> */}
                 
             </Container>
         </div>
-    );
-}
-
-function LinkText({ text, url }) {
-    return (
-        <Link 
-            href={url}
-            sx={{
-                m: 1,
-                width: '100%',
-                textAlign: 'center',
-                fontSize: '0.9em'
-            }}
-        >
-            {text}
-        </Link>
     );
 }
 

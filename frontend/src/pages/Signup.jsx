@@ -1,19 +1,48 @@
-import AppLogo from '../assets/stay_en_casa-nobg.png';
 import Container from '../components/Container.jsx';
-import MyButton from '../components/Button.jsx';
-import SizedBox from '../components/SizedBox.jsx';
+import CustomButton from '../components/CustomButton.jsx';
 import { Box, TextField, Typography, Link, Divider } from '@mui/material';
-import { LoginOutlined } from '@mui/icons-material';
 import DividerWithText from '../components/DividerWithText.jsx';
 import AppConstant from '../utils/AppConstant.js';
-import SignupHelper from '../services/SignupService.js';
-
-const signupInputFieldIds = {
-    email: 'signup-email',
-    password: 'signup-password',
-};
+import AppRoutes from '../utils/AppRoutes.js';
+import IdHelper from '../utils/IdHelper.js';
+import Colors from '../utils/Colors.js';
+import { useNavigate } from 'react-router-dom';
+import handleSignupFormSubmit from '../services/SignupService.js';
+import React from 'react';
+import AssetHelper from '../utils/AssetHelper.js';
 
 function Signup() {
+    const navigate = useNavigate();
+    
+    const [ errorMsg, setErrorMsg ] = React.useState("");
+    
+    const [ showError, setShowError ] = React.useState(false);
+    
+    const [ showPasswordComparison, setShowPasswordComparison ] = React.useState(false);
+    
+    const [ isPasswordMatched, setPasswordMatched ] = React.useState(true);
+
+    const passwordMsg = {
+        matched: "Yup! Password matched.",
+        unMatched: "Oops! Password do not match.",
+    }
+
+    /**
+     * @param {event} event 
+     */
+    const handleConfirmPassword = (event) => {
+        if(!showPasswordComparison) {
+            setShowPasswordComparison(true);
+        }
+        const password = document.getElementById(IdHelper.signupPassword).value;
+        
+        if(password === event.target.value) {
+            setPasswordMatched(true);
+        } else {
+            setPasswordMatched(false);
+        }
+    }
+
     return (
         <div style={{
             height: '100vh',
@@ -23,7 +52,7 @@ function Signup() {
             <Container style={{width: '100%'}}>
                 <Box
                     component="img"
-                    src={AppLogo}
+                    src={AssetHelper.appIconWithName}
                     alt="Box Image"
                     sx={{ 
                         width: 200, 
@@ -36,52 +65,80 @@ function Signup() {
                     {AppConstant.signupTagline}
                 </Typography>
 
-                <TextField
-                    id='signup-email'
-                    variant='outlined'
-                    label='Email'
-                    placeholder='your@gmail.com'
-                    type='email'
-                    sx={{ mb: 2 }}
+                <Typography 
+                    id={IdHelper.signupErrorDiv}
+                    style={{marginBottom: "15px", fontSize: '0.8em', color: Colors.error}}
+                    hidden={showError === false}
                 >
-                </TextField>
+                    {errorMsg}
+                </Typography>
 
-                <TextField
-                    id='signup-password'
-                    variant='outlined'
-                    label='Password'
-                    placeholder='********'
-                    type='password'
-                    sx={{ mb: 5 }}
+                <form 
+                    id={IdHelper.signupForm}
+                    onSubmit={ handleSignupFormSubmit(navigate, setErrorMsg, setShowError) }
                 >
-                </TextField>
-                
-                <MyButton title="Signup" onPress={SignupHelper.handleSignup} />
+                    <TextField
+                        id={IdHelper.signupEmail}
+                        variant='outlined'
+                        label='Email'
+                        name='email'
+                        placeholder='your@gmail.com'
+                        type='email'
+                        sx={{ mb: 2 }}
+                        autoComplete='username'
+                        required={true}
+                    />
+
+                    <TextField
+                        id={IdHelper.signupPassword}
+                        variant='outlined'
+                        label='Password'
+                        name='password'
+                        placeholder='********'
+                        type='password'
+                        autoComplete='new-password'
+                        required={true}
+                        sx={{ mb: 2 }}
+                    />
+                    
+                    <TextField
+                        // id={IdHelper.signupConfirmPassword}
+                        variant='outlined'
+                        label='Confirm Password'
+                        placeholder='********'
+                        type='password'
+                        name='confirmPassword'
+                        autoComplete='new-password'
+                        required={true}
+                        onChange={handleConfirmPassword}
+                        sx={{ mb: 1 }}
+                    />
+
+                    <Typography
+                        style={{ 
+                            fontSize: "0.8em",
+                            marginBottom: "1.4em", 
+                            textAlign: "start",
+                            color: `${isPasswordMatched ? Colors.success : Colors.error}`,
+                        }}
+                        visibility={ showPasswordComparison ? 'visible' : 'hidden'}
+                    >
+                        {isPasswordMatched ? passwordMsg.matched : passwordMsg.unMatched}
+                    </Typography>
+                    
+                    <CustomButton title="Signup" type='submit' />
+                </form>
 
                 <DividerWithText text={'or'} />
 
-                <LinkText text={"Already have an account? Login"} url={'/login'} />
+                <Typography sx={{ color: Colors.white }}>
+                    Already have an account ? <Link href={AppRoutes.login} style={{ fontSize: "1em" }}> Login</Link>
+                </Typography>
+                {/* <CustomLink text={"Already have an account? Login"} url={AppRoutes.login} /> */}
                 
             </Container>
         </div>
     );
 }
 
-function LinkText({ text, url }) {
-    return (
-        <Link 
-            href={url}
-            sx={{
-                m: 1,
-                width: '100%',
-                textAlign: 'center',
-                fontSize: '0.9em'
-            }}
-        >
-            {text}
-        </Link>
-    );
-}
-
 export default Signup;
-export { signupInputFieldIds };
