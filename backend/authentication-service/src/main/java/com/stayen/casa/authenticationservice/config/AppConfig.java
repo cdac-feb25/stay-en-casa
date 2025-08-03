@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.stayen.casa.authenticationservice.constant.TokenConstant;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class AppConfig {
@@ -26,6 +27,12 @@ public class AppConfig {
 		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		
 		return mapper;
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		RestTemplate restTemplate = new RestTemplate();
+		return restTemplate;
 	}
 	
 }

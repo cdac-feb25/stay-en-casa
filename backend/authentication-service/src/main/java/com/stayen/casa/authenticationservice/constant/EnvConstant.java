@@ -16,4 +16,7 @@ public class EnvConstant {
     @Value("${internal-service-auth-key}")
     private String internalServiceAuthKey;
 
+    @Value("${resend-mail-api-key}")
+    private String resendMailApiKey;
+
 }

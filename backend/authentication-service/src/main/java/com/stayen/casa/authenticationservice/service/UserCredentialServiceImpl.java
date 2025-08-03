@@ -3,12 +3,9 @@ package com.stayen.casa.authenticationservice.service;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.stayen.casa.authenticationservice.dto.LogoutRequestDTO;
+import com.stayen.casa.authenticationservice.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.stayen.casa.authenticationservice.dto.AuthTokenResponseDTO;
-import com.stayen.casa.authenticationservice.dto.LoginSignupRequestDTO;
-import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
 import com.stayen.casa.authenticationservice.entity.UserCredential;
 import com.stayen.casa.authenticationservice.enums.AuthError;
 import com.stayen.casa.authenticationservice.exception.AuthException;
@@ -24,12 +21,17 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	private final UserTokenService userTokenService;
 	private final PasswordEncoder passwordEncoder;
 
+	private final EmailService emailService;
+	private final OtpService otpService;
+
 	@Autowired
 	public UserCredentialServiceImpl(UserTokenService userTokenService,
-			UserCredentialRepository userCredentialRepository, PasswordEncoder passwordEncoder) {
+			UserCredentialRepository userCredentialRepository, PasswordEncoder passwordEncoder, EmailService emailService, OtpService otpService) {
 		this.userTokenService = userTokenService;
 		this.userCredentialRepository = userCredentialRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.emailService = emailService;
+		this.otpService = otpService;
 	}
 	
 	/**
@@ -40,7 +42,50 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	public SimpleResponseDTO logoutUser(LogoutRequestDTO logoutRequestDTO) {
 		return userTokenService.invalidateDeviceToken(logoutRequestDTO);
 	}
-	
+
+	/**
+	 *
+	 * Forgot Password
+	 *
+	 * @param emailDTO
+	 * @return
+	 */
+	@Override
+	public SimpleResponseDTO forgotPassword(EmailDTO emailDTO) {
+		Optional<UserCredential> userCredential =  userCredentialRepository.findByEmail(emailDTO.getEmail());
+
+		if(userCredential.isEmpty()) {
+			throw new AuthException(AuthError.NO_ACCOUNT_FOUND);
+		}
+
+		String otp = otpService.generateSave6DigitOtp(emailDTO.getEmail());
+
+		emailService.sendForgotPasswordEmail(emailDTO.getEmail(), otp);
+
+		return new SimpleResponseDTO("Password reset OTP sent successfully.");
+	}
+
+	/**
+	 * Verify OTP and change password
+	 *
+	 * @param otpPasswordDTO
+	 * @return
+	 */
+	@Override
+	public SimpleResponseDTO verifyOTPAndChangePassword(OtpPasswordDTO otpPasswordDTO) {
+		otpService.verifyAndDeleteOtp(otpPasswordDTO);
+
+		UserCredential userCredential = userCredentialRepository.findByEmail(otpPasswordDTO.getEmail())
+				.orElseThrow(() -> new AuthException(AuthError.NO_ACCOUNT_FOUND));
+
+		userCredential.updatePassword(passwordEncoder.encode(otpPasswordDTO.getNewPassword()));
+		userCredentialRepository.save(userCredential);
+
+		emailService.sendPasswordChangedEmail(otpPasswordDTO.getEmail(), otpPasswordDTO.getNewPassword());
+
+		return new SimpleResponseDTO("Password updated successfully.");
+	}
+
 	/**
 	 *
 	 */

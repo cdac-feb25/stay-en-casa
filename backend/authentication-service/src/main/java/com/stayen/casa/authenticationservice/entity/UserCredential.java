@@ -44,6 +44,11 @@ public class UserCredential extends BaseTimestampEntity {
 		this.passwordHash = passwordHash;
 	}
 
+	public void updatePassword(String passwordHash) {
+		this.passwordHash = passwordHash;
+		this.setUpdatedAt(LocalDateTime.now());
+	}
+
 	@Override
 	public String toString() {
 		return "UserCredential [uid=" + uid + ", email=" + email + ", passwordHash=" + passwordHash

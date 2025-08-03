@@ -13,7 +13,9 @@ public enum AuthError implements GenericError {
 	
 	INVALID_CREDENTIAL(1204, "Login failed. The email or password is incorrect."),
 
-	UID_EMAIL_NOT_MATCHING(1205, "Authentication  failed. Please ensure your user ID and email are correct.");
+	UID_EMAIL_NOT_MATCHING(1205, "Authentication  failed. Please ensure your user ID and email are correct."),
+
+	OTP_VERIFICATION_FAILED(1206, "The OTP you entered is incorrect or has expired. Please try again or request a new one.");
 
 	/**
 	 * 

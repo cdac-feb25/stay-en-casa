@@ -30,7 +30,7 @@ public class AuthControllerAdvice {
 			case 1201:
 				status = HttpStatus.NOT_FOUND;
 				break;
-			case 1202, 1204, 1205:
+			case 1202, 1204, 1205, 1206:
 				status = HttpStatus.FORBIDDEN;  // here
 				break;
 			case 1203:
