@@ -48,48 +48,6 @@ class SupabaseHelper {
         }
         
 
-        // return this.#supabase
-        //     .storage
-        //     .from(this.#bucketId)
-        //     .upload(pathWithFilename, file, { upsert: true })
-        //     .then((response) => {
-        //         const { id, path, fullPath } = response.data;
-        //         console.log(`id : ${id}`);
-        //         console.log(`path : ${path}`);
-        //         console.log(`fullpath : ${fullPath}`);
-
-        //         const photoUrl = this.#supabase
-        //             .storage
-        //             .from(this.#bucketId)
-        //             .getPublicUrl(pathWithFilename);
-
-        //         return photoUrl;
-        //     });
-
-        // try {
-        //     const response = await this.#supabase
-        //         .storage
-        //         .from(this.#bucketId)
-        //         .upload(pathWithFilename, file);
-
-        //     const { id, path, fullPath } = response.data;
-        //     console.log(`id : ${id}`);
-        //     console.log(`path : ${path}`);
-        //     console.log(`fullpath : ${fullPath}`);
-
-        //     const photoUrl = this.#supabase
-        //         .storage
-        //         .from(this.#bucketId)
-        //         .getPublicUrl(pathWithFilename);
-
-        //     return photoUrl;
-        // } 
-        // /**
-        //  * @param {StorageError} error
-        //  */
-        // catch(error) {
-        //     console.log(error);
-        // }
     }
 
     /**

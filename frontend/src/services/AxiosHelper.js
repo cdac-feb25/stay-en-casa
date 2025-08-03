@@ -46,6 +46,13 @@ class AxiosHelper {
         });
     }
 
+    static PATCH({ url, body = {}, isAuthHeader = true }) {
+        const header = isAuthHeader ? this.#getAuthHeader() : this.#getNoAuthHeader();
+        return axios.patch(url, body, {
+            headers: header,
+        });
+    }
+
 }
 
 export default AxiosHelper;

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBookingDetailsById, updateBookingStatusByBookingId } from "../services/bookingService";
+import Container from "../components/Container";
+import Column from "../components/Column";
+import Row from "../components/Row";
+import CustomButton from "../components/CustomButton";
+import SizedBox from "../components/SizedBox";
+import Navbar from "../components/Navbar";
 
 /**
  * UpdateBookingStatus component allows the admin to update the status of a booking.
@@ -17,6 +23,10 @@ const UpdateBookingStatus = () => {
     const [booking, setBooking] = useState(null);
 
     const [status, setStatus] = useState('');
+
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState(null);
 
     // Fetch booking details by ID when component mounts
     useEffect(
@@ -55,31 +65,54 @@ const UpdateBookingStatus = () => {
         }
     };
 
-    if(!booking) return <p>Loading Booking Details....</p>
+    if (loading) return <p>Loading Booking Details...</p>;
+    if (error) return <p style={{ color: "red" }}>{error}</p>;
+
 
     return (
-        <div>
-            <h2>Update Booking Status</h2>
-
-            <p><strong>Booking ID: </strong>{booking.bookingId}</p>
-            <p><strong>Property ID: </strong>{booking.propertyId}</p>
-            <p><strong>Buyer ID: </strong>{booking.buyerId}</p>
-            <p><strong>Booking Date: </strong>{booking.bookingDate}</p>
-            <p><strong>Current Status: </strong>{booking.status}</p>
-
-            { /* Form to update booking status */}
-            <form onSubmit={handleSubmit}>
-                <label htmlFor="status">Select Status: </label>
-                <select id="status" value={status} onChange={handleStatusChange} required>
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Cancelled">Cancelled</option>
-                </select>
-
-                <br /> <br />
-                <button type="submit">Update Status</button>
-            </form>
-        </div>
+        <>
+            <Navbar />
+            <Container style={{ maxWidth: 500, margin: "60px auto", padding: 24 }}>
+                <Column align="center">
+                    <h2>Update Booking Status</h2>
+                    <SizedBox height={16} />
+                    <Row><strong>Booking ID:</strong>&nbsp;{booking.bookingId}</Row>
+                    <Row><strong>Property ID:</strong>&nbsp;{booking.propertyId}</Row>
+                    <Row><strong>Buyer ID:</strong>&nbsp;{booking.buyerId}</Row>
+                    <Row><strong>Booking Date:</strong>&nbsp;{booking.bookingDate}</Row>
+                    <Row><strong>Current Status:</strong>&nbsp;{booking.status}</Row>
+                    <SizedBox height={16} />
+                    {/* Form to update booking status */}
+                    <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+                        <label htmlFor="status"><strong>Select Status:</strong> </label>
+                        <select
+                            id="status"
+                            value={status}
+                            onChange={handleStatusChange}
+                            required
+                            style={{ marginLeft: 8, padding: 4 }}
+                        >
+                            <option value="PENDING">Pending</option>
+                            <option value="CONFIRMED">Confirmed</option>
+                            <option value="CANCELLED">Cancelled</option>
+                        </select>
+                        <SizedBox height={16} />
+                        <CustomButton
+                            type="submit"
+                            disabled={submitting}
+                            style={{ width: "100%", marginTop: 12 }}
+                        >
+                            {submitting ? "Updating..." : "Update Status"}
+                        </CustomButton>
+                    </form>
+                    {error && (
+                        <Row justify="center">
+                            <span style={{ color: "red" }}>{error}</span>
+                        </Row>
+                    )}
+                </Column>
+            </Container>
+        </>
     )
 }
 
