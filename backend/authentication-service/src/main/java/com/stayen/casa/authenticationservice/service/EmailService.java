@@ -23,6 +23,8 @@ public class EmailService {
 
     public static final String FROM_EMAIL = "StayEn.Casa <no-reply@stayen.casa>";
 
+//    public static final String SUPPORT_EMAIL = "support@stayen.casa";
+
     private final String resendApiKey;
 
     private final RestTemplateUtils restTemplateUtils;
@@ -104,13 +106,13 @@ public class EmailService {
             margin: 0;
             padding: 0;
         }
-        .container {
-            max-width: 600px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .email-container {
+          max-width: 600px;
+          margin: auto;
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0,0,0,0.05);
         }
         .logo {
             text-align: center;
@@ -149,7 +151,7 @@ public class EmailService {
       </style>
     </head>
     <body>
-      <div class="container">
+      <div class="email-container">
         
         <div class="logo">
           <img src="https://cesyukrzbjmngxwtcqax.supabase.co/storage/v1/object/public/stay-en-casa/default-icons/stay_en_casa-nobg.png" alt="StayEn.Casa Logo">
@@ -157,19 +159,23 @@ public class EmailService {
         
         <div class="header">StayEn.Casa - Reset Your Password</div>
         
-        <div class="message">
-        Hello <strong>%s</strong>,<br><br>
-        We received a request to reset your password. Please use the following OTP to proceed with resetting your account:
-        </div>
+        <div class="content">
+          <div class="message">
+            Hello <strong>%s</strong>,<br><br>
+            We received a request to reset your password. Please use the following OTP to proceed with resetting your account:
+          </div>
     
-        <div class="otp">%s</div>
+          <div class="otp">%s</div>
     
-        <div class="message">
-        If you did not request a password reset, please ignore this email or contact support.
+          <div class="message">
+            If you did not request a password reset, please ignore this email or contact support.
+          </div>
+    
+          <p>Thank you,<br/>StayEnCasa Team</p>
         </div>
     
         <div class="footer">
-                &copy; %d StayEn.Casa | All rights reserved.
+            &copy; %d StayEn.Casa | All rights reserved.
         </div>
       </div>
     </body>
@@ -247,9 +253,12 @@ public class EmailService {
             <strong>Changed At:</strong> %s
           </div>
     
-          <p>If you did not request this change, please contact our support immediately.</p>
+          <p>
+            If you did not request this change, please contact our support at
+            <a href="mailto:support@stayen.casa">support@stayen.casa</a> immediately.
+          </p>
     
-          <p>Thank you,<br/>Stay En Casa Team</p>
+          <p>Thank you,<br/>StayEnCasa Team</p>
         </div>
         
         <div class="footer">

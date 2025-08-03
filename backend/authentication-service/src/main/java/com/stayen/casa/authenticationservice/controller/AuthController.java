@@ -61,7 +61,7 @@ public class AuthController {
 				.ok(userCredentialService.forgotPassword(emailDTO));
 	}
 
-	@PostMapping(Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD)
+	@PutMapping(Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD)
 	public ResponseEntity<?> verifyOTPAndChangePassword(@RequestBody OtpPasswordDTO otpPasswordDTO) {
 		return ResponseEntity
 				.ok(userCredentialService.verifyOTPAndChangePassword(otpPasswordDTO));

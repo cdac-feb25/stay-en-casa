@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Document("user_tokens")
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -29,20 +31,30 @@ public class UserToken extends BaseTimestampEntity {
 	private List<DeviceToken> tokens = new ArrayList<>();
 
 	public UserToken(String uid, String email) {
-		super.currentTimestamp();
+		super(); // current timestamp
 		this.uid = uid;
 		this.email = email;
 	}
-	
-	public UserToken(String uid, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
-		super.updateTimestamp(createdAt, updatedAt);
+
+	public UserToken(String uid, String email, List<DeviceToken> tokens, LocalDateTime createdAt, LocalDateTime updatedAt) {
+		super(createdAt, updatedAt); // timestamp from database
 		this.uid = uid;
 		this.email = email;
+		this.tokens = tokens;
 	}
+
+//	public UserToken(String uid, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
+//		super.updateTimestamp(createdAt, updatedAt);
+//		this.uid = uid;
+//		this.email = email;
+//	}
 	
 	/**
 	 * Helper Functions
 	 */
+	public void updateTimestamp() {
+		this.setUpdatedAt(LocalDateTime.now());
+	}
 	
 	/**
 	 * Check if token present for the given deviceId.
@@ -107,23 +119,5 @@ public class UserToken extends BaseTimestampEntity {
 				}
 			});
 	}
-	
-	
-	
-	
-//	public String getRefreshTokenForDeviceId(String deviceId) {
-//		AtomicReference<String> refreshToken = new AtomicReference<>();
-//		
-//		this.tokens
-//			.stream()
-//			.filter((deviceToken) -> {
-//				return deviceToken.getDeviceId().equals(deviceId);
-//			})
-//			.forEach((deviceToken) -> {
-//				refreshToken.set(deviceToken.getRefreshToken());
-//			});
-//		
-//		return refreshToken.get();
-//	}
-	
+
 }
