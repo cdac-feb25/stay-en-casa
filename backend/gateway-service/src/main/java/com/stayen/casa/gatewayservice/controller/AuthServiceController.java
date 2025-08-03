@@ -81,11 +81,14 @@ public class AuthServiceController {
         return restTemplateHelper.POST(url, receivedPayload, String.class);
     }
 
-    @PostMapping(Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD)
+    @PutMapping(Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD)
     public ResponseEntity<?> verifyOTPAndChangePassword(@RequestBody Map<String, Object> receivedPayload) {
         String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD;
 
-        return restTemplateHelper.POST(url, receivedPayload, String.class);
+//        System.out.println("Payload rec : " + receivedPayload);
+
+        return restTemplateHelper.PUT(url, null, receivedPayload, String.class);
+//        return null;
     }
 
 }
