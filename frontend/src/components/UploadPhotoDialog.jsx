@@ -68,6 +68,7 @@ function UploadProfilePhotoDialog({ showDialog, setShowDialog, saveFileOnUpload 
                     accept="image/*"
                     fullWidth={true}
                     sx={{
+                        color: Colors.white,
                         mt: 2,
                         mb: 1,
                     }}
@@ -80,6 +81,7 @@ function UploadProfilePhotoDialog({ showDialog, setShowDialog, saveFileOnUpload 
                         bgColor={Colors.error}
                         textColor={Colors.white}
                         fullWidth={false}
+                        mb={2}
                         onPress={ () => {
                             setShowDialog(false);
                             setSelectedFile({});
@@ -91,6 +93,7 @@ function UploadProfilePhotoDialog({ showDialog, setShowDialog, saveFileOnUpload 
                         bgColor={Colors.success}
                         textColor={Colors.white}
                         fullWidth={false} 
+                        mb={2}
                         onPress={() => {
                             saveFileOnUpload(selectedFile.file);
 

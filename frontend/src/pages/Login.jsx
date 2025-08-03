@@ -68,8 +68,7 @@ function Login() {
                         autoComplete='username'
                         required={true}
                         sx={{ mb: 2 }}
-                    >
-                    </TextField>
+                    />
 
                     <TextField
                         id={IdHelper.loginPassword}
@@ -81,10 +80,9 @@ function Login() {
                         autoComplete='current-password'
                         sx={{ mb: 3 }}
                         required={true}
-                    >
-                    </TextField>
+                    />
 
-                    <CustomButton title="Login" type='submit' />
+                    <CustomButton title="Login" type='submit' mb={2} />
                 </form>
 
                 <Link href={AppRoutes.forgotPassword}>Forgot your password ?</Link>

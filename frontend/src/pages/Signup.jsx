@@ -12,13 +12,11 @@ import React from 'react';
 import AssetHelper from '../utils/AssetHelper.js';
 
 function Signup() {
-    const navigate = useNavigate();
-    
     const [ isLoading, setIsLoading ] = React.useState(false);
     const [ errorMsg, setErrorMsg ] = React.useState("");
     const [ showError, setShowError ] = React.useState(false);
     const [ showPasswordComparison, setShowPasswordComparison ] = React.useState(false);
-    const [ isPasswordMatched, setPasswordMatched ] = React.useState(true);
+    const [ isPasswordMatched, setPasswordMatched ] = React.useState(false);
 
     const passwordMsg = {
         matched: "Yup! Password matched.",
@@ -124,7 +122,7 @@ function Signup() {
                         {isPasswordMatched ? passwordMsg.matched : passwordMsg.unMatched}
                     </Typography>
                     
-                    <CustomButton title="Signup" type='submit' />
+                    <CustomButton title="Signup" type='submit' mb={2} />
                 </form>
 
                 <DividerWithText text={'or'} />

@@ -5,14 +5,6 @@ import UserContext from './UserContext';
 
 class ApiActionHelper {
 
-    /**
-     * @param {import('axios').AxiosError} error 
-     * @returns {import('../types/ResponseError').ResponseError}
-     */
-    static getErrorObject(error) {
-        return error.response.data;
-    }
-
     static logoutHelper() {
         LocalStorageHelper.clearUid();
         LocalStorageHelper.clearUserProfile();

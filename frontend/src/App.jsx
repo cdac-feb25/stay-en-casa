@@ -11,7 +11,7 @@ import BookingDetailsPage from './pages/BookingDetailsPage';
 import UpdateBookingStatus from './pages/UpdateBookingStatus';
 import { Box } from '@mui/material';
 import AppRoutes from './utils/AppRoutes';
-import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
 import MyAccount from './pages/MyAccount';
 import EditProfile from './pages/EditProfile';
 import UserContext from './utils/UserContext';
@@ -20,6 +20,9 @@ import Navigate from './services/NavigationService';
 import ErrorDialog from './components/ErrorDialog';
 import { GlobalVariable, useGlobalState } from './pages/GlobalProvider';
 import AllPropertiesPage from './pages/AllPropertiesPage';
+import ForgotPassword from './pages/ForgotPassword';
+import ChangePassword from './pages/ChangePassword';
+import Home from './pages/Home';
 
 function App() {
   const navigate = useNavigate();
@@ -49,9 +52,12 @@ function App() {
         <Routes>
           <Route path={AppRoutes['/']} element={<Home />} />  {/* / -> Home */}
           <Route path={AppRoutes.home} element={<Home />} />  {/* /home -> Home */}
-          <Route path={AppRoutes.login} element={<Login />} />  {/* /login -> Login */} 
-          <Route path={AppRoutes.signup} element={<Signup />} />  {/* /signup -> Signup */} 
-          <Route path={AppRoutes.account} element={<MyAccount />} />  {/* /account -> MyAccount */} 
+          <Route path={AppRoutes.dashboard} element={<Dashboard />} />
+          <Route path={AppRoutes.login} element={<Login />} /> 
+          <Route path={AppRoutes.signup} element={<Signup />} />
+          <Route path={AppRoutes.forgotPassword} element={<ForgotPassword />} />
+          <Route path={AppRoutes.changePassword} element={<ChangePassword />} />
+          <Route path={AppRoutes.account} element={<MyAccount />} />
           <Route path={AppRoutes.editProfile} element={ <EditProfile /> } />
           
           {/* <Route path="/" element={<BookingPage />} /> */}

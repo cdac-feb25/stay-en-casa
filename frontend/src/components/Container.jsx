@@ -1,24 +1,34 @@
+import { Box, Paper } from "@mui/material";
 import Colors from "../utils/Colors";
 import Column from "./Column.jsx";
 
 function Container({ 
     children, 
-    padding: { top = '30px', right = '30px', bottom = '30px', left = '30px' } = {},
+    height="auto", width="auto", maxWidth=400,
+    marginLeft = "10px", marginRight = "10px", marginTop = "10px", marginBottom = "10px",
+    paddingLeft = "30px", paddingRight = "30px", paddingTop = "30px", paddingBottom = "30px",
 }) {
-    const style = {
-        padding: `${top} ${right} ${bottom} ${left}`,
-        border: `1px solid ${Colors.grey}`,
-        borderRadius: '10px',
-    };
-
     return (
-        <div 
-            style={style}
+        <Paper
+            variant="elevation"
+            elevation={10}
+            sx={{ 
+                border: '1px solid',
+                borderColor: Colors.grey,
+                borderRadius: 10
+                // bgcolor: Colors.foreground 
+            }}
         >
-            <Column>
+            <Column
+                height={height}
+                width={width}
+                maxWidth={maxWidth}
+                marginLeft={marginLeft} marginRight={marginRight} marginTop={marginTop} marginBottom={marginBottom}
+                paddingLeft={paddingLeft} paddingRight={paddingRight} paddingTop={paddingTop} paddingBottom={paddingBottom}
+            >
                 {children}
             </Column>
-        </div>
+        </Paper>
     );
 }
 

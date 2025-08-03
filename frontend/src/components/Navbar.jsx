@@ -1,11 +1,14 @@
 import React from "react";
-import { Box, IconButton, Link } from "@mui/material";
+import { Box, IconButton, Link, TextField } from "@mui/material";
 import Colors from "../utils/Colors";
 import AppRoutes from "../utils/AppRoutes";
 import { AccountBox, AccountCircle, Search, VerifiedUser } from "@mui/icons-material";
 import AssetHelper from "../utils/AssetHelper";
-import HomeAccountMenu from "./HomeAccountMenu";
+import LoggedInUserMenu from "./LoggedInUserMenu";
 import Row from "./Row";
+import LoggedOutUserMenu from "./LoggedOutUserMenu";
+import LocalStorageHelper from "../utils/LocalStorageHelper";
+import SizedBox from "./SizedBox";
 
 const Navbar = () => {
   const [ anchorEl, setAnchorEl ] = React.useState(null); 
@@ -21,7 +24,7 @@ const Navbar = () => {
     justifyContent: "space-between",
     alignItems: "center",
     background: `linear-gradient(90deg, ${Colors.background} 70%)`,
-    boxShadow: `0 2px 8px rgba(255, 255, 255, 0.07)` 
+    boxShadow: `0 5px 10px rgba(255, 255, 255, 0.07)` 
   };
 
   const handleMenuOnOpen = (event) => {
@@ -29,7 +32,12 @@ const Navbar = () => {
     setAnchorEl(event.target);
   }
 
-  <HomeAccountMenu anchorEl={ anchorEl } setAnchorEl={ setAnchorEl } />
+  /**
+   * @return {boolean}
+   */
+  function isUserLoggedIn() {
+    return (LocalStorageHelper.getJwtAccessToken() != null)
+  }
 
   return (
     <>
@@ -41,22 +49,22 @@ const Navbar = () => {
           <img src={AssetHelper.appIcon} alt="app-logo" style={{ height: "25px", margin: 5 }} />
           StayEn.Casa
         </Link>
+        
+        <Box marginRight={1} >
+          {
+            isUserLoggedIn() 
+            ? (<IconButton onClick={ handleMenuOnOpen } >
+                <AccountCircle />
+              </IconButton>) 
+            : (<LoggedOutUserMenu />)
+          }
+        </Box>
 
-        <Row justifyContent="end" >
-          <div >
-            {/* <Link href={AppRoutes.bookingPage}>Booking</Link>
-            {" "}|{" "}
-            <Link href={AppRoutes.myBookings}>My Booking</Link> */}
-
-            <Search>
-
-            </Search>
-          </div>
-
-          <IconButton onClick={ handleMenuOnOpen } >
+        {/* <Row justifyContent="end" > */}
+          {/* <IconButton onClick={ handleMenuOnOpen } >
             <AccountCircle />
-          </IconButton>
-        </Row>
+          </IconButton> */}
+        {/* </Row> */}
       </nav>
 
       {/* 
@@ -74,7 +82,7 @@ const Navbar = () => {
 
           afterward delete the comment
       */}
-      <HomeAccountMenu 
+      <LoggedInUserMenu 
         anchorEl={ anchorEl } 
         setAnchorEl={ setAnchorEl } 
       />

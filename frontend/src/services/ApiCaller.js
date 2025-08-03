@@ -21,13 +21,28 @@ class ApiCaller {
             });
     }
 
+    static async forgotPassword(resetEmail) {
+        const url = Endpoints.forgotPassword;
+        console.log("calling : " + url);
+        console.log("payload ", resetEmail);
+
+        return AxiosHelper.POST({ url, body: resetEmail, isAuthHeader: false, withCredentials: false });
+    }
+
+    static async changePassword(newPasswordData) {
+        const url = Endpoints.changePassword;
+        console.log("calling : " + url);
+        console.log("payload ", newPasswordData);
+
+        return AxiosHelper.PUT({ url, body: newPasswordData, isAuthHeader: false });
+    }
+
     /**
      * 
      * @param {import("../utils/UserContext").User} profile 
      */
     static async updateProfile(profile) {
         const url = Endpoints.profile;
-
         console.log("calling : " + url);
 
         return AxiosHelper
