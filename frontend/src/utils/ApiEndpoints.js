@@ -13,6 +13,8 @@ const Endpoints = {
     login: `${appDomain}${paths.authUrl}/login`,
     signup: `${appDomain}${paths.authUrl}/signup`,
     logout: `${appDomain}${paths.authUrl}/logout`,
+    forgotPassword: `${appDomain}${paths.authUrl}/forgot-password`,
+    changePassword: `${appDomain}${paths.authUrl}/change-password`,
 
     /**
      * Auth-Token related urls

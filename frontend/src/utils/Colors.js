@@ -4,7 +4,7 @@ const Colors = {
     primary: '#F16F02',           // Brand Orange
     secondary: '#C25400',         // Dark Orange for hover and accents
     background: '#0f181fff',        
-    foreground: '#0E151B',        
+    foreground: '#1a252c',        
     textPrimary: '#333333',       // Primary text color
     textSecondary: '#666666',     // Secondary/muted text
     buttonPrimary: '#F16F02',     // Primary button color (same as brand)

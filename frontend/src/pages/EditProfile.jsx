@@ -34,12 +34,12 @@ function EditProfile() {
         };
     }
 
+    const [ isLoading, setIsLoading ] = React.useState(false);
     const [ profile, setProfile ] = React.useState(loggedInUser ?? {});
     const [ file, setFile ] = React.useState({});
     const [ profileUpdateError, setProfileUpdateError ] = React.useState("");
 
     const [ showDialog, setShowDialog ] = React.useState(false);
-    const [ showProgress, setShowProgress ] = React.useState(false);
 
     const titleStyle = {
         fontSize: "1.2em",
@@ -79,7 +79,7 @@ function EditProfile() {
 
     return (
         <React.Fragment>
-            <Container>
+            <Container  maxWidth={500} >
                 <Box position="relative" display="inline-block">
                     <Avatar 
                         src={getPhotoUrl()} 
@@ -120,7 +120,10 @@ function EditProfile() {
                 {/* 
                     User Uid
                 */}
-                <Row justifyContent="space-between" >
+                <Row
+                    width="100%"
+                    justifyContent="space-between" 
+                >
                     <Typography sx={ titleStyle }>User ID : </Typography>
                     <SizedBox width={50} />
                     <Typography sx={ valueStyle }>{ loggedInUser.uid }</Typography>
@@ -130,6 +133,7 @@ function EditProfile() {
                     User Email
                 */}
                 <Row 
+                    width="100%"
                     marginTop={2}
                     justifyContent="space-between"
                 >
@@ -196,7 +200,7 @@ function EditProfile() {
 
                 <Typography sx={{ width: "100%", mb: 1.5, color: Colors.error }} >{ profileUpdateError }</Typography>
                 
-                <CustomButton title="Update" startIcon={ <CloudDone /> } type="button" onPress={ handleUpdateProfile(file, profile, setProfile, setProfileUpdateError, setShowProgress) } />
+                <CustomButton title="Update" startIcon={ <CloudDone /> } type="button" mb={2} onPress={ handleUpdateProfile(file, profile, setProfile, setProfileUpdateError, setIsLoading) } />
             </Container>
 
             {
@@ -208,7 +212,7 @@ function EditProfile() {
                 />) 
             }
 
-            <Backdrop open={showProgress} >
+            <Backdrop open={isLoading} >
                 <CircularProgress color="" />
             </Backdrop>
 

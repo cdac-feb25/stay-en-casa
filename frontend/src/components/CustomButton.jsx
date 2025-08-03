@@ -4,6 +4,8 @@ import { LoginRounded } from "@mui/icons-material";
 
 function CustomButton({ 
     title = "Button", 
+    width={},
+    height={},
     onPress, 
     disabled=false,
     bgColor=Colors.white,
@@ -13,6 +15,7 @@ function CustomButton({
     startIcon = null,
     endIcon = null,
     fullWidth=true,
+    mb=0,
 }) {
     return(
         <Button 
@@ -24,10 +27,13 @@ function CustomButton({
             endIcon={endIcon}
             fullWidth={fullWidth}
             sx={{ 
-                mb: 2,
+                height: {height},
+                width: {width},
+                mb: mb,
                 backgroundColor: bgColor,
                 color: textColor,
-                ":hover": hover
+                ":hover": hover,
+                borderColor: Colors.white,
             }}
         >
             {title}

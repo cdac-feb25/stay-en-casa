@@ -9,7 +9,7 @@ class RedirectionHelper {
         const isLoggedIn = LocalStorageHelper.getJwtAccessToken() !== null;
 
         if(isLoggedIn) {
-            Navigate.to({ path: AppRoutes.home, clearBrowserStack: true });
+            Navigate.to({ path: AppRoutes.dashboard, clearBrowserStack: true });
         }
     }
 

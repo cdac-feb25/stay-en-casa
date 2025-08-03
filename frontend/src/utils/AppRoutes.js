@@ -12,9 +12,11 @@
 const AppRoutes = {
     "/": "/",
     home: "/home",
+    dashboard: "/dashboard",
     login: "/login",
     signup: "/signup",
     forgotPassword: "/forgot-password",
+    changePassword: "/change-password",
     account: "/account",
     editProfile: "/edit-profile",
     bookingPage: "/booking-page",

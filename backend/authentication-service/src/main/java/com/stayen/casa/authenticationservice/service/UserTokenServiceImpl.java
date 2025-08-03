@@ -72,6 +72,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 		/**
 		 * Saving Removed Device Token
 		 */
+		userToken.updateTimestamp();
 		userTokenRepository.save(userToken);
 		
 		return new SimpleResponseDTO(TokenConstant.LOGOUT_MSG);
@@ -103,6 +104,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 		/**
 		 * Saving New Access, Refresh Token
 		 */
+		userToken.updateTimestamp();
 		userTokenRepository.save(userToken);
 		return new AuthTokenResponseDTO(jwtModel.getUid(), newAccessToken, newRefreshToken);
 	}
@@ -159,6 +161,7 @@ public class UserTokenServiceImpl implements UserTokenService {
 		/**
 		 * Saving Rotated Refresh Token
 		 */
+		userToken.updateTimestamp();
 		userTokenRepository.save(userToken);
 
 		return new AuthTokenResponseDTO(refreshTokenRequestDTO.getUid(), newAccessToken, newRefreshToken);

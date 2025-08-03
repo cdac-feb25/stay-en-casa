@@ -10,4 +10,8 @@ public class HeaderConstant {
 
     public static final String USER_DEVICE_ID = "User-Device-Id";
 
+    public static final String AUTHORIZATION = "Authorization";
+
+    public static final String BEARER_TOKEN_TYPE = "Bearer ";
+
 }

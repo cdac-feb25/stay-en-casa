@@ -42,7 +42,6 @@ public class AuthServiceController {
     public ResponseEntity<?> login(@RequestBody Map<String, Object> receivedPayload) {
         String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN;
 
-//        return restTemplateHelper.POST(url, receivedPayload, String.class);
         ResponseEntity<AuthTokenResponseDTO> response = restTemplateHelper.POST(url, receivedPayload, AuthTokenResponseDTO.class);
 
         return ResponseEntity
@@ -73,6 +72,23 @@ public class AuthServiceController {
         requestBody.put(BodyConstant.DEVICE_ID, loggedInUser.getDeviceId());
 
         return restTemplateHelper.POST(url, requestBody, String.class);
+    }
+
+    @PostMapping(Endpoints.Auth.FORGOT_PASSWORD)
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, Object> receivedPayload) {
+        String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.FORGOT_PASSWORD;
+
+        return restTemplateHelper.POST(url, receivedPayload, String.class);
+    }
+
+    @PutMapping(Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD)
+    public ResponseEntity<?> verifyOTPAndChangePassword(@RequestBody Map<String, Object> receivedPayload) {
+        String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD;
+
+//        System.out.println("Payload rec : " + receivedPayload);
+
+        return restTemplateHelper.PUT(url, null, receivedPayload, String.class);
+//        return null;
     }
 
 }

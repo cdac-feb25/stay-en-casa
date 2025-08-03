@@ -21,8 +21,6 @@ import lombok.Setter;
  * Need to be Abstract to work with MongoDB
  * </pre>
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public abstract class BaseTimestampEntity {
@@ -34,14 +32,23 @@ public abstract class BaseTimestampEntity {
 	@LastModifiedDate
 	@JsonProperty(access = Access.READ_ONLY)
 	private LocalDateTime updatedAt;
-	
-	protected void currentTimestamp() {
+
+	public BaseTimestampEntity() {
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
 	}
-	
-	protected void updateTimestamp(LocalDateTime createdAt, LocalDateTime updatedAt) {
+
+	public BaseTimestampEntity(LocalDateTime createdAt, LocalDateTime updatedAt) {
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
+	
+//	protected void currentTimestamp() {
+//		this.createdAt = LocalDateTime.now();
+//		this.updatedAt = LocalDateTime.now();
+//	}
+//
+//	protected void updateTimestamp(LocalDateTime updatedAt) {
+//		this.updatedAt = updatedAt;
+//	}
 }

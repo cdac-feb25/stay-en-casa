@@ -20,10 +20,18 @@ const theme = createTheme({
     color: Colors.white,
   },
   components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: Colors.background,
+        }
+      }
+    },
     MuiTypography: {
       styleOverrides: {
         root: {
           fontSize: "0.9em",
+          color: Colors.primary,
         },
       },
     },
@@ -78,6 +86,15 @@ const theme = createTheme({
             backgroundColor: Colors.primary,
             color: Colors.white,
           }
+        }
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          border: '1px solid #fff', // Change as needed
+          borderRadius: '30px',     // Optional
+          boxShadow: '0px 4px 20px rgba(0,0,0,0.2)' // Optional
         }
       }
     },

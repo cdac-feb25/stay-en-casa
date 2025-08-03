@@ -1,9 +1,6 @@
 package com.stayen.casa.authenticationservice.service;
 
-import com.stayen.casa.authenticationservice.dto.AuthTokenResponseDTO;
-import com.stayen.casa.authenticationservice.dto.LoginSignupRequestDTO;
-import com.stayen.casa.authenticationservice.dto.LogoutRequestDTO;
-import com.stayen.casa.authenticationservice.dto.SimpleResponseDTO;
+import com.stayen.casa.authenticationservice.dto.*;
 
 public interface UserCredentialService {
 	
@@ -12,5 +9,9 @@ public interface UserCredentialService {
 	AuthTokenResponseDTO loginUser(LoginSignupRequestDTO loginSignupRequestDTO);
 	
 	SimpleResponseDTO logoutUser(LogoutRequestDTO logoutRequestDTO);
-	
+
+	SimpleResponseDTO forgotPassword(EmailDTO emailDTO);
+
+	SimpleResponseDTO verifyOTPAndChangePassword(OtpPasswordDTO otpPasswordDTO);
+
 }

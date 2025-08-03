@@ -1,7 +1,9 @@
 package com.stayen.casa.authenticationservice.controller;
 
 import com.stayen.casa.authenticationservice.constant.Endpoints;
+import com.stayen.casa.authenticationservice.dto.EmailDTO;
 import com.stayen.casa.authenticationservice.dto.LogoutRequestDTO;
+import com.stayen.casa.authenticationservice.dto.OtpPasswordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +54,19 @@ public class AuthController {
 		return ResponseEntity
 				.ok(userCredentialService.logoutUser(logoutRequestDTO));
 	}
+
+	@PostMapping(Endpoints.Auth.FORGOT_PASSWORD)
+	public ResponseEntity<?> forgotPassword(@RequestBody EmailDTO emailDTO) {
+		return ResponseEntity
+				.ok(userCredentialService.forgotPassword(emailDTO));
+	}
+
+	@PutMapping(Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD)
+	public ResponseEntity<?> verifyOTPAndChangePassword(@RequestBody OtpPasswordDTO otpPasswordDTO) {
+		return ResponseEntity
+				.ok(userCredentialService.verifyOTPAndChangePassword(otpPasswordDTO));
+	}
+
+
 	
 }

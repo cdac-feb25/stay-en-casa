@@ -10,6 +10,10 @@ public class Endpoints {
         public static final String SIGNUP = "/signup";
 
         public static final String LOGOUT = "/logout";
+
+        public static final String FORGOT_PASSWORD = "/forgot-password";
+
+        public static final String VERIFY_AND_CHANGE_PASSWORD = "/change-password";
     }
 
     public static class Token {

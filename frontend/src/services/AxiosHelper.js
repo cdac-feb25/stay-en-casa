@@ -37,12 +37,13 @@ class AxiosHelper {
         });
     }
 
-    static PUT({ url, body = {}, isAuthHeader = true }) {
+    static PUT({ url, body = {}, isAuthHeader = true, withCredentials = false }) {
         const header = isAuthHeader ? this.#getAuthHeader() : this.#getNoAuthHeader();
         
         return axios.put(url, body, 
         {
             headers: header,
+            withCredentials: withCredentials
         });
     }
 

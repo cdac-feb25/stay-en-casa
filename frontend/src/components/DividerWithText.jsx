@@ -12,6 +12,7 @@ function DividerWithText({ text }) {
       <div style={{ flex: 1, height: lineThickness, backgroundColor: Colors.grey }} />
       <span 
         style={{ 
+          color: Colors.primary,
           margin: '10px 10px', whiteSpace: 'nowrap' 
         }}
       >

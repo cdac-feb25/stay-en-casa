@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import UserContext from "../utils/UserContext";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseStoragePublicUrl = import.meta.env.VITE_SUPABASE_STORAGE_PUBLIC_URL;
 const supabaseAnonPublicKey = import.meta.env.VITE_SUPABASE_PUBLIC_KEY;
 
 class SupabaseHelper {
@@ -34,19 +35,17 @@ class SupabaseHelper {
 
             return null;
         } else {
-            // const { id, path, fullPath } = data;
-            // console.log(`id : ${id}`);
-            // console.log(`path : ${path}`);
-            // console.log(`fullpath : ${fullPath}`);
-
             const { data: { publicUrl } } = this.#supabase
                 .storage
                 .from(this.#bucketId)
                 .getPublicUrl(pathWithFilename);
 
+            if(publicUrl == null || publicUrl.trim().length == 0) {
+                publicUrl = `${supabaseStoragePublicUrl}/${pathWithFilename}`;
+            }
+
             return publicUrl;
         }
-        
 
     }
 

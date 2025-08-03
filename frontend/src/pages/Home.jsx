@@ -1,29 +1,11 @@
-import { Button, Drawer } from "@mui/material";
-import ApiCaller from "../services/ApiCaller";
-import { ExitToApp } from "@mui/icons-material";
-import ApiActionHelper from "../utils/ApiActionHelper";
-import RedirectionHelper from "../services/RedirectionHelper";
-import Column from "../components/Column";
-import HomeAccountMenu from "../components/HomeAccountMenu";
-
 function Home() {
-    RedirectionHelper.fromHome();
-
-    function testRefreshToken() {
-        
-    }
-
     return (
-        <div>
-            <h1>Home Page</h1>
-            <Column>
-                <Button sx={{ mb:2 }} onClick={ () => { ApiCaller.refreshToken(); } }>
-                    Refresh token
-                </Button>
-
-
-            </Column>
-        </div>
+        <>
+            <h1>Home Page (For All Visitors)</h1>
+            <h3>Public page (accessible without login)</h3>
+            <h3>Hero Section (Banner) Catchy headline like: “Find your dream home to buy or rent”</h3>
+            <h3>Search bar for location, property type, budget</h3>
+        </>
     );
 }
 

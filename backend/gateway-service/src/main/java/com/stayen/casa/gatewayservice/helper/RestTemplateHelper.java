@@ -2,6 +2,7 @@ package com.stayen.casa.gatewayservice.helper;
 
 import com.stayen.casa.gatewayservice.constant.EnvConstant;
 import com.stayen.casa.gatewayservice.constant.HeaderConstant;
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -55,18 +56,20 @@ public class RestTemplateHelper {
         return restTemplate.exchange(uri, HttpMethod.POST, entity, responseType);
     }
 
-    public <T, B> ResponseEntity<T> PUT(String url, Map<String, String> requestHeader, B body, Class<T> responseType) {
+    public <T, B> ResponseEntity<T> PUT(String url, @Nullable Map<String, String> requestHeader, B body, Class<T> responseType) {
         URI uri = URI.create(url);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HeaderConstant.AUTH_KEY, internalServiceAuthKey);
-        requestHeader
-                .entrySet()
-                .stream()
-                .forEach((entry) -> {
-                    headers.set(entry.getKey(), entry.getValue());
-                });
+        if(requestHeader != null) {
+            requestHeader
+                    .entrySet()
+                    .stream()
+                    .forEach((entry) -> {
+                        headers.set(entry.getKey(), entry.getValue());
+                    });
+        }
 
         HttpEntity<B> entity = new HttpEntity<>(body, headers);
 
