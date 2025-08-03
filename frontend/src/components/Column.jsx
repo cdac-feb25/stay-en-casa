@@ -1,19 +1,23 @@
-function Column({ children, mainAxisAlignment = 'center', crossAxisAlignment = 'center' }) {
+import { Box } from "@mui/material";
+
+function Column({ children, marginLeft = 0, marginRight = 0, justifyContent = 'center', alignItems = 'center' }) {
     if(!children) {
         throw new Error('Children required !!!');
     }
 
-    const style = {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: mainAxisAlignment,
-        alignItems: crossAxisAlignment,
-    };
-
     return (
-        <div style={style}>
+        <Box 
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: justifyContent,
+                alignItems: alignItems,
+                marginLeft: marginLeft,
+                marginRight: marginRight,
+            }}
+        >
             {children}
-        </div>
+        </Box>
     );
 }
 

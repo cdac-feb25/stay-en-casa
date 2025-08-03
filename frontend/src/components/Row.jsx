@@ -1,20 +1,24 @@
-function Row({ children, mainAxisAlignment = 'center', crossAxisAlignment = 'center' }) {
+import { Box } from "@mui/material";
+
+function Row({ children, marginTop = 0, marginBottom = 0, justifyContent = 'center', alignItems = 'center' }) {
     if(!children) {
         throw new Error('Children required !!!');
     }
 
-    const style = {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: mainAxisAlignment,
-        alignItems: crossAxisAlignment,
-    };
-
-
     return (
-        <div style={style}>
+        <Box 
+            sx={{
+                width: "100%",
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: justifyContent,
+                alignItems: alignItems,
+                marginTop: marginTop,
+                marginBottom: marginBottom,
+            }}
+        >
             {children}
-        </div>
+        </Box>
     );
 }
 
