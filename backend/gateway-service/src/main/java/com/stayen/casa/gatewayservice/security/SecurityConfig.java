@@ -49,6 +49,7 @@ public class SecurityConfig {
                             .requestMatchers(
                                     "api/v1/auth/test", "api/v1/users/test",
                                     (Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN),  // "/api/v1/auth/login",
+                                    (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP_OTP),  // "/api/v1/auth/signup-otp",
                                     (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP),  // "/api/v1/auth/signup",
                                     (Endpoints.Auth.BASE_URL + Endpoints.Auth.FORGOT_PASSWORD),  // "/api/v1/auth/forgot-password",
                                     (Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD),  // "/api/v1/auth/change-password",
