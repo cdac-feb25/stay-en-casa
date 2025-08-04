@@ -4,13 +4,21 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getBookingDetailsById } from '../services/bookingService';
+import Container from "../components/Container";
+import Column from "../components/Column";
+import Row from "../components/Row";
+import SizedBox from "../components/SizedBox";
+import CustomButton from "../components/CustomButton";
+import Navbar from "../components/Navbar";
 
 const BookingDetailsPage = () => {
 
     // Get the bookingId from the URL (e.g., /booking/123)
     const { bookingId } = useParams();
+    
+    const navigate = useNavigate();
 
     // State to hold booking details
     const [booking, setBooking] = useState(null);
@@ -30,11 +38,11 @@ const BookingDetailsPage = () => {
 
                 // Fetch booking details from backend
                 const response = await getBookingDetailsById(bookingId);
-                setBooking(response);       // Set the booking data in state
+                setBooking(response);       
             } catch (error) {
-                setError("Failed to Fetch Booking Details!!!!!!!!");        // Show error if API call fails
+                setError("Failed to Fetch Booking Details!!!!!!!!");        
             } finally{
-                setLoading(false);      // Stop the loading spinner
+                setLoading(false);      
             }
         };
 
@@ -48,34 +56,65 @@ const BookingDetailsPage = () => {
         }
     }, [bookingId]);
 
+    const getStatusColor = (status) => {
+        if (status === "CONFIRMED" || status === "APPROVED") return "green";
+        if (status === "CANCELLED") return "red";
+        return "orange";
+    };
+
     return (
-        <div style={{padding : "1rem"}}>
-            <h2>Booking Details</h2>
-
-            {/* Show loading spinner */}
-            {loading && <p>Loading.....</p>}
-            
-             {/* Show error message */}
-            {error && <p style={{color: "red"}}>{error}</p>}
-
-            {/* Show booking details if available */}
-            {
-                booking && (
-                <div
-                style={{
-                border: '1px solid #ccc',
-                padding: '1rem',
-                borderRadius: '8px',
-                backgroundColor: '#f4f4f4',
-                }}>
-                <p><strong>Booking ID: </strong>{booking.bookingId}</p>
-                <p><strong>Buyer ID: </strong>{booking.buyerId}</p>
-                <p><strong>Property ID: </strong>{booking.propertyId}</p>
-                <p><strong>Booking Date: </strong>{booking.bookingDate}</p>
-                <p><strong>Booking Status: </strong>{booking.status}</p>
-                </div>
-            )}
-        </div>
+        <>
+            <Navbar />
+            <Container style={{ maxWidth: 500, margin: "60px auto", padding: 24 }}>
+                <Column align="center">
+                    <h2>Booking Details</h2>
+                    <SizedBox height={16} />
+                    {/* Loading State */}
+                    {loading && <p>Loading...</p>}
+                    {/* Error State */}
+                    {error && <p style={{ color: "red" }}>{error}</p>}
+                    {/* Booking Details */}
+                    {booking && (
+                        <Column align="flex-start" style={{
+                            border: '1px solid #ccc',
+                            padding: '1rem',
+                            borderRadius: '8px',
+                            backgroundColor: '#f4f4f4',
+                            width: "100%"
+                        }}>
+                            <Row>
+                                <strong>Booking ID:</strong>&nbsp;{booking.bookingId}
+                            </Row>
+                            <Row>
+                                <strong>Buyer ID:</strong>&nbsp;{booking.buyerId}
+                            </Row>
+                            <Row>
+                                <strong>Property ID:</strong>&nbsp;{booking.propertyId}
+                            </Row>
+                            <Row>
+                                <strong>Booking Date:</strong>&nbsp;{booking.bookingDate}
+                            </Row>
+                            <Row>
+                                <strong>Booking Status:</strong>&nbsp;
+                                <span style={{ color: getStatusColor(booking.status), fontWeight: 600 }}>
+                                    {booking.status}
+                                </span>
+                            </Row>
+                        </Column>
+                    )}
+                    <SizedBox height={24} />
+                    {/* Back Button */}
+                    <CustomButton
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => navigate(-1)}
+                        style={{ width: "100%" }}
+                    >
+                        Back
+                    </CustomButton>
+                </Column>
+            </Container>
+        </>
     );
 };
 

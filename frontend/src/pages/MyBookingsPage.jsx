@@ -3,12 +3,22 @@
 
 import React, { useEffect, useState } from "react";
 import { getBookingDetailsByBuyerId } from "../services/bookingService";
-import { useNavigate } from "react-router-dom";     // React Router's navigation hook
+import { useNavigate } from "react-router-dom";
+import Container from "../components/Container";
+import Column from "../components/Column";
+import Row from "../components/Row";
+import CustomButton from "../components/CustomButton";
+import SizedBox from "../components/SizedBox";
+import Navbar from "../components/Navbar";
 
 const MyBookingsPage = () => {
 
   // State to store all bookings made by the current buyer
   const [bookings, setBookings] = useState([]);
+
+  // State to handle loading and error states
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Hook to navigate to other routes programmatically
   const navigate = useNavigate();
@@ -42,37 +52,67 @@ const MyBookingsPage = () => {
     navigate(`/booking/${bookingId}`);
   };
 
+  const getStatusColor = (status) => {
+    if (status === "CONFIRMED" || status === "APPROVED") return "green";
+    if (status === "CANCELLED") return "red";
+    return "orange";
+  };
+
   return (
-    <div>
-      <h2>My Bookings</h2>
-      {bookings.length === 0 ? (
-        <p style={{color: "red"}}>No Bookings Found!!!!</p>
-      ) : (
-        <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
-          {bookings.map((booking) => (
-            <li
-              key={booking.bookingId}
-              onClick={() => handleBookingClick(booking.bookingId)}
-              style={{
-                border: "1px solid #ccc",
-                padding: "1rem",
-                borderRadius: "8px",
-                marginBottom: "1rem",
-                cursor: "pointer",
-                backgroundColor: "#f7f7f7",
-              }}
-            >
-              <strong>Property ID:</strong> {booking.propertyId} <br />
-              <strong>Date:</strong> {booking.bookingDate} <br />
-              <strong>Status:</strong> {booking.status}
-              <button onClick={(e) =>
-                {e.stopPropagation(); // Prevent click from bubbling up to the li
-                navigate(`/update-booking/${booking.bookingId}`);}}>Update</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <>
+      <Navbar />
+      <Container style={{ maxWidth: 600, margin: "60px auto", padding: 24 }}>
+        <Column align="center">
+          <h2>My Bookings</h2>
+          <SizedBox height={16} />
+          {loading && <p>Loading...</p>}
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          {!loading && bookings.length === 0 && (
+            <p style={{ color: "red" }}>No Bookings Found!</p>
+          )}
+          {!loading && bookings.length > 0 && (
+            <Column align="stretch" style={{ width: "100%" }}>
+              {bookings.map((booking) => (
+                <Row
+                  key={booking.bookingId}
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "1rem",
+                    borderRadius: "8px",
+                    marginBottom: "1rem",
+                    backgroundColor: "#f7f7f7",
+                    cursor: "pointer",
+                    alignItems: "center",
+                  }}
+                  onClick={() => handleBookingClick(booking.bookingId)}
+                >
+                  <Column align="flex-start" style={{ flex: 1 }}>
+                    <div><strong>Property ID:</strong> {booking.propertyId}</div>
+                    <div><strong>Date:</strong> {booking.bookingDate}</div>
+                    <div>
+                      <strong>Status:</strong>{" "}
+                      <span style={{ color: getStatusColor(booking.status), fontWeight: 600 }}>
+                        {booking.status}
+                      </span>
+                    </div>
+                  </Column>
+                  <CustomButton
+                    variant="outlined"
+                    color="secondary"
+                    onClick={e => {
+                      e.stopPropagation();
+                      navigate(`/update-booking/${booking.bookingId}`);
+                    }}
+                  >
+                    Update
+                  </CustomButton>
+                </Row>
+              ))}
+            </Column>
+          )}
+        </Column>
+      </Container>
+    </>
   );
 };
 

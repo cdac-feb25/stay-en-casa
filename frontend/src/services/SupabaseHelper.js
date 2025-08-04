@@ -47,6 +47,7 @@ class SupabaseHelper {
 
             return publicUrl;
         }
+
     }
 
     /**
