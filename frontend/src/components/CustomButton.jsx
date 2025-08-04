@@ -33,7 +33,11 @@ function CustomButton({
                 backgroundColor: bgColor,
                 color: textColor,
                 ":hover": hover,
-                borderColor: Colors.white,
+                '&.Mui-disabled': {
+                    color: Colors.grey,
+                    border: `1px solid ${Colors.lightGrey}`,
+                    backgroundColor: textColor,
+                },
             }}
         >
             {title}

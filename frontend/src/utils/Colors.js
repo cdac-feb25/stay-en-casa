@@ -19,6 +19,7 @@ const Colors = {
     black: '#000000',
     blue: '#003479ff',
     grey: '#645e5eff',
+    lightGrey: '#494444ff',
 };
 
 export default Colors;

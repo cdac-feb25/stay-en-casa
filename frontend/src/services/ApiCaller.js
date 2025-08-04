@@ -60,7 +60,7 @@ class ApiCaller {
         }
 
         const url = Endpoints.login;
-        const body = PayloadHelper.forLoginAndSignup({ email, password, deviceId: LocalStorageHelper.getDeviceId() });
+        const body = PayloadHelper.forLogin({ email, password, deviceId: LocalStorageHelper.getDeviceId() });
         
         console.log("calling : " + url);
         console.log("with : " + body);
@@ -99,13 +99,23 @@ class ApiCaller {
             });
     }
 
-    static async signup({ email, password }) {
-        if(!email || !password) {
+    static async generateSignupOtp({ email }) {
+        if(!email) {
+            throw new Error("Invalid email / password while calling Axios Helper");
+        }
+
+        const url = Endpoints.signupOtp;
+
+        return AxiosHelper.POST({ url, body: { email }, isAuthHeader: false, withCredentials: false });
+    }
+
+    static async signup(formData) {
+        if(!formData.email || !formData.password) {
             throw new Error("Invalid email / password while calling Axios Helper");
         }
 
         const url = Endpoints.signup;
-        const body = PayloadHelper.forLoginAndSignup({ email, password, deviceId: LocalStorageHelper.getDeviceId() });
+        const body = PayloadHelper.forSignup(formData);
 
         console.log("calling : " + url);
         console.log("with : " + body);
@@ -116,7 +126,7 @@ class ApiCaller {
                 ApiActionHelper.tokenResponseHelper(response);
 
                 const { uid } = response.data;
-                ApiActionHelper.loginSignupResponseHelper({ uid, email });
+                ApiActionHelper.loginSignupResponseHelper({ uid, email: formData.email });
 
                 return response;
             });
