@@ -34,12 +34,12 @@ public class OtpServiceImpl implements OtpService {
     }
 
     @Override
-    public boolean verifyAndDeleteOtp(OtpPasswordDTO otpPasswordDTO) {
+    public boolean verifyAndDeleteOtp(String userEmail, String userOtp) {
         Otp otp = otpRepository
-                .findById(otpPasswordDTO.getEmail())
+                .findById(userEmail)
                 .orElseThrow(() -> new AuthException(AuthError.OTP_VERIFICATION_FAILED));
 
-        if((otp.getOtp().equals(otpPasswordDTO.getOtp())) == false) {
+        if((otp.getOtp().equals(userOtp)) == false) {
             throw new AuthException(AuthError.OTP_VERIFICATION_FAILED);
         }
 

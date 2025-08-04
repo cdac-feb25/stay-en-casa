@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonPropertyOrder({"email", "password", "deviceId", "createdAt", "updatedAt"})
-public class LoginSignupRequestDTO extends BaseTimestampDTO {
+public class LoginRequestDTO extends BaseTimestampDTO {
 
 	private String email;
 
@@ -19,7 +19,7 @@ public class LoginSignupRequestDTO extends BaseTimestampDTO {
 
 	private String deviceId;
 
-	public LoginSignupRequestDTO(String email, String deviceId, String password) {
+	public LoginRequestDTO(String email, String deviceId, String password) {
 		this.email = email;
 		this.password = password;
 		this.deviceId = deviceId;

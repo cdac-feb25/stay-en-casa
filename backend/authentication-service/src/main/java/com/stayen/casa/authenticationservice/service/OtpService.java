@@ -6,6 +6,6 @@ public interface OtpService {
 
     String generateSave6DigitOtp(String email);
 
-    boolean verifyAndDeleteOtp(OtpPasswordDTO otpPasswordDTO);
+    boolean verifyAndDeleteOtp(String userEmail, String userOtp);
 
 }

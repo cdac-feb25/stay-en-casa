@@ -13,7 +13,7 @@ import com.stayen.casa.authenticationservice.service.UserTokenService;
  * Auth Controller for handling 
  * 	1. login 
  * 	2. logout 
- * 	3. register
+ * 	3. signup
  * </pre>
  */
 @RestController
