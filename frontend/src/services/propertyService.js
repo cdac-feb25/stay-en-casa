@@ -89,7 +89,7 @@ export const getPropertyDetailsById = async (propertyId) => {
 export const getMyProperties = async (ownerId) => {
   try {
     const response = await AxiosHelper.GET({
-      url: `${BASE_URL}/properties/owner/${ownerId}`,
+      url: `${BASE_URL}/owner/${ownerId}`,
     });
     return response.data;
   } catch (error) {
@@ -136,25 +136,6 @@ export const updateProperty = async (propertyId, propertyData) => {
   }
 };
 
-/**
- * Updates specific fields of a property by its ID.
- * @param {string} propertyId - The ID of the property to be updated.
- * @param {Object} updatedFields - The fields to update in the property.
- * @returns {Promise} - Promise resolving to the response of the API call.
- * @throws {Error} - Throws an error if the API call fails.
- */
-export const updatePartialProperty = async (propertyId, propertyData) => {
-  try {
-    const response = await AxiosHelper.PATCH({
-      url: `${BASE_URL}/properties/${propertyId}`,
-      body: propertyData,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error partially updating property:", error);
-    throw error;
-  }
-};
 
 /** 
  * Toggles the availability status of a property.
