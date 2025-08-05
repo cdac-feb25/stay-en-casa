@@ -31,6 +31,14 @@ public interface PropertyService {
 	APIResponse addNewProperty(PropertyRequest propertyDetails, String ownerId);
 	
 	/**
+	 * Updates the list of image URLs for an existing property.
+	 * @param propertyId ID of the property whose images will be updated. 
+	 * @param imageUrls List of image URLs to set for the property.
+	 * @return APIResponse indicating success or failure.
+	 */
+	APIResponse updatePropertyImages(String propertyId, List<String> imageUrls);
+	
+	/**
      * Fetches a specific property using its ID.
      * @param propertyId The unique identifier of the property.
      * @return PropertyResponse containing the property details.
@@ -73,5 +81,14 @@ public interface PropertyService {
      * @return APIResponse indicating whether deletion was successful.
      */
 	APIResponse deletePropertyById(String propertyId);
+
+	/**
+	 * Retrieves all Properties associated with the Specific Owner
+	 * @param ownerId The unique ID of the owner whose listed properties are to be retrieved. 
+	 * @return A List of Property associated with the Given Owner.
+	 */
+	List<PropertyResponse> getPropertiesByOwner(String ownerId);
+
+	
 
 }

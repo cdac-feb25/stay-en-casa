@@ -9,7 +9,6 @@ import Column from "../components/Column";
 import Row from "../components/Row";
 import CustomButton from "../components/CustomButton";
 import SizedBox from "../components/SizedBox";
-import Navbar from "../components/Navbar";
 
 const MyBookingsPage = () => {
 
@@ -60,7 +59,6 @@ const MyBookingsPage = () => {
 
   return (
     <>
-      <Navbar />
       <Container style={{ maxWidth: 600, margin: "60px auto", padding: 24 }}>
         <Column align="center">
           <h2>My Bookings</h2>

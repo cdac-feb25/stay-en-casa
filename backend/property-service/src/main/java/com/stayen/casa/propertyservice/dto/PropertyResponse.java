@@ -39,7 +39,7 @@ public class PropertyResponse {
     private ListingType listingType;
     
 	@Schema(description = "Category of the Property - PLOT, VILLA, FLAT or COMMERCIAL")
-    private PropertyCategory category;
+    private PropertyCategory propertyCategory;
     
 	@Schema(description = "User ID of the Property owner")
     private String ownerId;

@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllProperties } from '../services/propertyService';
+import Container from "../components/Container";
+import Column from "../components/Column";
+import Row from "../components/Row";
+import SizedBox from "../components/SizedBox";
+import PropertyCard from '../components/PropertyCard';
+import Colors from '../utils/Colors';
 
 /**
  * AllPropertiesPage component
  * 
- * - Fetches and displays all available properties in a tabular format.
+ * - Fetches and displays all available properties.
  * - Allows users to click on a row to view detailed information 
  *   about a specific property.
  * - Uses React Router for navigation.
@@ -18,6 +24,8 @@ const AllPropertiesPage = () => {
 
   // State to handle loading UI
   const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState(null);
 
   // React Router's navigation hook
   const navigate = useNavigate();
@@ -43,45 +51,29 @@ const AllPropertiesPage = () => {
     fetchProperties();
   }, []);
 
-  // Show loader while fetching
-  if (loading) return <div>Loading properties...</div>;
-
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-      <h2>All Properties</h2>
-      {Array.isArray(properties) && properties.length === 0 ? (
-        <p>No properties found.</p>
-      ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f5f5f5' }}>
-              <th style={{ padding: 8, border: '1px solid #ddd' }}>Name</th>
-              <th style={{ padding: 8, border: '1px solid #ddd' }}>Type</th>
-              <th style={{ padding: 8, border: '1px solid #ddd' }}>Category</th>
-              <th style={{ padding: 8, border: '1px solid #ddd' }}>Price</th>
-              <th style={{ padding: 8, border: '1px solid #ddd' }}>Furnishing</th>
-              <th style={{ padding: 8, border: '1px solid #ddd' }}>City</th>
-            </tr>
-          </thead>
-          <tbody>
+    <Container maxWidth={1200}>
+      <Column align="center">
+        <h2 style={{ color: "white", marginBottom: "20px" }}>All Properties</h2>
+        <SizedBox height={16} />
+        {loading && <p style={{ color: Colors.textOrange }}>Loading properties...</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        {!loading && properties.length === 0 && (
+          <p style={{ color: "white" }}>No properties found.</p>
+        )}
+        {!loading && properties.length > 0 && (
+          <Row style={{ flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
             {properties.map((property) => (
-              <tr
+              <PropertyCard
                 key={property.propertyId}
-                style={{ cursor: 'pointer' }}
+                property={property}
                 onClick={() => navigate(`/properties/${property.propertyId}`)}
-              >
-                <td style={{ padding: 8, border: '1px solid #ddd' }}>{property.propertyName}</td>
-                <td style={{ padding: 8, border: '1px solid #ddd' }}>{property.listingType}</td>
-                <td style={{ padding: 8, border: '1px solid #ddd' }}>{property.propertyCategory}</td>
-                <td style={{ padding: 8, border: '1px solid #ddd' }}>₹{property.price.toLocaleString()}</td>
-                <td style={{ padding: 8, border: '1px solid #ddd' }}>{property.furnishing}</td>
-                <td style={{ padding: 8, border: '1px solid #ddd' }}>{property.location?.city}</td>
-              </tr>
+              />
             ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+          </Row>
+        )}
+      </Column>
+    </Container>
   );
 };
 

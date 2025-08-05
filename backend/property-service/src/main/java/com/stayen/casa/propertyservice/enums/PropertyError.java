@@ -22,6 +22,8 @@ public enum PropertyError {
 	
 	PROPERTY_SEARCH_FAILED(1606, "Property search failed due to invalid filters or internal error."),
 	
+	TOO_MANY_IMAGES(1607,"You can upload a maximum of 3 images per property."),
+	
 	GENERIC_ERROR(1699,"An Unknown Error Occurred. Please try again later....");
 	
 	/**

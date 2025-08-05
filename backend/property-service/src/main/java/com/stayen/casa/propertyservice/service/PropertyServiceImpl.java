@@ -84,7 +84,26 @@ public class PropertyServiceImpl implements PropertyService {
 		}
 		
 		//5. Return the Listing Confirmation Message
-		return new APIResponse("Property is Listed!!!!! Your Property ID: "+propertyEntity.getPropertyId());
+		return new APIResponse("Property is Listed!!!!! Your Property ID: ",propertyEntity.getPropertyId());
+	}
+	
+	@Override
+	public APIResponse updatePropertyImages(String propertyId, List<String> imageUrls) {
+		
+		PropertyEntity propertyEntity =  propertyRepository.findById(propertyId)
+				.orElseThrow(()-> new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
+		
+		if (imageUrls.size() > 3) {
+	        throw new PropertyException(PropertyError.TOO_MANY_IMAGES);
+	    }
+		
+		propertyEntity.setImages(imageUrls);
+		
+		propertyEntity.setUpdatedAt(LocalDateTime.now());
+		
+		propertyRepository.save(propertyEntity);
+		
+		return new APIResponse("Images Updated Successfully!!!!!!");
 	}
 
 	@Override
@@ -101,6 +120,7 @@ public class PropertyServiceImpl implements PropertyService {
 		
 		PropertyEntity propertyEntity = propertyRepository.findById(propertyId)
 				.orElseThrow(()-> new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
+		
 		
 		// Map all matching fields from DTO to entity
 		modelMapper.map(updatedDetails, propertyEntity);
@@ -336,6 +356,13 @@ public class PropertyServiceImpl implements PropertyService {
 		
 		return new APIResponse("Property with ID: "+propertyId+" Deleted Successfully");
 	}
-	
 
+	@Override
+	public List<PropertyResponse> getPropertiesByOwner(String ownerId) {
+		List<PropertyEntity> properties = propertyRepository.findByOwnerId(ownerId);
+
+        return properties.stream()
+                .map(property -> modelMapper.map(property, PropertyResponse.class))
+                .toList();
+    }
 }

@@ -10,6 +10,7 @@ class SupabaseHelper {
     static #supabase = createClient(supabaseUrl, supabaseAnonPublicKey);
     static #bucketId = 'stay-en-casa';
     static #profilePhotoFolderName = 'profile-photos';
+    static #propertiesFolderName = 'properties';
     
     /**
      * @param {File} file 
@@ -35,7 +36,42 @@ class SupabaseHelper {
 
             return null;
         } else {
-            const { data: { publicUrl } } = this.#supabase
+            let { data: { publicUrl } } = this.#supabase
+                .storage
+                .from(this.#bucketId)
+                .getPublicUrl(pathWithFilename);
+
+            if(publicUrl == null || publicUrl.trim().length == 0) {
+                publicUrl = `${supabaseStoragePublicUrl}/${pathWithFilename}`;
+            }
+
+            return publicUrl;
+        }
+
+    }
+
+    static async uploadPropertiesPhotoFile(file, propertyId) {
+        const fileExtension = this.#getFileExtension(file);
+        const uid = UserContext.getLoggedInUser().uid;
+        const fileName = file.name.replace(/\.[^/.]+$/,"");
+        const pathWithFilename = `${this.#propertiesFolderName}/${uid}/${propertyId}/${fileName}.${fileExtension}`;
+
+        console.log("pathWithFilename : ", pathWithFilename);
+
+        const { data, error } = await this.#supabase
+            .storage
+            .from(this.#bucketId)
+            .upload(pathWithFilename, file, { 
+                upsert: false, 
+                contentType: file.type,
+            });
+
+        if(error) {
+            console.log(error);
+
+            return null;
+        } else {
+            let { data: { publicUrl } } = this.#supabase
                 .storage
                 .from(this.#bucketId)
                 .getPublicUrl(pathWithFilename);

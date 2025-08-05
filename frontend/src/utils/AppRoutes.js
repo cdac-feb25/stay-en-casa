@@ -20,10 +20,15 @@ const AppRoutes = {
     account: "/account",
     editProfile: "/edit-profile",
     bookingPage: "/booking-page",
-    myBookings: "/my-bookings",
+    myBookings: "/my-bookings/:propertyId",
     bookingById: "/booking/:bookingId",
     updateBookingById: "/update-booking/:bookingId",
     properties: "/properties",
+    addProperty: "/add-property",
+    propertyById: "/properties/:propertyId",
+    myProperties: "/my-properties",
+    editProperty: "/edit-property/:propertyId",
+    
 };
 
 export default AppRoutes;
