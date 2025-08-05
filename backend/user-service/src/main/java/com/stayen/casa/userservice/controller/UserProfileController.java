@@ -29,6 +29,7 @@ public class UserProfileController {
 	@GetMapping
 	public ResponseEntity<?> fetchUserDetail() {
 		User loggedInUser = UserContext.getLoggedInUser();
+
 		return ResponseEntity
 				.ok(userProfileService.fetchUserProfile(loggedInUser.getUid()));
 	}
@@ -46,7 +47,7 @@ public class UserProfileController {
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(userProfileService.updateUserProfile(loggedInUser.getUid(), userProfileDTO));
+				.body(userProfileService.updateUserProfile(loggedInUser, userProfileDTO));
 	}
 	
 }

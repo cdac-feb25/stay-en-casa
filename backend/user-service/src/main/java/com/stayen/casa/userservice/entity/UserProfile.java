@@ -1,7 +1,6 @@
 package com.stayen.casa.userservice.entity;
 
 import com.stayen.casa.userservice.dto.UserProfileDTO;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -64,7 +63,7 @@ public class UserProfile extends BaseTimestampEntity {
     /**
      * Uid, Email cannot be updated
      */
-    public void update(UserProfileDTO updatedUserProfileDTO) {
+    public void updateTimestamp(UserProfileDTO updatedUserProfileDTO) {
         this.name = updatedUserProfileDTO.getName();
         this.phoneNo = updatedUserProfileDTO.getPhoneNo();
         this.address = updatedUserProfileDTO.getAddress();

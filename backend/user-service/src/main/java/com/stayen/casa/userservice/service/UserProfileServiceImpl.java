@@ -4,6 +4,7 @@ import com.stayen.casa.userservice.dto.UserProfileDTO;
 import com.stayen.casa.userservice.entity.UserProfile;
 import com.stayen.casa.userservice.enums.ProfileError;
 import com.stayen.casa.userservice.exception.ProfileException;
+import com.stayen.casa.userservice.model.User;
 import com.stayen.casa.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,12 +43,21 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Override
-    public UserProfileDTO updateUserProfile(String uid, UserProfileDTO updatedUserProfileDTO) {
-        UserProfile userProfile = userRepository
-                .findById(uid)
-                .orElseThrow(() -> new ProfileException(ProfileError.NO_PROFILE_FOUND));
+    public UserProfileDTO updateUserProfile(User loggedInUser, UserProfileDTO updatedUserProfileDTO) {
+        Optional<UserProfile> optionalProfile = userRepository
+                .findById(loggedInUser.getUid());
 
-        userProfile.update(updatedUserProfileDTO);
+        UserProfile userProfile;
+        if(optionalProfile.isPresent()) {
+            userProfile = optionalProfile.get();
+
+            userProfile.updateTimestamp(updatedUserProfileDTO);
+        } else {
+            updatedUserProfileDTO.setUid(loggedInUser.getUid());
+            updatedUserProfileDTO.setEmail(loggedInUser.getEmail());
+
+            userProfile = new UserProfile(updatedUserProfileDTO);
+        }
 
         userProfile = userRepository.save(userProfile);
         return new UserProfileDTO(userProfile);

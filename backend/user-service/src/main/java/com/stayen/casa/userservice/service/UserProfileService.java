@@ -1,6 +1,7 @@
 package com.stayen.casa.userservice.service;
 
 import com.stayen.casa.userservice.dto.UserProfileDTO;
+import com.stayen.casa.userservice.model.User;
 
 public interface UserProfileService {
 
@@ -8,7 +9,7 @@ public interface UserProfileService {
 
     UserProfileDTO createUserProfile(UserProfileDTO userProfileDTO);
 
-    UserProfileDTO updateUserProfile(String uid, UserProfileDTO updatedUserProfileDTO);
+    UserProfileDTO updateUserProfile(User loggedInUser, UserProfileDTO updatedUserProfileDTO);
 
 
 }
