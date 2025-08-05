@@ -11,12 +11,13 @@ class SupabaseHelper {
     static #bucketId = 'stay-en-casa';
     static #profilePhotoFolderName = 'profile-photos';
     static #propertiesFolderName = 'properties';
+    // bucket/profile/uid
     
     /**
      * @param {File} file 
      */
     static async uploadProfilePhotoFile(file) {
-        const fileExtension = this.#getFileExtension(file);
+        const fileExtension = this.#getPhotoExtension(file);
         const uid = UserContext.getLoggedInUser().uid;
         const pathWithFilename = `${this.#profilePhotoFolderName}/${uid}.${fileExtension}`;
 
@@ -51,7 +52,7 @@ class SupabaseHelper {
     }
 
     static async uploadPropertiesPhotoFile(file, propertyId) {
-        const fileExtension = this.#getFileExtension(file);
+        const fileExtension = this.#getPhotoExtension(file);
         const uid = UserContext.getLoggedInUser().uid;
         const fileName = file.name.replace(/\.[^/.]+$/,"");
         const pathWithFilename = `${this.#propertiesFolderName}/${uid}/${propertyId}/${fileName}.${fileExtension}`;
@@ -89,7 +90,7 @@ class SupabaseHelper {
      * @param {File} file 
      * @returns {string} extension
      */
-    static #getFileExtension(file) {
+    static #getPhotoExtension(file) {
         const type = file.type;
         return type.substring(6);
     } 

@@ -1,14 +1,11 @@
 package com.stayen.casa.authenticationservice.controller;
 
 import com.stayen.casa.authenticationservice.constant.Endpoints;
-import com.stayen.casa.authenticationservice.dto.EmailDTO;
-import com.stayen.casa.authenticationservice.dto.LogoutRequestDTO;
-import com.stayen.casa.authenticationservice.dto.OtpPasswordDTO;
+import com.stayen.casa.authenticationservice.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.stayen.casa.authenticationservice.dto.LoginSignupRequestDTO;
 import com.stayen.casa.authenticationservice.service.UserCredentialService;
 
 /**
@@ -16,7 +13,9 @@ import com.stayen.casa.authenticationservice.service.UserCredentialService;
  * Auth Controller for handling 
  * 	1. login 
  * 	2. logout 
- * 	3. register
+ * 	3. signup
+ * 	4. forgot password
+ * 	5. change password
  * </pre>
  */
 @RestController
@@ -36,17 +35,23 @@ public class AuthController {
 	}
 	
 	@PostMapping(Endpoints.Auth.LOGIN)
-	public ResponseEntity<?> login(@RequestBody LoginSignupRequestDTO loginSignupRequestDTO) {
-		System.out.println(loginSignupRequestDTO);
+	public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+		System.out.println(loginRequestDTO);
 		return ResponseEntity
-				.ok(userCredentialService.loginUser(loginSignupRequestDTO));
+				.ok(userCredentialService.loginUser(loginRequestDTO));
+	}
+
+	@PostMapping(Endpoints.Auth.SIGNUP_OTP)
+	public ResponseEntity<?> generateSignupOtp(@RequestBody EmailDTO emailDTO) {
+		return ResponseEntity
+				.ok(userCredentialService.generateSignupOTP(emailDTO));
 	}
 	
 	@PostMapping(Endpoints.Auth.SIGNUP)
-	public ResponseEntity<?> register(@RequestBody LoginSignupRequestDTO loginSignupRequestDTO) {
+	public ResponseEntity<?> signup(@RequestBody SignupRequestDTO signupRequestDTO) {
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
-				.body(userCredentialService.signupUser(loginSignupRequestDTO));
+				.body(userCredentialService.signupUser(signupRequestDTO));
 	}
 	
 	@PostMapping(Endpoints.Auth.LOGOUT)

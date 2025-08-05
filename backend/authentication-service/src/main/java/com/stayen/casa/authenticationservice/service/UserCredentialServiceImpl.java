@@ -52,11 +52,9 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 */
 	@Override
 	public SimpleResponseDTO forgotPassword(EmailDTO emailDTO) {
-		Optional<UserCredential> userCredential =  userCredentialRepository.findByEmail(emailDTO.getEmail());
-
-		if(userCredential.isEmpty()) {
-			throw new AuthException(AuthError.NO_ACCOUNT_FOUND);
-		}
+		userCredentialRepository
+				.findByEmail(emailDTO.getEmail())
+				.orElseThrow(() -> new AuthException(AuthError.NO_ACCOUNT_FOUND));
 
 		String otp = otpService.generateSave6DigitOtp(emailDTO.getEmail());
 
@@ -73,7 +71,7 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 */
 	@Override
 	public SimpleResponseDTO verifyOTPAndChangePassword(OtpPasswordDTO otpPasswordDTO) {
-		otpService.verifyAndDeleteOtp(otpPasswordDTO);
+		otpService.verifyAndDeleteOtp(otpPasswordDTO.getEmail(), otpPasswordDTO.getOtp());
 
 		UserCredential userCredential = userCredentialRepository.findByEmail(otpPasswordDTO.getEmail())
 				.orElseThrow(() -> new AuthException(AuthError.NO_ACCOUNT_FOUND));
@@ -90,30 +88,54 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 *
 	 */
 	@Override
-	public AuthTokenResponseDTO loginUser(LoginSignupRequestDTO loginSignupRequestDTO) {
+	public AuthTokenResponseDTO loginUser(LoginRequestDTO loginRequestDTO) {
 		// Getting verified user credentials
-		UserCredential credential = verifyUser(loginSignupRequestDTO);
+		UserCredential credential = verifyUser(loginRequestDTO);
 		System.out.println(CLASS_NAME + " : user verified");
 		
-		JwtModel jwtModel = new JwtModel(credential.getUid(), loginSignupRequestDTO.getEmail(), loginSignupRequestDTO.getDeviceId());
+		JwtModel jwtModel = new JwtModel(credential.getUid(), loginRequestDTO.getEmail(), loginRequestDTO.getDeviceId());
 		
 		AuthTokenResponseDTO authResponseDTO = userTokenService.generateToken(jwtModel);
 		System.out.println(CLASS_NAME + " : token generated");
 		return authResponseDTO;
 	}
-	
+
+	@Override
+	public SimpleResponseDTO generateSignupOTP(EmailDTO emailDTO) {
+		Optional<UserCredential> userCredential = userCredentialRepository.findByEmail(emailDTO.getEmail());
+
+		if(userCredential.isPresent()) {
+			throw new AuthException(AuthError.ACCOUNT_ALREADY_EXIST);
+		}
+
+		/**
+		 * Before generating,
+		 * we can check if OTP already generated or not,
+		 * to prevent OTP abuse
+		 *
+		 * Pending for future update
+		 */
+		String otp = otpService.generateSave6DigitOtp(emailDTO.getEmail());
+
+		emailService.sendSignupOTPEmail(emailDTO.getEmail(), otp);
+
+		return new SimpleResponseDTO("OTP sent successfully on the given email, please continue with account creation process.");
+	}
+
 	/**
 	 * 
 	 */
 	@Override
-	public AuthTokenResponseDTO signupUser(LoginSignupRequestDTO loginSignupRequestDTO) {
-		UserCredential credential = createNewUserCredential(loginSignupRequestDTO);
+	public AuthTokenResponseDTO signupUser(SignupRequestDTO signupRequestDTO) {
+		otpService.verifyAndDeleteOtp(signupRequestDTO.getEmail(), signupRequestDTO.getOtp());
+
+		UserCredential credential = createNewUserCredential(signupRequestDTO);
 		
 		System.out.println(CLASS_NAME + "New User Creation : ");
 		System.out.println(CLASS_NAME + "User cred : " + credential);
 		userCredentialRepository.save(credential);
 		
-		JwtModel jwtModel = new JwtModel(credential.getUid(), credential.getEmail(), loginSignupRequestDTO.getDeviceId());
+		JwtModel jwtModel = new JwtModel(credential.getUid(), credential.getEmail(), signupRequestDTO.getDeviceId());
 		
 		AuthTokenResponseDTO authResponseDTO = userTokenService.generateToken(jwtModel);
 		return authResponseDTO;
@@ -123,18 +145,18 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 * Validates the credentials of user with 
 	 * the raw information entered by user on front-end
 	 * 
-	 * @param loginSignupRequestDTO
+	 * @param loginRequestDTO
 	 * @return UserCredential validated user credential
 	 * @throws AuthException if no account found with the given email / if credential not matched with the credential stored in database
 	 */
-	private UserCredential verifyUser(LoginSignupRequestDTO loginSignupRequestDTO) {
-		Optional<UserCredential> credential = userCredentialRepository.findByEmail(loginSignupRequestDTO.getEmail());
+	private UserCredential verifyUser(LoginRequestDTO loginRequestDTO) {
+		Optional<UserCredential> credential = userCredentialRepository.findByEmail(loginRequestDTO.getEmail());
 		
 		if(credential.isEmpty()) {
 			throw new AuthException(AuthError.NO_ACCOUNT_FOUND);
 		}
 		
-		if(!passwordEncoder.matches(loginSignupRequestDTO.getPassword(), credential.get().getPasswordHash())) {
+		if(!passwordEncoder.matches(loginRequestDTO.getPassword(), credential.get().getPasswordHash())) {
 			throw new AuthException(AuthError.INVALID_CREDENTIAL);
 		}
 		
@@ -151,8 +173,8 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	 * 
 	 */
 	
-	private UserCredential createNewUserCredential(LoginSignupRequestDTO loginSignupRequestDTO) {
-		Optional<UserCredential> credential = userCredentialRepository.findByEmail(loginSignupRequestDTO.getEmail());
+	private UserCredential createNewUserCredential(SignupRequestDTO signupRequestDTO) {
+		Optional<UserCredential> credential = userCredentialRepository.findByEmail(signupRequestDTO.getEmail());
 
 		if(credential.isPresent()) {
 			throw new AuthException(AuthError.ACCOUNT_ALREADY_EXIST);
@@ -164,10 +186,10 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 		 * Creating new User based on 
 		 * Details received from registration form
 		 */
-		String newUid = UUID.nameUUIDFromBytes(loginSignupRequestDTO.getEmail().getBytes()).toString();
-		String passwordHash = passwordEncoder.encode(loginSignupRequestDTO.getPassword());
+		String newUid = UUID.nameUUIDFromBytes(signupRequestDTO.getEmail().getBytes()).toString();
+		String passwordHash = passwordEncoder.encode(signupRequestDTO.getPassword());
 		
-		return new UserCredential(newUid, loginSignupRequestDTO.getEmail(), passwordHash);
+		return new UserCredential(newUid, signupRequestDTO.getEmail(), passwordHash);
 	}
 
 	

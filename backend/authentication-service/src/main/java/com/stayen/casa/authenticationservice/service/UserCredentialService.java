@@ -3,10 +3,12 @@ package com.stayen.casa.authenticationservice.service;
 import com.stayen.casa.authenticationservice.dto.*;
 
 public interface UserCredentialService {
+
+	SimpleResponseDTO generateSignupOTP(EmailDTO emailDTO);
+
+	AuthTokenResponseDTO signupUser(SignupRequestDTO signupRequestDTO);
 	
-	AuthTokenResponseDTO signupUser(LoginSignupRequestDTO loginSignupRequestDTO);
-	
-	AuthTokenResponseDTO loginUser(LoginSignupRequestDTO loginSignupRequestDTO);
+	AuthTokenResponseDTO loginUser(LoginRequestDTO loginRequestDTO);
 	
 	SimpleResponseDTO logoutUser(LogoutRequestDTO logoutRequestDTO);
 

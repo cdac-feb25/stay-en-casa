@@ -11,6 +11,7 @@ const Endpoints = {
      * Auth related urls
      */
     login: `${appDomain}${paths.authUrl}/login`,
+    signupOtp: `${appDomain}${paths.authUrl}/signup-otp`,
     signup: `${appDomain}${paths.authUrl}/signup`,
     logout: `${appDomain}${paths.authUrl}/logout`,
     forgotPassword: `${appDomain}${paths.authUrl}/forgot-password`,

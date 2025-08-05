@@ -7,6 +7,8 @@ public class Endpoints {
 
         public static final String LOGIN = "/login";
 
+        public static final String SIGNUP_OTP = "/signup-otp";
+
         public static final String SIGNUP = "/signup";
 
         public static final String LOGOUT = "/logout";

@@ -51,13 +51,26 @@ public class AuthServiceController {
                 .body(response.getBody());
     }
 
+    @PostMapping(Endpoints.Auth.SIGNUP_OTP)
+    public ResponseEntity<?> generateSignupOtp(@RequestBody Map<String, Object> receivedPayload) {
+        String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP_OTP;
+        System.out.println(receivedPayload);
+        return restTemplateHelper.POST(url, receivedPayload, String.class);
+    }
+
     @PostMapping(Endpoints.Auth.SIGNUP)
     public ResponseEntity<?> signup(@RequestBody Map<String, Object> receivedPayload) {
         String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP;
         System.out.println(receivedPayload);
 
 //        return restTemplateHelper.POST("http://localhost:9090/api/v1/auth/test", receivedPayload, String.class);
-        return restTemplateHelper.POST(url, receivedPayload, String.class);
+        ResponseEntity<AuthTokenResponseDTO> response = restTemplateHelper.POST(url, receivedPayload, AuthTokenResponseDTO.class);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(ResponseValidator.getHeaderWithJwtRefreshTokenCookies(appDomain, response))
+                .body(response.getBody());
     }
 
     @PostMapping(Endpoints.Auth.LOGOUT)

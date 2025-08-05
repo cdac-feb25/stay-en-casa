@@ -3,6 +3,36 @@ import AppRoutes from "../utils/AppRoutes";
 import Navigate from "./NavigationService";
 import { getResponseError } from "../types/ResponseError";
 
+function handleGenerateSignupOtp(setIsLoading, setShowSignup, setErrorMsg) {
+
+    /**
+     * @param {Event} event
+     */
+    return async (event) => {
+        setIsLoading(true);
+        event.preventDefault();
+
+        const form = event.target;
+        const formData = Object.fromEntries(new FormData(form));
+
+        try {
+            const response = await ApiCaller.generateSignupOtp(formData);
+
+            if(response.status === 200) {
+                setErrorMsg(response.data.message);
+                setShowSignup(true);
+            }
+        } 
+        catch(error) {
+            const resError = getResponseError(error);
+            setErrorMsg(resError.errorMessage);
+        } 
+        finally {
+            setIsLoading(false);
+        }
+    }
+}
+
 function handleSignupFormSubmit(setIsLoading, setErrorMsg, setShowError) {
 
     /**
@@ -13,9 +43,10 @@ function handleSignupFormSubmit(setIsLoading, setErrorMsg, setShowError) {
         event.preventDefault();
 
         const form = event.target;
-        const formData = new FormData(form);
+        const formData = Object.fromEntries(new FormData(form));
+        console.log("Form Data : ", formData);
 
-        const { email, password, confirmPassword } = Object.fromEntries(formData.entries());
+        const { password, confirmPassword } = formData;
 
         /**
          * TODO:
@@ -24,22 +55,26 @@ function handleSignupFormSubmit(setIsLoading, setErrorMsg, setShowError) {
          * -- create profile 
          */
         if(password === confirmPassword) {
-            await ApiCaller.signup({ email, password })
+            await ApiCaller.signup(formData)
                 .then((_) => {
                     setShowError(true);
                     // navigate(AppRoutes.editProfile);
                     Navigate.to({ path: AppRoutes.editProfile, clearBrowserStack: true });
                 })
                 .catch((error) => {
+                    console.log(error);
+                    
                     const resError = getResponseError(error);
 
                     setErrorMsg(resError.errorMessage);
                     setShowError(true);
                 });
+        } else {
+            setErrorMsg("Password is not matching. Please confirm your password.");
         }
 
         setIsLoading(false);
     };
 }
 
-export default handleSignupFormSubmit;
+export { handleGenerateSignupOtp, handleSignupFormSubmit };
