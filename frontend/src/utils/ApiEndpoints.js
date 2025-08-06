@@ -38,6 +38,7 @@ const Endpoints = {
      * Property related urls
      */
     propertyBase: `${appDomain}${paths.propertyUrl}`,
+    getAllProperty: `${appDomain}${paths.propertyUrl}`,
     postProperty: `${appDomain}${paths.propertyUrl}`,
     // updatePropertyImages: `${appDomain}/${propertyUrl}/${propertyId}/images`,
     imagesEnd: `/images`,

@@ -5,6 +5,7 @@ const PropertyCard = ({ property, onClick }) => {
     <div
       onClick={onClick}
       style={{
+        margin: "0px 10px",
         cursor: "pointer",
         width: "280px",
         backgroundColor: "#1e1e2f",
@@ -14,7 +15,7 @@ const PropertyCard = ({ property, onClick }) => {
         transition: "transform 0.2s, box-shadow 0.2s",
       }}
       onMouseOver={(e) => {
-        e.currentTarget.style.transform = "scale(1.03)";
+        e.currentTarget.style.transform = "scale(1.1)";
         e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.4)";
       }}
       onMouseOut={(e) => {

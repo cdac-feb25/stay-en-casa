@@ -9,9 +9,14 @@ import AppRoutes from "../utils/AppRoutes";
 import PropertyImages from "../components/PropertyImages";
 import Colors from "../utils/Colors";
 import UserContext from "../utils/UserContext";
+import RedirectionHelper from "../services/RedirectionHelper";
+import LocalStorageHelper from "../utils/LocalStorageHelper";
 
 const PropertyDetailsPage = () => {
   const { propertyId } = useParams(); // propertyId from route
+
+  RedirectionHelper.fromSpecificPropertyPage(propertyId);
+
   const [property, setProperty] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -19,12 +24,19 @@ const PropertyDetailsPage = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const data = await getPropertyDetailsById(propertyId);
-        setProperty(data);
-      } catch (err) {
+        let propertyById = LocalStorageHelper.getPropertyById(propertyId);
+
+        if(!propertyById) {
+          propertyById = await getPropertyDetailsById(propertyId);
+        }
+
+        setProperty(propertyById);
+      } 
+      catch (err) {
         setError(err.message || "Failed to load property details.");
       }
     };
+
     fetchProperty();
   }, [propertyId]);
 
@@ -35,7 +47,7 @@ const PropertyDetailsPage = () => {
       navigate(AppRoutes.bookingPage, { state: { propertyId } });
     } else {
       // Redirect to LoginPage
-      navigate(AppRoutes.login, { state: { from: AppRoutes.propertyById.replace(":propertyId", propertyId) } });
+      navigate(AppRoutes.login, { state: { from: AppRoutes.showPropertyById_param.replace(":propertyId", propertyId) } });
     }
   };
 
@@ -127,7 +139,7 @@ const PropertyDetailsPage = () => {
 
       <CustomButton
         title="Back to Properties"
-        onPress={() => navigate(AppRoutes.properties)}
+        onPress={() => navigate(AppRoutes.showAllProperties)}
         bgColor="#f5f5f5"
         textColor="black"
         width="220px"
@@ -153,7 +165,7 @@ const PropertyDetailsPage = () => {
       )}
     <CustomButton 
         title="Book Property"
-        onPress={handleBooking}
+        onPress={ handleBooking }
         bgColor="#f5f5f5"
         textColor="black"
   />
@@ -164,3 +176,4 @@ const PropertyDetailsPage = () => {
 };
 
 export default PropertyDetailsPage;
+

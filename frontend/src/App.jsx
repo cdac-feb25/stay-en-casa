@@ -71,9 +71,12 @@ function App() {
           <Route path={AppRoutes.updateBookingById} element={<UpdateBookingStatus />} />
 
           {/* Property related routes */}
-          <Route path={AppRoutes.properties} element={ <AllPropertiesPage /> } />
-          <Route path={AppRoutes.addProperty} element={ <AddPropertyPage /> } />
-          <Route path={AppRoutes.propertyById} element={ <PropertyDetailsPage /> } />
+          {/* Complete */}
+          <Route path={AppRoutes.addProperty} element={ <AddPropertyPage /> } /> 
+          <Route path={AppRoutes.showAllProperties} element={ <AllPropertiesPage /> } />
+          
+          <Route path={AppRoutes.showPropertyById_param} element={ <PropertyDetailsPage /> } />
+
           <Route path={AppRoutes.myProperties} element={ <MyPropertiesPage /> } />
           <Route path={AppRoutes.editProperty} element={ <EditPropertyPage /> } />
           

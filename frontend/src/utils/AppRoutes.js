@@ -17,15 +17,21 @@ const AppRoutes = {
     signup: "/signup",
     forgotPassword: "/forgot-password",
     changePassword: "/change-password",
+
+    //
     account: "/account",
     editProfile: "/edit-profile",
+    
+    //
     bookingPage: "/booking-page",
     myBookings: "/my-bookings/:propertyId",
     bookingById: "/booking/:bookingId",
     updateBookingById: "/update-booking/:bookingId",
-    properties: "/properties",
+
+    //
+    showAllProperties: "/properties",
     addProperty: "/add-property",
-    propertyById: "/properties/:propertyId",
+    showPropertyById_param: "/properties/:propertyId",
     myProperties: "/my-properties",
     editProperty: "/edit-property/:propertyId",
     

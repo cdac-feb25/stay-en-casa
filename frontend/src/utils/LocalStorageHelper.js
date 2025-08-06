@@ -7,6 +7,9 @@ class LocalStorageHelper {
     static #deviceIdKey = "device_id"; 
     static #jwtAccessTokenKey = "access_token"; 
     static #userProfile = "user_profile";
+    //
+    static #allProperties = "all_properties";
+    static #allPropertiesNextFetchTime = "all_properties_next_fetch_time";
 
     static clearUid() {
         localStorage.removeItem(this.#uidKey);
@@ -88,6 +91,67 @@ class LocalStorageHelper {
         localStorage.setItem(this.#userProfile, profileStr);
     }
 
+    /**
+     * 
+     * All Properties
+     * 
+     */
+    /**
+     * @returns {boolean}
+     */
+    static toFetchAllProperty() {
+        let nextTime = localStorage.getItem(this.#allPropertiesNextFetchTime);
+        
+        if(!nextTime) {
+            nextTime = (new Date().getTime() + (1000 * 60 * 15));
+            localStorage.setItem(this.#allPropertiesNextFetchTime, nextTime);
+            return true;
+        }
+
+        const currTime = new Date().getTime();
+        return (currTime > nextTime);
+    }
+
+    /**
+     * @returns {Property[]}
+     */
+    static getAllProperty() {
+        const allProperties = localStorage.getItem(this.#allProperties);
+
+        if(allProperties) {
+            return JSON.parse(allProperties);
+        }
+        return [];
+    }
+
+    static setAllProperty(allProperties) {
+        const allPropertiesAsStr = JSON.stringify(allProperties);
+
+        localStorage.setItem(this.#allProperties, allPropertiesAsStr);
+    }
+
+    /**
+     * Property by Id
+     * 
+     * @param {string} propertyId 
+     * @returns {Property}
+     */
+    static getPropertyById(propertyId) {
+        const allProperties = this.getAllProperty();
+
+        if(allProperties.length > 0) {
+            const filteredProp = allProperties.filter((property, index) => {
+                return (property.propertyId == propertyId);
+            });
+            
+            console.log("Prop found : ", filteredProp?.at(0) ?? {});
+            return filteredProp?.at(0) ?? {};
+        }
+        console.log("LocalStorage : 0 Property found");
+        return {};
+    }
+
+    
 }
 
 export default LocalStorageHelper;

@@ -14,6 +14,7 @@ import RedirectionHelper from "../services/RedirectionHelper";
 import { LocationOn } from "@mui/icons-material";
 import getLocation from "../services/LocationService";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
+import Navigate from "../services/NavigationService";
 
 const AddPropertyPage = () => {
   RedirectionHelper.fromAddPropertyPage();
@@ -169,6 +170,7 @@ const AddPropertyPage = () => {
       // Show backend custom success message
       // alert(response.message);
       // navigate(AppRoutes.properties);       //Update this my-properties page
+      Navigate.to({ path: AppRoutes.showAllProperties, clearBrowserStack: true });
     } catch (err) {
       // Show backend custom error message if available
       const backendMsg = err.response?.data?.message || err.message || "Failed to add property.";

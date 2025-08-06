@@ -7,6 +7,8 @@ import Row from "../components/Row";
 import SizedBox from "../components/SizedBox";
 import PropertyCard from '../components/PropertyCard';
 import Colors from '../utils/Colors';
+import { Backdrop, Button, CircularProgress } from '@mui/material';
+import LocalStorageHelper from '../utils/LocalStorageHelper';
 
 /**
  * AllPropertiesPage component
@@ -23,7 +25,7 @@ const AllPropertiesPage = () => {
   const [properties, setProperties] = useState([]);
 
   // State to handle loading UI
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [error, setError] = useState(null);
 
@@ -38,13 +40,22 @@ const AllPropertiesPage = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await getAllProperties();
-        console.log("API Response:", response);
-        setProperties(response);    // Save response to state
-      } catch (error) {
+        if(LocalStorageHelper.toFetchAllProperty()) {
+          const response = await getAllProperties();
+  
+          console.log("All Prop Response : ", response);
+          
+          setProperties(response);    // Save response to state
+        } else {
+          console.log("Prop fetched locally....");
+          setProperties(LocalStorageHelper.getAllProperty());
+        }
+      } 
+      catch (error) {
         console.error("Error fetching properties:", error);
-      } finally {
-        setLoading(false);
+      } 
+      finally {
+        setIsLoading(false);
       }
     };
 
@@ -52,28 +63,63 @@ const AllPropertiesPage = () => {
   }, []);
 
   return (
-    <Container maxWidth={1200}>
-      <Column align="center">
-        <h2 style={{ color: "white", marginBottom: "20px" }}>All Properties</h2>
-        <SizedBox height={16} />
-        {loading && <p style={{ color: Colors.textOrange }}>Loading properties...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        {!loading && properties.length === 0 && (
-          <p style={{ color: "white" }}>No properties found.</p>
-        )}
-        {!loading && properties.length > 0 && (
+    <>
+      {/* <Button
+        onClick={() => {
+          LocalStorageHelper.getPropertyById("prop-7b7ed51e47404b2597d41d1d16c0f249");
+        }}
+      >
+        Get Property by ID
+      </Button> */}
+
+      { isLoading && (
+        <Backdrop open={isLoading} >
+          <CircularProgress />
+        </Backdrop>
+      )}
+      
+      {!isLoading && properties.length > 0 && (
+          
           <Row style={{ flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
+          
             {properties.map((property) => (
+              
               <PropertyCard
                 key={property.propertyId}
                 property={property}
-                onClick={() => navigate(`/properties/${property.propertyId}`)}
+                onClick={ () => navigate(`/properties/${property.propertyId}`) }
               />
+
             ))}
+          
           </Row>
         )}
-      </Column>
-    </Container>
+    </>
+
+    // <Container maxWidth={"auto"}>
+    //   <Column align="center">
+
+    //     {/* <h2 style={{ color: "white", marginBottom: "20px" }}>All Properties</h2> */}
+      
+    //     {/* <SizedBox height={16} /> */}
+      
+    //     {/* {isLoading && <p style={{ color: Colors.textOrange }}>Loading properties...</p>} */}
+      
+    //     {/* {error && <p style={{ color: "red" }}>{error}</p>} */}
+      
+    //     {!isLoading && properties.length === 0 && (
+    //       <p style={{ color: "white" }}>No properties found.</p>
+    //     )}.
+
+    //     { isLoading && (
+    //       <Backdrop>
+    //         <CircularProgress />
+    //       </Backdrop>
+    //     )}
+      
+        
+    //   </Column>
+    // </Container>
   );
 };
 

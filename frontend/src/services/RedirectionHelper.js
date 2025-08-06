@@ -42,6 +42,12 @@ class RedirectionHelper {
         }
     }
 
+    static fromSpecificPropertyPage(propertyId) {
+        if( !propertyId ) {
+            Navigate.to({ path: AppRoutes.showAllProperties, clearBrowserStack: true });
+        }
+    }
+
 }
 
 export default RedirectionHelper;

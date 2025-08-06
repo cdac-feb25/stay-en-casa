@@ -2,6 +2,7 @@
 // This service handles API calls related to properties.
 import { getResponseError } from "../types/ResponseType";
 import Endpoints from "../utils/ApiEndpoints";
+import LocalStorageHelper from "../utils/LocalStorageHelper";
 import ApiCaller from "./ApiCaller";
 import AxiosHelper from "./AxiosHelper";
 
@@ -15,13 +16,19 @@ const BASE_URL = import.meta.env.VITE_PROPERTY_API_URL;
  */
 export const getAllProperties = async () => {
     try {
-        const response = await AxiosHelper.GET({ url: BASE_URL, isAuthHeader: false });
-        return Array.isArray(response.data) ? response.data : [];
-    } catch (error) {
-        if (error.response && error.response.data && error.response.data.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error(error.message || "Error fetching all properties");
+      const response = await AxiosHelper.GET({ url: Endpoints.getAllProperty, isAuthHeader: false });
+
+      const allProperties = Array.isArray(response.data) ? response.data : [];
+
+      LocalStorageHelper.setAllProperty(allProperties);
+
+      return allProperties;
+    } 
+    catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error(error.message || "Error fetching all properties");
     }
 }
 
@@ -37,6 +44,7 @@ export const createProperty = async (propertyDetails, setError) => {
         return response.data;
     } 
     catch (error) {
+
       return await ApiCaller.onErrorCallRefreshAndRepeatProcess(error, setError, async () => {
         const retryRes = await AxiosHelper.POST({ url: Endpoints.postProperty, body: propertyDetails, isAuthHeader: true });
         return retryRes.data;
@@ -78,6 +86,7 @@ export const updatePropertyImages = async (propertyId, imageUrls, setError) => {
 
     return response.data; // APIResponse with message
   } catch (error) {
+    
     return await ApiCaller.onErrorCallRefreshAndRepeatProcess(error, setError, async () => {
       const retryRes = await AxiosHelper.PUT({ url: url, body: imageUrls, isAuthHeader: true });
 

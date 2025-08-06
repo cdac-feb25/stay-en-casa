@@ -31,7 +31,7 @@ import java.util.Map;
  */
 
 @RestController
-@RequestMapping("api/v1/properties")
+@RequestMapping("/api/v1/properties")
 @AllArgsConstructor
 public class PropertyController {
 
