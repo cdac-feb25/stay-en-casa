@@ -95,7 +95,8 @@ public class PropertyServiceImpl implements PropertyService {
 	@Override
 	public SimpleResponseDTO updatePropertyImages(String propertyId, List<String> imageUrls) {
 		
-		PropertyEntity propertyEntity =  propertyRepository.findById(propertyId)
+		PropertyEntity propertyEntity =  propertyRepository
+				.findById(propertyId)
 				.orElseThrow(()-> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
 		
 		if (imageUrls.size() > 3) {
@@ -103,11 +104,10 @@ public class PropertyServiceImpl implements PropertyService {
 	    }
 		
 		propertyEntity.setImages(imageUrls);
-		
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
-		
+
 		propertyRepository.save(propertyEntity);
-		
+
 		return new SimpleResponseDTO("Images Updated Successfully!!!!!!");
 	}
 

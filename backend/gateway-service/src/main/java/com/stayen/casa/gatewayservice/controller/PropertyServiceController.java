@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -153,6 +154,7 @@ public class PropertyServiceController {
     // http://localhost:9093/api/v1/properties
     @PostMapping
     public ResponseEntity<?> postNewProperty(@RequestBody Map<String, Object> payloadReceived) {
+        System.out.println("New Property called...");
         User loggedInUser = UserContext.getLoggedInUser();
 
         String ownerId = loggedInUser.getUid();
@@ -220,6 +222,26 @@ public class PropertyServiceController {
             );
         }
         return newPropertyResponse;
+    }
+
+    /**
+     * Protected endpoint - require JWT in auth-header
+     *
+     */
+    @PutMapping(Endpoints.Property.PROPERTY_BY_ID_param + Endpoints.Property.IMAGES)
+    public ResponseEntity<?> updatePropertyImages(@PathVariable String propertyId, @RequestBody List<String> imageUrls) {
+        String url = propertyServiceDomain
+                + Endpoints.Property.BASE_URL
+                + "/" + propertyId
+                + Endpoints.Property.IMAGES;
+
+//        return ResponseEntity.ok(imageUrls);
+        return restTemplateHelper.PUT(
+                url,
+                null,
+                imageUrls,
+                String.class
+        );
     }
 
     /**

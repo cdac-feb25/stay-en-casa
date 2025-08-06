@@ -85,7 +85,9 @@ public class PropertyController {
 	@Operation(description = "Upload the Image of Property")
 	public ResponseEntity<?> updatePropertyImages(@PathVariable String propertyId, @RequestBody List<String> imageUrls)
 	{
-		return ResponseEntity.status(HttpStatus.CREATED).body(propertyService.updatePropertyImages(propertyId,imageUrls));
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(propertyService.updatePropertyImages(propertyId,imageUrls));
 	}
 
 	/**

@@ -49,6 +49,8 @@ public class Endpoints {
 
         public static final String PROPERTY_BY_OWNER = "/owner";
 
+        public static final String IMAGES = "/images";
+
         public static final String SEARCH = "/search";
 
         public static final String AVAILABILITY = "/availability";
