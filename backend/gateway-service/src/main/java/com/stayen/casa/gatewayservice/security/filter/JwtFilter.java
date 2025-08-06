@@ -12,6 +12,7 @@ import com.stayen.casa.gatewayservice.model.User;
 import com.stayen.casa.gatewayservice.security.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
@@ -23,11 +24,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JwtFilter extends OncePerRequestFilter {
@@ -35,37 +39,123 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
     private final ObjectMapper mapper;
+    private final AntPathMatcher antPathMatcher;
+    public static final Map<String, List<String>> PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER;
+    private static final List<String> ONLY_REFRESH_TOKEN_PATH;
 
-    private static final List<String> PATH_EXCLUDED_FROM_JWT_FILTER = List.of(
-            (Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN),  // "/api/v1/auth/login"
-            (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP_OTP),  // "/api/v1/auth/signup-otp"
-            (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP),  // "/api/v1/auth/signup"
-            (Endpoints.Auth.BASE_URL + Endpoints.Auth.FORGOT_PASSWORD), // "/api/v1/auth/forgot-password"
-            (Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD)  // "/api/v1/auth/change-password"
-//            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN),  // "/api/v1/auth/token/refresh"
-    );
+    static {
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER = new HashMap<>();
+        ONLY_REFRESH_TOKEN_PATH = List.of(
+                (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN)  // "/api/v1/auth/token/refresh"
+        );
 
-    private static final List<String> ONLY_REFRESH_TOKEN_PATH = List.of(
-            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN)  // "/api/v1/auth/token/refresh"
-    );
+        //        /**
+//         * Auth Service Allowlisted URL
+//         */
+//        (Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN),  // "/api/v1/auth/login"
+//        (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP_OTP),  // "/api/v1/auth/signup-otp"
+//        (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP),  // "/api/v1/auth/signup"
+//        (Endpoints.Auth.BASE_URL + Endpoints.Auth.FORGOT_PASSWORD), // "/api/v1/auth/forgot-password"
+//        (Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD),  // "/api/v1/auth/change-password"
+////            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN),  // "/api/v1/auth/token/refresh"
+
+        /**
+         * Generic URLs
+         */
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put("api/v1/auth/test", List.of("GET"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put("api/v1/users/test", List.of("GET"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put("/swagger-ui/**", List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put("/swagger-ui.html", List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+
+        /**
+         * Auth Service Allowlisted URL
+         */
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN), List.of("POST"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP_OTP), List.of("POST"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP), List.of("POST"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.FORGOT_PASSWORD), List.of("POST"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD), List.of("PUT"));
+
+        /**
+         * Property Service Allowlisted URL
+         */
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put(Endpoints.Property.BASE_URL, List.of("GET"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Property.BASE_URL + Endpoints.Property.SEARCH), List.of("POST"));
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Property.BASE_URL + Endpoints.Property.PROPERTY_BY_ID_param + Endpoints.Property.AVAILABILITY), List.of("GET"));
+    }
 
     @Autowired
-    public JwtFilter(JwtUtils jwtUtils, ObjectMapper mapper) {
+    public JwtFilter(JwtUtils jwtUtils, ObjectMapper mapper, AntPathMatcher antPathMatcher) {
         this.jwtUtils = jwtUtils;
         this.mapper = mapper;
+        this.antPathMatcher = antPathMatcher;
     }
+
+//    public static Map<String, List<String>> PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER() {
+//        Map<String, List<String>> allowedUrlMap = new HashMap<>();
+////        /**
+////         * Auth Service Allowlisted URL
+////         */
+////        (Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN),  // "/api/v1/auth/login"
+////        (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP_OTP),  // "/api/v1/auth/signup-otp"
+////        (Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP),  // "/api/v1/auth/signup"
+////        (Endpoints.Auth.BASE_URL + Endpoints.Auth.FORGOT_PASSWORD), // "/api/v1/auth/forgot-password"
+////        (Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD),  // "/api/v1/auth/change-password"
+//////            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN),  // "/api/v1/auth/token/refresh"
+//
+//        /**
+//         * Generic URLs
+//         */
+//        allowedUrlMap.put("api/v1/auth/test", List.of("GET"));
+//        allowedUrlMap.put("api/v1/users/test", List.of("GET"));
+//        allowedUrlMap.put("/swagger-ui/**", List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+//        allowedUrlMap.put("/swagger-ui.html", List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+//
+//        /**
+//         * Auth Service Allowlisted URL
+//         */
+//        allowedUrlMap.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN), List.of("POST"));
+//        allowedUrlMap.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP_OTP), List.of("POST"));
+//        allowedUrlMap.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.SIGNUP), List.of("POST"));
+//        allowedUrlMap.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.FORGOT_PASSWORD), List.of("POST"));
+//        allowedUrlMap.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.VERIFY_AND_CHANGE_PASSWORD), List.of("PUT"));
+//
+//        /**
+//         * Property Service Allowlisted URL
+//         */
+//        allowedUrlMap.put(Endpoints.Property.BASE_URL, List.of("GET"));
+//        allowedUrlMap.put((Endpoints.Property.BASE_URL + Endpoints.Property.SEARCH), List.of("POST"));
+//        allowedUrlMap.put((Endpoints.Property.BASE_URL + Endpoints.Property.PROPERTY_BY_ID_param + Endpoints.Property.AVAILABILITY), List.of("GET"));
+//
+//        return allowedUrlMap;
+//    }
+//
+//    private static final List<String> ONLY_REFRESH_TOKEN_PATH = List.of(
+//            (Endpoints.Token.BASE_URL + Endpoints.Token.REFRESH_TOKEN)  // "/api/v1/auth/token/refresh"
+//    );
 
     /**
      * Verify whether to apply JWT filter
      * on the request
      *
-     * @param incomingPath
+     * @param path
      * @return
      */
-    private static boolean isPathExcludedFromJwtFilter(String incomingPath) {
-        return PATH_EXCLUDED_FROM_JWT_FILTER
+    private boolean isPathExcludedFromJwtFilter(String path, String method) {
+        return PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER
+                .entrySet()
                 .stream()
-                .anyMatch((path) -> path.equalsIgnoreCase(incomingPath));
+                .anyMatch((entry) -> {
+                    String allowedPath = entry.getKey();
+                    List<String> allowedMethods = entry.getValue();
+
+                    if(antPathMatcher.match(allowedPath, path)) {
+                        return allowedMethods
+                                .stream()
+                                .anyMatch((allowedMethod) -> allowedMethod.equals(method));
+                    }
+                    return false;
+                });
     }
 
     /**
@@ -74,7 +164,7 @@ public class JwtFilter extends OncePerRequestFilter {
      * @param incomingPath
      * @return
      */
-    private static boolean isRefreshTokenPath(String incomingPath) {
+    private boolean isRefreshTokenPath(String incomingPath) {
         return ONLY_REFRESH_TOKEN_PATH
                 .stream()
                 .anyMatch((path) -> path.equalsIgnoreCase(incomingPath));
@@ -89,7 +179,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        if(isPathExcludedFromJwtFilter(request.getServletPath())) {
+        String path = request.getServletPath();
+        String method = request.getMethod();
+
+        if(isPathExcludedFromJwtFilter(path, method)) {
             System.out.println(CLASS_NAME + " - Request Skipped from authentication.... " + request.getServletPath());
             printHeaderReceived(request);
             return true;
@@ -165,7 +258,7 @@ public class JwtFilter extends OncePerRequestFilter {
             setAuthErrorResponse(response, e.getTokenError());
         } catch (ExpiredJwtException e) {
             setAuthErrorResponse(response, TokenError.EXPIRED);
-        }  catch (SignatureException e) {
+        } catch (MalformedJwtException | SignatureException e) {
             setAuthErrorResponse(response, TokenError.MALFORMED);
         } catch (UnsupportedJwtException e) {
             setAuthErrorResponse(response, TokenError.UNSUPPORTED);

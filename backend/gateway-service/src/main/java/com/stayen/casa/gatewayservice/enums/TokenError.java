@@ -3,7 +3,7 @@ package com.stayen.casa.gatewayservice.enums;
 import lombok.Getter;
 
 @Getter
-public enum TokenError {
+public enum TokenError implements GenericError {
 
     /**
      * <pre>

@@ -38,13 +38,13 @@
 <!--		</dependency>-->
 	<!--  Apache HttpClient for RestTemplate  -->
 	
-	<!-- swagger dependency for Spring Boot 3  -->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.8.6</version>
-		</dependency>
-	<!-- swagger dependency for Spring Boot 3  -->
+<!--	&lt;!&ndash; swagger dependency for Spring Boot 3  &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.springdoc</groupId>-->
+<!--			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
+<!--			<version>2.8.6</version>-->
+<!--		</dependency>-->
+<!--	&lt;!&ndash; swagger dependency for Spring Boot 3  &ndash;&gt;-->
 
 
 	<!-- Jackson -->

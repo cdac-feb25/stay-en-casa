@@ -28,6 +28,9 @@ public class EnvConstant {
     @Value("${user-service-domain}")
     private String userServiceDomain;
 
+    @Value("${property-service-domain}")
+    private String propertyServiceDomain;
+
     /**
      * Cookies and Cors
      */

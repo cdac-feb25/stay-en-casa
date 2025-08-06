@@ -9,6 +9,7 @@ import com.stayen.casa.gatewayservice.dto.AuthTokenResponseDTO;
 import com.stayen.casa.gatewayservice.helper.RestTemplateHelper;
 import com.stayen.casa.gatewayservice.model.User;
 import com.stayen.casa.gatewayservice.validator.ResponseValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class AuthServiceController {
     private final String authServiceDomain;
     private final RestTemplateHelper restTemplateHelper;
 
+    @Autowired
     public AuthServiceController(EnvConstant envConstant, RestTemplateHelper restTemplateHelper) {
         this.appDomain = envConstant.getAppDomain();
         this.authServiceDomain = envConstant.getAuthServiceDomain();
@@ -38,6 +40,24 @@ public class AuthServiceController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Some message");
     }
 
+//    /**
+//     *
+//     * @param uid
+//     * @return
+//     */
+//    // -----   /{uid}/exists
+//    // @PostMapping(Endpoints.Auth.UID_EXISTS)
+//    public ResponseEntity<?> isValidUser(@PathVariable String uid) {
+//        String url = authServiceDomain + Endpoints.Auth.BASE_URL + "/" + uid + "/exists";
+//
+//        return restTemplateHelper.GET(url, null, String.class);
+//    }
+
+    /**
+     *
+     * @param receivedPayload
+     * @return
+     */
     @PostMapping(Endpoints.Auth.LOGIN)
     public ResponseEntity<?> login(@RequestBody Map<String, Object> receivedPayload) {
         String url = authServiceDomain + Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN;

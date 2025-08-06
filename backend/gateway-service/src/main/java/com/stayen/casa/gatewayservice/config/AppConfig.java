@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,8 +38,13 @@ public class AppConfig {
     }
 
     @Bean
-    public JwtFilter jwtFilter(JwtUtils jwtUtils, ObjectMapper mapper) {
-        return new JwtFilter(jwtUtils, mapper);
+    public AntPathMatcher antPathMatcher() {
+        return new AntPathMatcher();
+    }
+
+    @Bean
+    public JwtFilter jwtFilter(JwtUtils jwtUtils, ObjectMapper mapper, AntPathMatcher antPathMatcher) {
+        return new JwtFilter(jwtUtils, mapper, antPathMatcher);
     }
 
     @Bean

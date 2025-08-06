@@ -5,6 +5,8 @@ public class Endpoints {
     public static class Auth {
         public static final String BASE_URL = "/api/v1/auth";
 
+        public static final String UID_EXISTS = "/{uid}/exists";
+
         public static final String LOGIN = "/login";
 
         public static final String SIGNUP_OTP = "/signup-otp";
@@ -28,6 +30,39 @@ public class Endpoints {
         public static final String BASE_URL = "/api/v1/users";
 
         public static final String PROFILE = "/profile";
+
+        public static final String ADD_NEW_PROPERTY_ID = "/add-property-id";
+
+        public static final String DELETE_PROPERTY_ID = "/delete-property-id";
+
+        /**
+         * Just for reference
+         */
+        public static final String PROFILE_EXISTS = "/{uid}/exists";
+        public static final String PROPERTY_EXISTS = "/{uid}/property/{propertyId}/exists";
+    }
+
+    public static class Property {
+        public static final String BASE_URL = "/api/v1/properties";
+
+        public static final String PROPERTY_BY_ID_param = "/{propertyId}";
+
+        public static final String SEARCH = "/search";
+
+        public static final String AVAILABILITY = "/availability";
+
+        public static final String MARK_PROPERTY_SOLD = "/mark-as-sold";
+
+        public static final String MARK_PROPERTY_AVAILABLE = "/mark-as-available";
+
+        /**
+         * Only for connecting to downstream Property Service
+         */
+        public static final String ADD_NEW_PROPERTY_param = "/owner/{ownerId}";
+
+
+
+
     }
 
 }

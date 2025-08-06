@@ -26,18 +26,17 @@ public class RestTemplateHelper {
 //        this.envConstant = envConstant;
     }
 
-    public <T> ResponseEntity<T> GET(String url, Map<String, String> requestHeader, Class<T> responseType) {
+    public <T> ResponseEntity<T> GET(String url, @Nullable Map<String, String> addRequestHeader, Class<T> responseType) {
         URI uri = URI.create(url);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HeaderConstant.AUTH_KEY, internalServiceAuthKey);
-        requestHeader
-                .entrySet()
-                .stream()
-                .forEach((entry) -> {
-                    headers.set(entry.getKey(), entry.getValue());
-                });
+
+        if(addRequestHeader != null) {
+            addRequestHeader
+                    .forEach((key, value) -> headers.set(key, value));
+        }
 
         HttpEntity<T> entity = new HttpEntity<>(headers);
 
@@ -56,19 +55,15 @@ public class RestTemplateHelper {
         return restTemplate.exchange(uri, HttpMethod.POST, entity, responseType);
     }
 
-    public <T, B> ResponseEntity<T> PUT(String url, @Nullable Map<String, String> requestHeader, B body, Class<T> responseType) {
+    public <T, B> ResponseEntity<T> PUT(String url, @Nullable Map<String, String> addRequestHeader, B body, Class<T> responseType) {
         URI uri = URI.create(url);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set(HeaderConstant.AUTH_KEY, internalServiceAuthKey);
-        if(requestHeader != null) {
-            requestHeader
-                    .entrySet()
-                    .stream()
-                    .forEach((entry) -> {
-                        headers.set(entry.getKey(), entry.getValue());
-                    });
+        if(addRequestHeader != null) {
+            addRequestHeader
+                    .forEach((key, value) -> headers.set(key, value));
         }
 
         HttpEntity<B> entity = new HttpEntity<>(body, headers);
@@ -76,4 +71,31 @@ public class RestTemplateHelper {
         return restTemplate.exchange(uri, HttpMethod.PUT, entity, responseType);
     }
 
+    public <T, B> ResponseEntity<T> PATCH(String url, B body, Class<T> responseType) {
+        URI uri = URI.create(url);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HeaderConstant.AUTH_KEY, internalServiceAuthKey);
+
+        HttpEntity<B> entity = new HttpEntity<>(body, headers);
+
+        return restTemplate.exchange(uri, HttpMethod.PATCH, entity, responseType);
+    }
+
+    public <T> ResponseEntity<T> DELETE(String url, @Nullable Map<String, String> addRequestHeader, Class<T> responseType) {
+        URI uri = URI.create(url);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(HeaderConstant.AUTH_KEY, internalServiceAuthKey);
+        if(addRequestHeader != null) {
+            addRequestHeader
+                    .forEach((key, value) -> headers.set(key, value));
+        }
+
+        HttpEntity<Object> entity = new HttpEntity<>(headers);
+
+        return restTemplate.exchange(uri, HttpMethod.DELETE, entity, responseType);
+    }
 }

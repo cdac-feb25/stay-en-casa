@@ -1,5 +1,6 @@
 package com.stayen.casa.gatewayservice.dto;
 
+import com.stayen.casa.gatewayservice.enums.GenericError;
 import com.stayen.casa.gatewayservice.enums.TokenError;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,9 +17,9 @@ public class ErrorResponseDTO {
 
     private LocalDateTime timestamp;
 
-    public ErrorResponseDTO(TokenError tokenError) {
-        this.errorCode = tokenError.getCode();
-        this.errorMessage = tokenError.getMessage();
+    public ErrorResponseDTO(GenericError genericError) {
+        this.errorCode = genericError.getCode();
+        this.errorMessage = genericError.getMessage();
         this.timestamp = LocalDateTime.now();
     }
 
