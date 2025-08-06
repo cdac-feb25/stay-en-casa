@@ -4,6 +4,8 @@ import com.stayen.casa.authenticationservice.dto.*;
 
 public interface UserCredentialService {
 
+	SimpleResponseDTO isValidUser(String uid);
+
 	SimpleResponseDTO generateSignupOTP(EmailDTO emailDTO);
 
 	AuthTokenResponseDTO signupUser(SignupRequestDTO signupRequestDTO);

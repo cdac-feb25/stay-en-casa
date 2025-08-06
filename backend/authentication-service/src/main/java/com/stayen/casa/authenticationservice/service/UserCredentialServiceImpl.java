@@ -33,7 +33,15 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 		this.emailService = emailService;
 		this.otpService = otpService;
 	}
-	
+
+	@Override
+	public SimpleResponseDTO isValidUser(String uid) {
+		userCredentialRepository
+				.findById(uid)
+				.orElseThrow(() -> new AuthException(AuthError.NO_ACCOUNT_FOUND));
+		return new SimpleResponseDTO("User exists.");
+	}
+
 	/**
 	 * 
 	 * Logout Process 

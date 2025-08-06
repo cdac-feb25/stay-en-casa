@@ -33,7 +33,14 @@ public class AuthController {
 	public String test() {
 		return "Hello World !!!";
 	}
-	
+
+	// -----   /{uid}/exists
+	@GetMapping(Endpoints.Auth.UID_EXISTS)
+	public ResponseEntity<?> isValidUser(@PathVariable String uid) {
+		return ResponseEntity
+				.ok(userCredentialService.isValidUser(uid));
+	}
+
 	@PostMapping(Endpoints.Auth.LOGIN)
 	public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequestDTO) {
 		System.out.println(loginRequestDTO);

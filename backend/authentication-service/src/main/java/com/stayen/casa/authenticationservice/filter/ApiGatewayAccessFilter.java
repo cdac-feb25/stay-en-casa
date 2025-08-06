@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component
 public class ApiGatewayAccessFilter extends OncePerRequestFilter {
 
     private final String internalServiceAuthKey;
