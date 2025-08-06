@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public enum PropertyError implements GenericError {
 
-	INVALID_PROPERTY_ID(1600, "Owner Id and Property Id is not matching. Please verify it once."),
+	INVALID_PROPERTY_ID(1600, "No property found with the given owner Id. Please verify it once."),
 
 	PROPERTY_ALREADY_EXIST(1601, "Property Already Listed, Please try Listing different Property"),
 
@@ -23,6 +23,8 @@ public enum PropertyError implements GenericError {
 	PROPERTY_DELETION_FAILED(1605, "Failed to delete the property. Please verify the Property ID."),
 	
 	PROPERTY_SEARCH_FAILED(1606, "Property search failed due to invalid filters or internal error."),
+	
+	TOO_MANY_IMAGES(1607,"You can upload a maximum of 3 images per property."),
 	
 	GENERIC_ERROR(1699,"An Unknown Error Occurred. Please try again later....");
 	

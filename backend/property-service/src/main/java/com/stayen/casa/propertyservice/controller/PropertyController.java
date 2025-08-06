@@ -74,6 +74,21 @@ public class PropertyController {
 	}
 	
 	/**
+	 * Updates the images associated with the specified property.
+	 * This endpoint replaces the current list of image URLs for the property with the provided list.
+	 *
+	 * @param propertyId The ID of the property to update.
+	 * @param imageUrls A list of image URLs to associate with the property.
+	 * @return ResponseEntity containing a success message or error response.
+	 */
+	@PutMapping("/{propertyId}/images")
+	@Operation(description = "Upload the Image of Property")
+	public ResponseEntity<?> updatePropertyImages(@PathVariable String propertyId, @RequestBody List<String> imageUrls)
+	{
+		return ResponseEntity.status(HttpStatus.CREATED).body(propertyService.updatePropertyImages(propertyId,imageUrls));
+	}
+
+	/**
 	 * Retrieves a single property by its ID.
 	 *
 	 * @param propertyId The ID of the property to retrieve.
@@ -86,6 +101,13 @@ public class PropertyController {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(propertyService.getPropertyById(propertyId));
+	}
+
+	@GetMapping("/owner/{ownerId}")
+	@Operation(description = "Get properties added by a specific owner")
+	public ResponseEntity<?> getPropertiesByOwner(@PathVariable String ownerId) {
+		return ResponseEntity
+				.ok(propertyService.getPropertiesByOwner(ownerId));
 	}
 	
 	/**
@@ -151,7 +173,7 @@ public class PropertyController {
 				.status(HttpStatus.OK)
 				.body(propertyService.markPropertyAsAvailable(propertyId, ownerId));
 	}
-	
+
 //	/**
 //     * Perform a partial update by modifying specific fields of a property.
 //     *
@@ -165,7 +187,7 @@ public class PropertyController {
 //	{
 //		return ResponseEntity.status(HttpStatus.OK).body(propertyService.updatePartialProperty(updatedFields, propertyId));
 //	}
-	
+
 	/**
 	 * Searches for properties based on the provided filter criteria.
 	 *
@@ -195,4 +217,5 @@ public class PropertyController {
 				.status(HttpStatus.OK)
 				.body(propertyService.deletePropertyById(propertyId));
 	}
+
 }

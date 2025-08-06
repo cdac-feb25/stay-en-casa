@@ -91,6 +91,25 @@ public class PropertyServiceImpl implements PropertyService {
 				propertyEntity.getListedAt()
 		);
 	}
+	
+	@Override
+	public SimpleResponseDTO updatePropertyImages(String propertyId, List<String> imageUrls) {
+		
+		PropertyEntity propertyEntity =  propertyRepository.findById(propertyId)
+				.orElseThrow(()-> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
+		
+		if (imageUrls.size() > 3) {
+	        throw new PropertyException(PropertyError.TOO_MANY_IMAGES);
+	    }
+		
+		propertyEntity.setImages(imageUrls);
+		
+		propertyEntity.setUpdatedAt(LocalDateTime.now());
+		
+		propertyRepository.save(propertyEntity);
+		
+		return new SimpleResponseDTO("Images Updated Successfully!!!!!!");
+	}
 
 	@Override
 	public PropertyResponse getPropertyById(String propertyId) {
@@ -110,6 +129,7 @@ public class PropertyServiceImpl implements PropertyService {
 		if(ownerId.equals(propertyEntity.getOwnerId()) == false) {
 			throw new PropertyException(PropertyError.INVALID_PROPERTY_ID);
 		}
+		
 		
 		// Map all matching fields from DTO to entity
 		modelMapper.map(updatedDetails, propertyEntity);
@@ -384,6 +404,17 @@ public class PropertyServiceImpl implements PropertyService {
 				LocalDateTime.now()
 		);
 	}
-	
 
+	@Override
+	public List<PropertyResponse> getPropertiesByOwner(String ownerId) {
+		List<PropertyEntity> properties = propertyRepository.findByOwnerId(ownerId);
+
+		if(properties.isEmpty()) {
+			throw new PropertyException(PropertyError.INVALID_PROPERTY_ID);
+		}
+
+        return properties.stream()
+                .map(property -> modelMapper.map(property, PropertyResponse.class))
+                .toList();
+    }
 }

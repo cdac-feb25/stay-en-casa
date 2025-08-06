@@ -1,7 +1,5 @@
 package com.stayen.casa.bookingservice.config;
 
-import java.time.Duration;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,11 +40,6 @@ public class MongoConfig {
 		ConnectionString connectionString = new ConnectionString(mongoUri);
 		
 		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString)
-				.applyToSocketSettings(builder -> builder
-						.connectTimeout((int)Duration.ofSeconds(15).toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS)
-						.readTimeout((int)Duration.ofSeconds(30).toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS))
-				.applyToClusterSettings(builder->builder
-						.serverSelectionTimeout((int)Duration.ofSeconds(30).toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS))
 				.build();
 		return MongoClients.create(settings);
 	}

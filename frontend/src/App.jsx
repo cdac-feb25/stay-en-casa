@@ -23,6 +23,10 @@ import AllPropertiesPage from './pages/AllPropertiesPage';
 import ForgotPassword from './pages/ForgotPassword';
 import ChangePassword from './pages/ChangePassword';
 import Home from './pages/Home';
+import AddPropertyPage from './pages/AddPropertyPage';
+import PropertyDetailsPage from './pages/PropertyDetailsPage';
+import MyPropertiesPage from './pages/MyPropertiesPage';
+import EditPropertyPage from './pages/EditPropertyPage';
 
 function App() {
   const navigate = useNavigate();
@@ -65,7 +69,15 @@ function App() {
           <Route path={AppRoutes.myBookings} element={<MyBookingsPage />} />
           <Route path={AppRoutes.bookingById} element={<BookingDetailsPage />} />
           <Route path={AppRoutes.updateBookingById} element={<UpdateBookingStatus />} />
+
+          {/* Property related routes */}
           <Route path={AppRoutes.properties} element={ <AllPropertiesPage /> } />
+          <Route path={AppRoutes.addProperty} element={ <AddPropertyPage /> } />
+          <Route path={AppRoutes.propertyById} element={ <PropertyDetailsPage /> } />
+          <Route path={AppRoutes.myProperties} element={ <MyPropertiesPage /> } />
+          <Route path={AppRoutes.editProperty} element={ <EditPropertyPage /> } />
+          
+          {/* Fallback route */}
         </Routes>
       </Box>
 

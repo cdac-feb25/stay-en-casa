@@ -47,6 +47,8 @@ public class Endpoints {
 
         public static final String PROPERTY_BY_ID_param = "/{propertyId}";
 
+        public static final String PROPERTY_BY_OWNER = "/owner";
+
         public static final String SEARCH = "/search";
 
         public static final String AVAILABILITY = "/availability";
@@ -54,14 +56,6 @@ public class Endpoints {
         public static final String MARK_PROPERTY_SOLD = "/mark-as-sold";
 
         public static final String MARK_PROPERTY_AVAILABLE = "/mark-as-available";
-
-        /**
-         * Only for connecting to downstream Property Service
-         */
-        public static final String ADD_NEW_PROPERTY_param = "/owner/{ownerId}";
-
-
-
 
     }
 

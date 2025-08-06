@@ -1,5 +1,6 @@
 package com.stayen.casa.propertyservice.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -27,5 +28,7 @@ public interface PropertyRepository extends MongoRepository<PropertyEntity, Stri
      */
 	@Query("{ 'ownerId': ?0, 'location.address': ?1, 'location.pincode': ?2 }")
 	Optional<PropertyEntity> findByOwnerIdAndLocationAddressAndLocationPincode(String ownerID, String address, Integer pincode);
+
+	List<PropertyEntity> findByOwnerId(String ownerId);
 
 }

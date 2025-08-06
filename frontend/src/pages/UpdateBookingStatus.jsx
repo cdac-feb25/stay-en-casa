@@ -71,7 +71,6 @@ const UpdateBookingStatus = () => {
 
     return (
         <>
-            <Navbar />
             <Container style={{ maxWidth: 500, margin: "60px auto", padding: 24 }}>
                 <Column align="center">
                     <h2>Update Booking Status</h2>

@@ -9,7 +9,6 @@ import com.stayen.casa.gatewayservice.exception.ProfileException;
 import com.stayen.casa.gatewayservice.helper.RestTemplateHelper;
 import com.stayen.casa.gatewayservice.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -110,6 +109,28 @@ public class PropertyServiceController {
                 + Endpoints.Property.BASE_URL
                 + "/"
                 + propertyId;
+
+        return restTemplateHelper.GET(
+                url,
+                null,
+                String.class
+        );
+    }
+
+    /**
+     * Protected endpoint - require JWT in auth-header
+     *
+     */
+    // http://localhost:9093/api/v1/properties/owner
+    @GetMapping(Endpoints.Property.PROPERTY_BY_OWNER)
+    public ResponseEntity<?> fetchPropertyById() {
+        String ownerId = UserContext.getLoggedInUser().getUid();
+
+        String url = propertyServiceDomain
+                + Endpoints.Property.BASE_URL
+                + Endpoints.Property.PROPERTY_BY_OWNER
+                + "/"
+                + ownerId;
 
         return restTemplateHelper.GET(
                 url,
