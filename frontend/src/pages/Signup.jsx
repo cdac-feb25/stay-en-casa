@@ -21,7 +21,7 @@ function Signup() {
     const [ otp, setOtp ] = React.useState("");
     
     const [ showError, setShowError ] = React.useState(true);
-    const [ errorMsg, setErrorMsg ] = React.useState("We will send an OTP to your email to verify you identity");
+    const [ errorMsg, setErrorMsg ] = React.useState("We will send an OTP to your email to verify your identity");
 
     const [ showPasswordComparison, setShowPasswordComparison ] = React.useState(false);
     const [ isPasswordMatched, setPasswordMatched ] = React.useState(false);

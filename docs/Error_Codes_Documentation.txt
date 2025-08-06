@@ -31,10 +31,12 @@ Auth related Error Codes ::
 
 	1205  :  UID_EMAIL_NOT_MATCHING(1205, "Authentication  failed. Please ensure your user ID and email are correct.");
 
+	1206  :  OTP_VERIFICATION_FAILED(1206, "The OTP you entered is incorrect or has expired. Please try again or request a new one.");
+
 
 Profile related Error Codes :: 
 
-	1301  :  NO_ACCOUNT_FOUND(1301, "We could not find an account matching the given user id. Please try logging in using a different email."),
+	1301  :  NO_PROFILE_FOUND(1301, ""We could not find a profile matching the given user id. Please try to log in and create a profile.""),
 
     1302  :  PROFILE_ALREADY_CREATED(1302, "Profile already created. If you like to make changes, please update your existing profile.");
 

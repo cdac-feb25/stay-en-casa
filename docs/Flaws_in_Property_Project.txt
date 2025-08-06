@@ -3,8 +3,13 @@ Flaws in Property Project
 1. 
 user old device specific token remains in mongo collection if not logged out and jwt expires
 
-
 2.
+	No Email verificatuion while creating new account
+
+	Can be solved : 
+	As done in Forgot Password OTP verification (not a big deal)
+
+3.
 	Access Token is being used untill expired even after logout
 
 	Can be solved : 
@@ -12,7 +17,7 @@ user old device specific token remains in mongo collection if not logged out and
 	and during token invalidation, simply remove token from the database.
 
 
-3.
+4.
 Complete project is synchronous (blocking) because of spring-web.
 	Spring-Web (Tomcat server) use 1 thread for 1 request :: 
 		Which mean that thread will be blocked until the request gets completed.
@@ -25,6 +30,7 @@ Complete project is synchronous (blocking) because of spring-web.
 
 
 ...
+
 
 
 

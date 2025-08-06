@@ -29,7 +29,8 @@
         "isAvailable": true,
         "listedAt": 12345678,
         "updatedAt": 987654,
-        "viewCount": 23
+        "viewCount": 23,
+        "isSold": false
     },
     {},
     {}

@@ -3,12 +3,12 @@
         "_id": "uuid",
         "email": "example@gmail.com",
         "name": "Full-Name",
-        "phone": 9876543210,
+        "phoneNo": 9876543210,
         "address": "address",
         "photoUrl": "URL of photo stored on storage",
         "createdAt": 986278364924,
         "updatedAt": 879787430923,
-        "savedProperties" : ["prop_id-1", "prop_id-2"],
+        // "savedProperties" : ["prop_id-1", "prop_id-2"],  // to be done is UI
         "ownedProperties" : ["prop_id-101", "prop_id-201"]
     },
     {},
