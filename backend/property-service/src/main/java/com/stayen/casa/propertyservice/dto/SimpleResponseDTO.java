@@ -2,6 +2,7 @@ package com.stayen.casa.propertyservice.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,15 +12,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class APIResponse {
+@JsonPropertyOrder({"message", "timestamp"})
+public class SimpleResponseDTO {
 
-	private LocalDateTime timeStamp;
 	private String message;
+	private LocalDateTime timeStamp;
 	
-	public APIResponse(String message)
+	public SimpleResponseDTO(String message)
 	{
-		this.timeStamp = LocalDateTime.now();
 		this.message = message;
+		this.timeStamp = LocalDateTime.now();
 	}
 	
 }

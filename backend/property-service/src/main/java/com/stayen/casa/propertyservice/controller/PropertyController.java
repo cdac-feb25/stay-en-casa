@@ -1,5 +1,8 @@
 package com.stayen.casa.propertyservice.controller;
 
+import com.stayen.casa.propertyservice.entity.PropertyEntity;
+import com.stayen.casa.propertyservice.enums.PropertyError;
+import com.stayen.casa.propertyservice.exception.PropertyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,19 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.stayen.casa.propertyservice.dto.PropertyRequest;
 import com.stayen.casa.propertyservice.dto.PropertySearchRequest;
-import com.stayen.casa.propertyservice.dto.UpdatePropertyRequest;
 import com.stayen.casa.propertyservice.service.PropertyService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+import java.util.Map;
+
 /*
  * PropertyController handles all HTTP requests related to property operations.
  */
 
 @RestController
-@RequestMapping("/api/properties")
+@RequestMapping("api/v1/properties")
 @AllArgsConstructor
 public class PropertyController {
 
@@ -42,8 +47,14 @@ public class PropertyController {
 	@GetMapping
 	@Operation(description = "Display all Properties")
 	public ResponseEntity<?> getAllProperty(){
-		
-		return ResponseEntity.ok(propertyService.getAllProperty());
+		List<PropertyEntity> properties = propertyService.getAllProperty();
+
+		if(properties.isEmpty()) {
+			throw new PropertyException(PropertyError.NO_PROPERTY_FOUND);
+		}
+
+		return ResponseEntity
+				.ok(properties);
 	}
 	
 	/**
@@ -53,11 +64,13 @@ public class PropertyController {
 	 * @param ownerId The ID of the owner under whom the property will be listed.
 	 * @return ResponseEntity containing a success message or error response.
 	 */
-	@PostMapping("/{ownerId}")
+	@PostMapping("/owner/{ownerId}")
 	@Operation(description = "Add a new Property under the specified Owner.")
 	public ResponseEntity<?> addNewProperty(@RequestBody @Valid PropertyRequest propertyDetails, @PathVariable String ownerId)
 	{
-		return ResponseEntity.status(HttpStatus.CREATED).body(propertyService.addNewProperty(propertyDetails, ownerId));
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(propertyService.addNewProperty(ownerId, propertyDetails));
 	}
 	
 	/**
@@ -70,7 +83,9 @@ public class PropertyController {
 	@Operation(description = "Display the Property of given Property ID")
 	public ResponseEntity<?> getPropertyById(@PathVariable String propertyId)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(propertyService.getPropertyById(propertyId));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(propertyService.getPropertyById(propertyId));
 	}
 	
 	/**
@@ -80,11 +95,15 @@ public class PropertyController {
      * @param updatedDetails The full updated property data.
      * @return ResponseEntity containing the updated property details.
      */
-	@PutMapping("/{propertyId}")
+	@PutMapping("/{propertyId}/ownerId/{ownerId}")
 	@Operation(description = "Update all Details of given Property ID")
-	public ResponseEntity<?> updatePropertyById(@RequestBody @Valid PropertyRequest updatedDetails, @PathVariable String propertyId)
-	{
-		return ResponseEntity.status(HttpStatus.OK).body(propertyService.updatePropertyDetails(updatedDetails, propertyId));
+	public ResponseEntity<?> updatePropertyById(
+			@PathVariable String propertyId, @PathVariable String ownerId,
+			@RequestBody @Valid PropertyRequest updatedDetails
+	) {
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(propertyService.updatePropertyDetails(propertyId, ownerId, updatedDetails));
 	}
 	
 	/**
@@ -93,26 +112,59 @@ public class PropertyController {
      * @param propertyId The ID of the property whose availability will be changed.
      * @return ResponseEntity containing the updated property details.
      */
-	@PatchMapping("/{propertyId}/availability")
-	@Operation(description = "Updates Availability of given Property ID")
-	public ResponseEntity<?> updatePropertyAvailabilityById(@PathVariable String propertyId)
-	{
-		return ResponseEntity.status(HttpStatus.OK).body(propertyService.updatePropertyAvailabilityById(propertyId));
+	@GetMapping("/{propertyId}/availability")
+	public ResponseEntity<?> isPropertyAvailable(@PathVariable String propertyId) {
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(propertyService.isPropertyAvailable(propertyId));
+	}
+
+	/**
+	 * Mark property as sold
+	 *
+	 */
+	@PutMapping("/{propertyId}/mark-as-sold")
+	public ResponseEntity<?> markAsSold(@PathVariable String propertyId, @RequestBody Map<String, Object> requestBody) {
+		String ownerId = requestBody.getOrDefault("ownerId", "").toString();
+
+		System.out.println(propertyId);
+		System.out.println(ownerId);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(propertyService.markPropertyAsSold(propertyId, ownerId));
+	}
+
+	/**
+	 * Mark property as unsold / available
+	 *
+	 */
+	@PutMapping("/{propertyId}/mark-as-available")
+	public ResponseEntity<?> markAsAvailable(@PathVariable String propertyId, @RequestBody Map<String, Object> requestBody) {
+		//
+		String ownerId = requestBody.getOrDefault("ownerId", "").toString();
+
+		System.out.println(propertyId);
+		System.out.println(ownerId);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(propertyService.markPropertyAsAvailable(propertyId, ownerId));
 	}
 	
-	/**
-     * Perform a partial update by modifying specific fields of a property.
-     * 
-     * @param propertyId The ID of the property to update.
-     * @param updatedFields The fields and values to update.
-     * @return ResponseEntity containing the partially updated property details.
-     */
-	@PatchMapping("/{propertyId}")
-	@Operation(description = "Update Partial Details of Given Property ID")
-	public ResponseEntity<?> updatePartialProperty(@RequestBody UpdatePropertyRequest updatedFields, @PathVariable String propertyId)
-	{
-		return ResponseEntity.status(HttpStatus.OK).body(propertyService.updatePartialProperty(updatedFields, propertyId));
-	}
+//	/**
+//     * Perform a partial update by modifying specific fields of a property.
+//     *
+//     * @param propertyId The ID of the property to update.
+//     * @param updatedFields The fields and values to update.
+//     * @return ResponseEntity containing the partially updated property details.
+//     */
+//	@PatchMapping("/{propertyId}")
+//	@Operation(description = "Update Partial Details of Given Property ID")
+//	public ResponseEntity<?> updatePartialProperty(@RequestBody UpdatePropertyRequest updatedFields, @PathVariable String propertyId)
+//	{
+//		return ResponseEntity.status(HttpStatus.OK).body(propertyService.updatePartialProperty(updatedFields, propertyId));
+//	}
 	
 	/**
 	 * Searches for properties based on the provided filter criteria.
@@ -124,7 +176,9 @@ public class PropertyController {
 	@Operation(description = "Search Properties Based on Given Search Filter(s)")
 	public ResponseEntity<?> searchProperties(@RequestBody @Valid PropertySearchRequest searchFields)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(propertyService.searchProperties(searchFields));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(propertyService.searchProperties(searchFields));
 	}
 	
 	/**
@@ -137,6 +191,8 @@ public class PropertyController {
 	@Operation(description = "Delete the Property by given Property ID")
 	ResponseEntity<?> deletePropertyById(@PathVariable String propertyId)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(propertyService.deletePropertyById(propertyId));
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(propertyService.deletePropertyById(propertyId));
 	}
 }

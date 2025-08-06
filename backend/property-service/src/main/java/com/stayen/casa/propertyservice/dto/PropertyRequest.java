@@ -70,13 +70,18 @@ public class PropertyRequest {
 	@NotNull(message = "Area is Required")
 	@Positive(message = "Area must be a Positve Number")
 	private Double area;
-	
-	/**
-	 * Unit of Area of Property listed like Sq.Ft., Sq.Yard, Sq.m and so on.
-	 */
-	@Schema(description = "Unit of Area of Property listed")
-	@NotNull(message = "Area Unit is Required")
-	private AreaUnit unit;
+
+
+	// NOTE ::
+	// by default property area will be in Sq.Feet
+	// Conversion from Sq.Feet to other unit will be done on UI
+
+//	/**
+//	 * Unit of Area of Property listed like Sq.Ft., Sq.Yard, Sq.m and so on.
+//	 */
+//	@Schema(description = "Unit of Area of Property listed")
+//	@NotNull(message = "Area Unit is Required")
+//	private AreaUnit unit;
 	
 	/**
      * Number of bedrooms in the property.
@@ -134,5 +139,5 @@ public class PropertyRequest {
      */
 	@Schema(description = "Availability status of the Property")
 	@NotNull(message = "Specification of Availability Status is must")
-	private Boolean isAvailable;
+	private boolean available;
 }

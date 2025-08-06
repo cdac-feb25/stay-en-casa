@@ -2,6 +2,7 @@ package com.stayen.casa.propertyservice.exception;
 
 import java.util.Map;
 
+import com.stayen.casa.propertyservice.dto.ErrorResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,12 +30,18 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(PropertyException.class)
 	public ResponseEntity<?> handlePropertyException(PropertyException ex)
 	{
-		PropertyError error = ex.getPropertyError();
-		
-		log.error("Property error occurred: [{}] - {}", error.getCode(), error.getMessage());
+		log.error("Property error occurred: [{}] - {}", ex.getGenericError().getCode(), ex.getGenericError().getMessage());
 
-		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("status","error","message",error.getMessage()));
+		HttpStatus status = switch(ex.getGenericError().getCode()) {
+			case 1600, 1602, 1606 -> HttpStatus.NOT_FOUND;
+			case 1601, 1603, 1604, 1605 -> HttpStatus.CONFLICT;
+			default -> HttpStatus.NOT_FOUND;
+		};
+
+		return ResponseEntity
+				.status(status)
+//				.body(Map.of("status","error","message",error.getMessage()));
+				.body(new ErrorResponseDTO(ex.getGenericError()));
 	}
 	
 	
@@ -47,7 +54,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> handleGenericException(Exception ex)
 	{
-		
+
 		log.error("Unhandled Exception occurred: {}", ex.getMessage(),ex);
 		
 		PropertyError error = PropertyError.GENERIC_ERROR;

@@ -1,12 +1,9 @@
 package com.stayen.casa.propertyservice.service;
 
 import java.util.List;
+import java.util.Map;
 
-import com.stayen.casa.propertyservice.dto.APIResponse;
-import com.stayen.casa.propertyservice.dto.PropertyRequest;
-import com.stayen.casa.propertyservice.dto.PropertyResponse;
-import com.stayen.casa.propertyservice.dto.PropertySearchRequest;
-import com.stayen.casa.propertyservice.dto.UpdatePropertyRequest;
+import com.stayen.casa.propertyservice.dto.*;
 import com.stayen.casa.propertyservice.entity.PropertyEntity;
 
 /**
@@ -28,7 +25,7 @@ public interface PropertyService {
      * @param ownerId The unique ID of the owner adding the property.
      * @return APIResponse indicating success or failure.
      */
-	APIResponse addNewProperty(PropertyRequest propertyDetails, String ownerId);
+	OwnerAndPropertyDTO addNewProperty(String ownerId, PropertyRequest propertyDetails);
 	
 	/**
      * Fetches a specific property using its ID.
@@ -43,15 +40,19 @@ public interface PropertyService {
      * @param propertyId The unique ID of the property to update.
      * @return PropertyResponse containing updated property information.
      */
-	PropertyResponse updatePropertyDetails(PropertyRequest updatedDetails,String propertyId);
+	PropertyResponse updatePropertyDetails(String propertyId, String ownerId, PropertyRequest updatedDetails);
 	
 	/**
      * Toggles or updates the availability status of a property.
      * @param propertyId The ID of the property whose availability is being changed.
      * @return PropertyResponse with the updated availability status.
      */
-	PropertyResponse updatePropertyAvailabilityById(String propertyId);
-	
+	Map<String, Object> isPropertyAvailable(String propertyId);
+
+	OwnerAndPropertyDTO markPropertyAsSold(String propertyId, String ownerId);
+
+	OwnerAndPropertyDTO markPropertyAsAvailable(String propertyId, String ownerId);
+
 	/**
      * Updates specific fields of a property (partial update).
      * @param updatedFields The fields to be updated.
@@ -72,6 +73,6 @@ public interface PropertyService {
      * @param propertyId The unique ID of the property to delete.
      * @return APIResponse indicating whether deletion was successful.
      */
-	APIResponse deletePropertyById(String propertyId);
+	OwnerAndPropertyDTO deletePropertyById(String propertyId);
 
 }

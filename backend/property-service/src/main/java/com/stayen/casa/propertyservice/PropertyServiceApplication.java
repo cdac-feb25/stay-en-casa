@@ -15,12 +15,4 @@ public class PropertyServiceApplication {
 		SpringApplication.run(PropertyServiceApplication.class, args);
 	}
 	
-	@Bean
-	ModelMapper modelMapper() {
-		ModelMapper mapper = new ModelMapper();
-		mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT).setPropertyCondition(Conditions.isNotNull());
-		
-		return mapper;
-	}
-
 }

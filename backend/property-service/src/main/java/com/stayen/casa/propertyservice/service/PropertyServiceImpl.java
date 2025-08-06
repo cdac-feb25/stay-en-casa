@@ -2,20 +2,16 @@ package com.stayen.casa.propertyservice.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.stayen.casa.propertyservice.dto.*;
+import com.stayen.casa.propertyservice.enums.AreaUnit;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.stayen.casa.propertyservice.dto.APIResponse;
-import com.stayen.casa.propertyservice.dto.LocationUpdateRequest;
-import com.stayen.casa.propertyservice.dto.PropertyRequest;
-import com.stayen.casa.propertyservice.dto.PropertyResponse;
-import com.stayen.casa.propertyservice.dto.PropertySearchRequest;
-import com.stayen.casa.propertyservice.dto.UpdatePropertyRequest;
 import com.stayen.casa.propertyservice.entity.Location;
 import com.stayen.casa.propertyservice.entity.PropertyEntity;
 import com.stayen.casa.propertyservice.enums.PropertyError;
@@ -43,26 +39,33 @@ public class PropertyServiceImpl implements PropertyService {
 	}
 
 	@Override
-	public APIResponse addNewProperty(PropertyRequest propertyDetails, String ownerID) {
-		
-		//Check if the property is already Listed
-		Optional<PropertyEntity> existingProperty = propertyRepository.findByOwnerIdAndLocationAddressAndLocationPincode(ownerID,
-				propertyDetails.getLocation().getAddress(), propertyDetails.getLocation().getPincode());
-		
-		if(existingProperty.isPresent()) {
-			throw new PropertyException(PropertyError.PROPERTY_ALREADY_EXIST);
-		}
+	public OwnerAndPropertyDTO addNewProperty(String ownerId, PropertyRequest propertyDetails) {
+//		//Check if the property is already Listed
+//		Optional<PropertyEntity> existingProperty = propertyRepository
+//				.findByOwnerIdAndLocationAddressAndLocationPincode(
+//						ownerID,
+//						propertyDetails.getLocation().getAddress(),
+//						propertyDetails.getLocation().getPincode()
+//				);
+//
+//		if(existingProperty.isPresent()) {
+//			throw new PropertyException(PropertyError.PROPERTY_ALREADY_EXIST);
+//		}
 		
 		//Map the Property Details to entity
 		PropertyEntity propertyEntity = modelMapper.map(propertyDetails, PropertyEntity.class);
 		
 		//Set Owner ID
-		propertyEntity.setOwnerId(ownerID);
+		propertyEntity.setOwnerId(ownerId);
 		
 		//Generate random unique Property ID
-		String uuid = "prop-"+UUID.randomUUID().toString().replace("-", "");
+		String propertyId = "prop-" + UUID.randomUUID().toString().replace("-", "");
 		
-		propertyEntity.setPropertyId(uuid);
+		propertyEntity.setPropertyId(propertyId);
+
+		// by default property area will be in Sq.Feet
+		// Conversion from Sq.Feet to other unit will be done on UI
+		propertyEntity.setUnit(AreaUnit.SQ_FT);
 		
 		//Make property as available while listing
 		propertyEntity.setAvailable(true);
@@ -74,49 +77,48 @@ public class PropertyServiceImpl implements PropertyService {
 		
 		//Save to Database
 		try {
-			
 			propertyRepository.save(propertyEntity);
-			
 		} catch (Exception e) {
-			
 			throw new PropertyException(PropertyError.PROPERTY_CREATION_FAILED);
-			
 		}
 		
 		//5. Return the Listing Confirmation Message
-		return new APIResponse("Property is Listed!!!!! Your Property ID: "+propertyEntity.getPropertyId());
+//		return new SimpleResponseDTO("Property is Listed !!!Your Property ID : " + propertyEntity.getPropertyId());
+		return new OwnerAndPropertyDTO(
+				ownerId,
+				propertyId,
+				"Property posted successfully.",
+				propertyEntity.getListedAt()
+		);
 	}
 
 	@Override
 	public PropertyResponse getPropertyById(String propertyId) {
-		
-		PropertyEntity propertyEntity =  propertyRepository.findById(propertyId)
-				.orElseThrow(()-> new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
+		PropertyEntity propertyEntity =  propertyRepository
+				.findById(propertyId)
+				.orElseThrow(()-> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
 		
 		return modelMapper.map(propertyEntity, PropertyResponse.class);
 	}
 
 	@Override
-	public PropertyResponse updatePropertyDetails(PropertyRequest updatedDetails,String propertyId) {
-		
-		PropertyEntity propertyEntity = propertyRepository.findById(propertyId)
-				.orElseThrow(()-> new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
+	public PropertyResponse updatePropertyDetails(String propertyId, String ownerId, PropertyRequest updatedDetails) {
+		PropertyEntity propertyEntity = propertyRepository
+				.findById(propertyId)
+				.orElseThrow(()-> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
+
+		if(ownerId.equals(propertyEntity.getOwnerId()) == false) {
+			throw new PropertyException(PropertyError.INVALID_PROPERTY_ID);
+		}
 		
 		// Map all matching fields from DTO to entity
 		modelMapper.map(updatedDetails, propertyEntity);
-		
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
-		
-		
-		
+
 		try {
-			
-			propertyRepository.save(propertyEntity);
-			
+			propertyEntity = propertyRepository.save(propertyEntity);
 		} catch (Exception e) {
-			
 			throw new PropertyException(PropertyError.PROPERTY_UPDATE_FAILED);
-			
 		}
 		
 		// Map entity to response
@@ -124,129 +126,167 @@ public class PropertyServiceImpl implements PropertyService {
 	}
 
 	@Override
-	public PropertyResponse updatePropertyAvailabilityById(String propertyId) {
+	public Map<String, Object> isPropertyAvailable(String propertyId) {
+		PropertyEntity propertyEntity = propertyRepository
+				.findById(propertyId)
+				.orElseThrow(() -> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
 		
-		PropertyEntity propertyEntity = propertyRepository.findById(propertyId)
-				.orElseThrow(()->new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
-		
-		//Change the Availability of Property
-		propertyEntity.setAvailable(!propertyEntity.isAvailable());
-		
+		return Map.of(
+				"propertyId", propertyId,
+				"isAvailable", propertyEntity.isAvailable()
+		);
+	}
+
+
+	@Override
+	public OwnerAndPropertyDTO markPropertyAsSold(String propertyId, String ownerId) {
+		PropertyEntity propertyEntity = propertyRepository
+				.findById(propertyId)
+				.orElseThrow(() -> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
+
+		if(propertyEntity.getOwnerId().equals(ownerId) == false) {
+			throw new PropertyException(PropertyError.INVALID_PROPERTY_ID);
+		}
+
+		propertyEntity.setAvailable(false);
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
-		
-		
-		propertyRepository.save(propertyEntity);
-		
-		
-		
-		return modelMapper.map(propertyEntity,PropertyResponse.class);
+		propertyEntity = propertyRepository.save(propertyEntity);
+
+		return new OwnerAndPropertyDTO(
+				ownerId,
+				propertyId,
+				"Property marked as sold.",
+				propertyEntity.getUpdatedAt()
+		);
+	}
+
+	@Override
+	public OwnerAndPropertyDTO markPropertyAsAvailable(String propertyId, String ownerId) {
+		PropertyEntity propertyEntity = propertyRepository
+				.findById(propertyId)
+				.orElseThrow(() -> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
+
+		if(propertyEntity.getOwnerId().equals(ownerId) == false) {
+			throw new PropertyException(PropertyError.INVALID_PROPERTY_ID);
+		}
+
+		propertyEntity.setAvailable(true);
+		propertyEntity.setUpdatedAt(LocalDateTime.now());
+		propertyEntity = propertyRepository.save(propertyEntity);
+
+		return new OwnerAndPropertyDTO(
+				ownerId,
+				propertyId,
+				"Property marked as available.",
+				propertyEntity.getUpdatedAt()
+		);
 	}
 
 	@Override
 	public PropertyResponse updatePartialProperty(UpdatePropertyRequest updatedFields, String propertyId) {
-		
+
 		PropertyEntity propertyEntity = propertyRepository.findById(propertyId)
-				.orElseThrow(()->new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
-		
+				.orElseThrow(()->new PropertyException(PropertyError.NO_PROPERTY_FOUND));
+
 		if(updatedFields.getPropertyName()!=null)
 		{
 			propertyEntity.setPropertyName(updatedFields.getPropertyName());
 		}
-		
+
 		if(updatedFields.getPropertyDescription()!=null)
-		{			
+		{
 			propertyEntity.setPropertyDescription(updatedFields.getPropertyDescription());
 		}
-		
+
 		if(updatedFields.getListingType()!=null)
-		{			
+		{
 			propertyEntity.setListingType(updatedFields.getListingType());
 		}
-		
+
 		if(updatedFields.getPropertyCategory()!=null)
 		{
 			propertyEntity.setPropertyCategory(updatedFields.getPropertyCategory());
 		}
-		
+
 		if(updatedFields.getPrice()!=null)
 		{
 			propertyEntity.setPrice(updatedFields.getPrice());
 		}
-		
+
 		if(updatedFields.getArea()!=null)
 		{
 			propertyEntity.setArea(updatedFields.getArea());
 		}
-		
+
 		if(updatedFields.getUnit()!=null)
 		{
 			propertyEntity.setUnit(updatedFields.getUnit());
 		}
-		
+
 		if(updatedFields.getBedrooms()!=null)
 		{
 			propertyEntity.setBedrooms(updatedFields.getBedrooms());
 		}
-		
+
 		if(updatedFields.getBathrooms()!=null)
 		{
 			propertyEntity.setBathrooms(updatedFields.getBathrooms());
 		}
-		
+
 		if(updatedFields.getFloorNumber()!=null)
 		{
 			propertyEntity.setFloorNumber(updatedFields.getFloorNumber());
 		}
-		
+
 		if(updatedFields.getTotalFloors()!=null)
 		{
 			propertyEntity.setTotalFloors(updatedFields.getTotalFloors());
 		}
-		
+
 		if(updatedFields.getFurnishing()!=null)
 		{
 			propertyEntity.setFurnishing(updatedFields.getFurnishing());
 		}
-		
+
 		if(updatedFields.getAmenities()!=null)
 		{
 			propertyEntity.setAmenities(updatedFields.getAmenities());
 		}
-		
+
 		if(updatedFields.getLocation()!=null)
 		{
 			if(propertyEntity.getLocation()==null)
 			{
 				propertyEntity.setLocation(new Location());
 			}
-			
+
 			updateLocationFields(propertyEntity.getLocation(), updatedFields.getLocation());
 		}
-		
+
 		if(updatedFields.getImages()!=null)
 		{
 			propertyEntity.setImages(updatedFields.getImages());
 		}
-		
+
 		if(updatedFields.getIsAvailable()!=null)
-		{			
+		{
 			propertyEntity.setAvailable(updatedFields.getIsAvailable());
 		}
-		
+
 		propertyEntity.setUpdatedAt(LocalDateTime.now());
-		
-		
+
+
 		try {
-			
+
 			propertyRepository.save(propertyEntity);
-			
+
 		} catch (Exception e) {
-			
+
 			throw new PropertyException(PropertyError.PROPERTY_UPDATE_FAILED);
-			
+
 		}
-		
-		
+
+
 		return modelMapper.map(propertyEntity, PropertyResponse.class);
 	}
 	
@@ -315,26 +355,34 @@ public class PropertyServiceImpl implements PropertyService {
 			throw new PropertyException(PropertyError.PROPERTY_SEARCH_FAILED);
 		}
 		
-		return properties.stream().map(p-> modelMapper.map(p, PropertyResponse.class)).collect(Collectors.toList());
+		return properties
+				.stream()
+				.map(p-> modelMapper.map(p, PropertyResponse.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public APIResponse deletePropertyById(String propertyId) {
-		
-		PropertyEntity property = propertyRepository.findById(propertyId)
-	            .orElseThrow(() -> new PropertyException(PropertyError.PROPERTY_NOT_EXIST));
-		
+	public OwnerAndPropertyDTO deletePropertyById(String propertyId) {
+		PropertyEntity propertyEntity = propertyRepository
+				.findById(propertyId)
+				.orElseThrow(() -> new PropertyException(PropertyError.NO_PROPERTY_FOUND));
+
 		try {
-			
 			propertyRepository.deleteById(propertyId);
-			
 		} catch (Exception e) {
-			
 			throw new PropertyException(PropertyError.PROPERTY_DELETION_FAILED);
-			
 		}
-		
-		return new APIResponse("Property with ID: "+propertyId+" Deleted Successfully");
+
+		/**
+		 * Returning Owner Id so that
+		 * user profile can also update its ownedProperties section
+		 */
+		return new OwnerAndPropertyDTO(
+				propertyEntity.getOwnerId(),
+				propertyId,
+				"Property deleted successfully.",
+				LocalDateTime.now()
+		);
 	}
 	
 

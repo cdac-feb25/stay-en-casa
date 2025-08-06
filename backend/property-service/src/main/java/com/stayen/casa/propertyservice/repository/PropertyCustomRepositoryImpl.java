@@ -3,6 +3,7 @@ package com.stayen.casa.propertyservice.repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -14,96 +15,135 @@ import com.stayen.casa.propertyservice.entity.PropertyEntity;
 import lombok.AllArgsConstructor;
 
 @Repository
-@AllArgsConstructor
+//@AllArgsConstructor
 public class PropertyCustomRepositoryImpl implements PropertyCustomRepository {
 	
 	private final MongoTemplate mongoTemplate;
 
+	@Autowired
+	public  PropertyCustomRepositoryImpl(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
+
 	@Override
-	public List<PropertyEntity> searchProperties(PropertySearchRequest searchFields) {
+	public List<PropertyEntity> searchProperties(PropertySearchRequest searchFieldsDTO) {
 		
 		List<Criteria> filters = new ArrayList<>();
 		
-		if(searchFields.getPropertyName()!=null && !searchFields.getPropertyName().isBlank())
+//		if(searchFieldsDTO.getPropertyName() != null && !searchFieldsDTO.getPropertyName().isBlank())
+//		{
+//			filters.add(Criteria.where("propertyName")
+//			.regex(searchFieldsDTO.getPropertyName(), "i"));
+//		}
+		
+		if(searchFieldsDTO.getListingType() != null)
 		{
-			filters.add(Criteria.where("propertyName").regex(searchFields.getPropertyName(), "i"));
+			filters.add(Criteria.where("listingType")
+					.is(searchFieldsDTO.getListingType()));
 		}
 		
-		if(searchFields.getListingType()!=null)
-		{
-			filters.add(Criteria.where("listingType").is(searchFields.getListingType()));
-		}
-		
-		 if (searchFields.getFurnishing() != null) {
-	            filters.add(Criteria.where("furnishing").is(searchFields.getFurnishing()));
+		 if (searchFieldsDTO.getFurnishing() != null) {
+	            filters.add(Criteria.where("furnishing")
+						.is(searchFieldsDTO.getFurnishing()));
 	        }
 		
-		if(searchFields.getPropertyCategory()!=null)
+		if(searchFieldsDTO.getPropertyCategory() != null)
 		{
-			filters.add(Criteria.where("propertyCategory").is(searchFields.getPropertyCategory()));
+			filters.add(Criteria.where("propertyCategory")
+					.is(searchFieldsDTO.getPropertyCategory()));
 		}
 		
-		if(searchFields.getMinPrice()!=null && searchFields.getMaxPrice()!=null)
+		if(searchFieldsDTO.getMinPrice() != null && searchFieldsDTO.getMaxPrice() != null)
 		{
-			filters.add(Criteria.where("price").gte(searchFields.getMinPrice().doubleValue()).lte(searchFields.getMaxPrice().doubleValue()));
-		}else if(searchFields.getMinPrice()!=null)
+			filters.add(Criteria.where("price")
+					.gte(searchFieldsDTO.getMinPrice().doubleValue())
+					.lte(searchFieldsDTO.getMaxPrice().doubleValue()));
+		}
+		else if(searchFieldsDTO.getMinPrice()!=null)
 		{
-			filters.add(Criteria.where("price").gte(searchFields.getMinPrice().doubleValue()));
-		}else if(searchFields.getMaxPrice()!=null)
+			filters.add(Criteria.where("price")
+					.gte(searchFieldsDTO.getMinPrice().doubleValue()));
+		}
+		else if(searchFieldsDTO.getMaxPrice() != null)
 		{
-			filters.add(Criteria.where("price").lte(searchFields.getMaxPrice().doubleValue()));
+			filters.add(Criteria.where("price")
+					.lte(searchFieldsDTO.getMaxPrice().doubleValue()));
 		}
 		
-		if(searchFields.getMinArea()!=null && searchFields.getMaxArea()!=null)
+		if(searchFieldsDTO.getMinArea() != null && searchFieldsDTO.getMaxArea() != null)
 		{
-			filters.add(Criteria.where("area").gte(searchFields.getMinArea()).lte(searchFields.getMaxArea()));
-		}else if(searchFields.getMinArea()!=null)
+			filters.add(Criteria.where("area")
+					.gte(searchFieldsDTO.getMinArea())
+					.lte(searchFieldsDTO.getMaxArea()));
+		}
+		else if(searchFieldsDTO.getMinArea() != null)
 		{
-			filters.add(Criteria.where("area").gte(searchFields.getMinArea()));
-		}else if(searchFields.getMaxArea()!=null)
+			filters.add(Criteria.where("area")
+					.gte(searchFieldsDTO.getMinArea()));
+		}
+		else if(searchFieldsDTO.getMaxArea() != null)
 		{
-			filters.add(Criteria.where("area").lte(searchFields.getMaxArea()));
+			filters.add(Criteria.where("area")
+					.lte(searchFieldsDTO.getMaxArea()));
 		}
 		
-		if(searchFields.getUnit()!=null)
+		if(searchFieldsDTO.getUnit() != null)
 		{
-			filters.add(Criteria.where("unit").is(searchFields.getUnit()));
+			filters.add(Criteria.where("unit")
+					.is(searchFieldsDTO.getUnit()));
 		}
 		
-		if(searchFields.getBedrooms()!=null)
+		if(searchFieldsDTO.getBedrooms() != null)
 		{
-			filters.add(Criteria.where("bedrooms").gte(searchFields.getBedrooms()));
+			filters.add(Criteria.where("bedrooms")
+					.gte(searchFieldsDTO.getBedrooms()));
 		}
 		
-		if(searchFields.getBathrooms()!=null)
+		if(searchFieldsDTO.getBathrooms() != null)
 		{
-			filters.add(Criteria.where("bathrooms").gte(searchFields.getBathrooms()));
+			filters.add(Criteria.where("bathrooms")
+					.gte(searchFieldsDTO.getBathrooms()));
 		}
 		
-		if(searchFields.getAmenities()!=null && !searchFields.getAmenities().isEmpty())
+		if(searchFieldsDTO.getAmenities() != null && !searchFieldsDTO.getAmenities().isEmpty())
 		{
-			filters.add(Criteria.where("amenities").in(searchFields.getAmenities()));
+			filters.add(Criteria.where("amenities")
+					.all(searchFieldsDTO.getAmenities()));
 		}
 		
-		if(searchFields.getTotalFloors()!=null)
+		if(searchFieldsDTO.getTotalFloors() != null)
 		{
-			filters.add(Criteria.where("totalFloors").gte(searchFields.getTotalFloors()));
+			filters.add(Criteria.where("totalFloors")
+					.gte(searchFieldsDTO.getTotalFloors()));
 		}
 		
-		if(searchFields.getCity()!=null && !searchFields.getCity().isBlank())
+		if(searchFieldsDTO.getCity() != null && !searchFieldsDTO.getCity().isBlank())
 		{
-			filters.add(Criteria.where("location.city").regex(searchFields.getCity(), "i"));
+			filters.add(Criteria.where("location.city")
+					.regex(searchFieldsDTO.getCity(), "i"));
 		}
 		
-		if(searchFields.getState()!=null && !searchFields.getState().isBlank())
+		if(searchFieldsDTO.getState() != null && !searchFieldsDTO.getState().isBlank())
 		{
-			filters.add(Criteria.where("location.state").regex(searchFields.getState(), "i"));
+			filters.add(Criteria.where("location.state")
+					.regex(searchFieldsDTO.getState(), "i"));
+		}
+
+		if(searchFieldsDTO.getCountry() != null && searchFieldsDTO.getCountry().isBlank()) {
+			filters.add(Criteria.where("location.country")
+					.regex(searchFieldsDTO.getCountry(), "i"));
+		}
+
+		if(searchFieldsDTO.getPincode() != 0 && (Math.log10(searchFieldsDTO.getPincode()+1) >= 3)) {
+			filters.add(Criteria.where("location.pincode")
+					.is(searchFieldsDTO.getPincode()));
 		}
 		
-		if(searchFields.getLocality()!=null && !searchFields.getLocality().isBlank())
-		{
-			filters.add(Criteria.where("location.locality").regex(searchFields.getLocality(), "i"));
-		}
+//		if(searchFieldsDTO.getLocality()!=null && !searchFieldsDTO.getLocality().isBlank())
+//		{
+//			filters.add(Criteria.where("location.locality")
+//			.regex(searchFieldsDTO.getLocality(), "i"));
+//		}
 		
 		Query query = new Query();
 		

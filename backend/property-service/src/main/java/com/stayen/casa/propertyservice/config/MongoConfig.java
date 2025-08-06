@@ -39,13 +39,8 @@ public class MongoConfig {
 	public MongoClient mongoClient()
 	{
 		ConnectionString connectionString = new ConnectionString(mongoUri);
-		
+
 		MongoClientSettings settings = MongoClientSettings.builder().applyConnectionString(connectionString)
-				.applyToSocketSettings(builder -> builder
-						.connectTimeout((int)Duration.ofSeconds(15).toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS)
-						.readTimeout((int)Duration.ofSeconds(30).toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS))
-				.applyToClusterSettings(builder->builder
-						.serverSelectionTimeout((int)Duration.ofSeconds(30).toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS))
 				.build();
 		return MongoClients.create(settings);
 	}

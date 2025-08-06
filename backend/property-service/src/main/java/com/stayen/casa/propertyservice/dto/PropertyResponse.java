@@ -39,7 +39,7 @@ public class PropertyResponse {
     private ListingType listingType;
     
 	@Schema(description = "Category of the Property - PLOT, VILLA, FLAT or COMMERCIAL")
-    private PropertyCategory category;
+    private PropertyCategory propertyCategory;
     
 	@Schema(description = "User ID of the Property owner")
     private String ownerId;
@@ -78,8 +78,9 @@ public class PropertyResponse {
     private List<String> images;
     
 	@Schema(description = "Availability status of the Property")
-    private Boolean available;
-    
+	private boolean available;
+
+
 	@Schema(description = "Timestamp when the Property was Listed")
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime listedAt;

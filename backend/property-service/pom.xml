@@ -30,6 +30,14 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+
+<!--		Spring Security for Request filteration-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+<!--		Spring Security for Request filteration-->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>

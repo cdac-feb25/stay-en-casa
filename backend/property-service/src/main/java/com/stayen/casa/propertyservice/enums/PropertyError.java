@@ -8,11 +8,13 @@ import lombok.Getter;
  */
 
 @Getter
-public enum PropertyError {
-	
+public enum PropertyError implements GenericError {
+
+	INVALID_PROPERTY_ID(1600, "Owner Id and Property Id is not matching. Please verify it once."),
+
 	PROPERTY_ALREADY_EXIST(1601, "Property Already Listed, Please try Listing different Property"),
-	
-	PROPERTY_NOT_EXIST(1602, "The requested property does not exist. Please verify the Property ID and try again."),
+
+	NO_PROPERTY_FOUND(1602, "Not able to find any property of your matching right now. Please try searching after some time."),
 	
 	PROPERTY_CREATION_FAILED(1603, "Failed to create the property. Please try again."),
 	

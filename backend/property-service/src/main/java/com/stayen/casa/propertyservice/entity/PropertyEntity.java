@@ -113,7 +113,7 @@ public class PropertyEntity {
 	/**
      * Flag indicating if the property is currently available.
      */
-	private boolean isAvailable;
+	private boolean available;
 	
 	/**
      * Timestamp when the property was listed.

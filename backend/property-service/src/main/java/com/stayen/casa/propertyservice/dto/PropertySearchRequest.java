@@ -28,11 +28,11 @@ public class PropertySearchRequest {
 
     // Basic Property Details
 
-    /**
-     * Name of the property to search for (partial match).
-     */
-    @Schema(description = "Property name (for partial match)")
-    private String propertyName;
+//    /**
+//     * Name of the property to search for (partial match).
+//     */
+//    @Schema(description = "Property name (for partial match)")
+//    private String propertyName;
 
     /**
      * Type of listing - RENT or SALE.
@@ -141,8 +141,21 @@ public class PropertySearchRequest {
     private String state;
 
     /**
-     * Locality or area name for more specific location filtering.
+     * Country in which the property is located (e.g., "India").
      */
-    @Schema(description = "Locality filter")
-    private String locality;
+    private String country;
+
+    /**
+     * Postal code or PIN code for the property's location.
+     */
+    private int pincode;
+
+//    /**
+//     * Locality or area name for more specific location filtering.
+//     */
+//    @Schema(description = "Locality filter")
+//    private String locality;
+
+
+
 }
