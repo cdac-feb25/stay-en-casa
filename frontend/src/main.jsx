@@ -15,11 +15,22 @@ const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 
 const theme = createTheme({
+  palette: {
+    background: {
+      default: Colors.background,
+    },
+  },
   typography: {
     fontFamily: 'Nunito, sans-serif',
-    color: Colors.white,
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: Colors.background,
+        },
+      }
+    },
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -32,6 +43,7 @@ const theme = createTheme({
         root: {
           fontSize: "0.9em",
           color: Colors.primary,
+          fontFamily: 'Nunito, sans-serif',
         },
       },
     },

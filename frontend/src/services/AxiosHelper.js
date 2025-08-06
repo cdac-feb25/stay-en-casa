@@ -27,7 +27,7 @@ class AxiosHelper {
         });
     }
 
-    static POST({ url, body = {}, isAuthHeader = true, withCredentials = true }) {
+    static POST({ url, body = {}, isAuthHeader = true, withCredentials = false }) {
         const header = isAuthHeader ? this.#getAuthHeader() : this.#getNoAuthHeader();
         
         return axios.post(url, body, 

@@ -7,6 +7,11 @@ class UserContext {
      */
     static #user = null;
 
+    static isUserLoggedIn() {
+        const token = LocalStorageHelper.getJwtAccessToken();
+        return (token != null);
+    }
+
     /**
      * @returns {import('../types/User').User | null}
      */

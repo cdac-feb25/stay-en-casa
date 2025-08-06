@@ -2,7 +2,7 @@ import IdHelper from "../utils/IdHelper";
 import ApiCaller from "./ApiCaller";
 import AppRoutes from "../utils/AppRoutes";
 import ApiActionHelper from "../utils/ApiActionHelper";
-import { getResponseError as getResponseErrorData } from "../types/ResponseError";
+import { getResponseError as getResponseErrorData } from "../types/ResponseType";
 import Navigate from "./NavigationService";
 
 function handleLoginFormSubmit(setIsLoading, setErrorMsg, setShowError) {

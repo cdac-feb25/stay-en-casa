@@ -53,8 +53,11 @@ class SupabaseHelper {
 
     static async uploadPropertiesPhotoFile(file, propertyId) {
         const fileExtension = this.#getPhotoExtension(file);
+
         const uid = UserContext.getLoggedInUser().uid;
+
         const fileName = file.name.replace(/\.[^/.]+$/,"");
+        
         const pathWithFilename = `${this.#propertiesFolderName}/${uid}/${propertyId}/${fileName}.${fileExtension}`;
 
         console.log("pathWithFilename : ", pathWithFilename);
@@ -63,7 +66,7 @@ class SupabaseHelper {
             .storage
             .from(this.#bucketId)
             .upload(pathWithFilename, file, { 
-                upsert: false, 
+                upsert: true, // previously false
                 contentType: file.type,
             });
 

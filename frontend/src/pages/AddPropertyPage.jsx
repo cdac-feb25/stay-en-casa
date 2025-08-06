@@ -10,8 +10,15 @@ import logo from "../assets/stay_en_casa-nobg.png";
 import Container from "../components/Container";
 import Colors from "../utils/Colors";
 import AppRoutes from "../utils/AppRoutes";
+import RedirectionHelper from "../services/RedirectionHelper";
+import { LocationOn } from "@mui/icons-material";
+import getLocation from "../services/LocationService";
+import { Backdrop, CircularProgress, Typography } from "@mui/material";
 
 const AddPropertyPage = () => {
+  RedirectionHelper.fromAddPropertyPage();
+
+
   // Form state for property fields
   const [form, setForm] = useState({
     propertyName: "",
@@ -35,12 +42,15 @@ const AddPropertyPage = () => {
     state: "",
     country: "",
     pincode: "",
-    isAvailable: true,
+    available: true,
   });
 
+  const [ locationData, setLocationData ] = React.useState({ latitude: 0, longitude: 0, locality: "", city: "", state: "", country: "", pincode: "" });
+  const [ locationError, setLocationError ] = React.useState("");
+
   const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
@@ -49,7 +59,7 @@ const AddPropertyPage = () => {
     const { name, value } = e.target;
     setForm({
       ...form,
-      [name]: name === "isAvailable" ? value === "true" : value,
+      [name]: name === "available" ? value === "true" : value,
     });
   };
 
@@ -66,20 +76,20 @@ const AddPropertyPage = () => {
   // Form submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
 
     try {
       // Ensure user is logged in
       const userId = UserContext.getLoggedInUser().uid;
-      if (!userId) {
+      if (!UserContext.isUserLoggedIn()) {
         setError("You must be logged in to add a property.");
-        setLoading(false);
+        setIsLoading(false);
         return;
       }
 
       // Build property payload
-       const propertyPayload = {
+      const propertyPayload = {
         propertyName: form.propertyName,
         propertyDescription: form.propertyDescription,
         listingType: form.listingType,
@@ -94,7 +104,7 @@ const AddPropertyPage = () => {
         furnishing: form.furnishing,
         amenities: form.amenities.split(",").map((a) => a.trim()),
         ownerId: userId,
-        isAvailable: form.isAvailable,
+        available: form.available,
         location: {
           latitude: form.latitude,
           longitude: form.longitude,
@@ -108,58 +118,75 @@ const AddPropertyPage = () => {
         images: [],
       };
 
-    useEffect(() => {
-        if (form.propertyCategory === "PLOT") {
-            setForm((prev) => ({
-            ...prev,
-            bedrooms: "",
-            bathrooms: "",
-            floorNumber: "",
-            totalFloors: "",
-            furnishing: "UNFURNISHED",
-            amenities: "",
-        }));
-    }
-}, [form.propertyCategory]);
+      // useEffect(() => {
+      //   if(form.propertyCategory === "PLOT") {
+      //     setForm((prev) => ({
+      //       ...prev,
+      //       bedrooms: "",
+      //       bathrooms: "",
+      //       floorNumber: "",
+      //       totalFloors: "",
+      //       furnishing: "UNFURNISHED",
+      //       amenities: "",
+      //     }));
+      //   }
+      // }, [form.propertyCategory]);
+
+      if(propertyPayload.propertyCategory === "PLOT") {
+        propertyPayload["bedrooms"] = "";
+        propertyPayload["bathrooms"] = "";
+        propertyPayload["floorNumber"] = "";
+        propertyPayload["totalFloors"] = "";
+        propertyPayload["furnishing"] = "Unfurnished";
+        propertyPayload["amenities"] = [];
+      }
+      
+      console.log("Payload : ", propertyPayload);
 
       // Call backend to create property
-      const response = await createProperty(propertyPayload);
+      const response = await createProperty(propertyPayload, setError);
 
       // Response expected from backend: { message, propertyId }
       const propertyId = response.propertyId;
+      console.log("propertyId : ", propertyId);
 
       // Upload images to Supabase
       let imageUrls = [];
       for (let file of images) {
-        const publicUrl = await SupabaseHelper.uploadPropertiesPhotoFile(file,propertyId);
-        if (publicUrl) imageUrls.push(publicUrl);
+        const publicUrl = await SupabaseHelper.uploadPropertiesPhotoFile(file, propertyId);
+
+        if (publicUrl) {
+          imageUrls.push(publicUrl);
+        }
       }
+      console.log("local img urls : ", imageUrls);
 
       // Update property in backend with image URLs
       if (imageUrls.length > 0) {
-        await updatePropertyImages(propertyId, imageUrls);
+        await updatePropertyImages(propertyId, imageUrls, setError);
       }
 
       // Show backend custom success message
-      alert(response.message);
-      navigate(AppRoutes.properties);       //Update this my-properties page
+      // alert(response.message);
+      // navigate(AppRoutes.properties);       //Update this my-properties page
     } catch (err) {
       // Show backend custom error message if available
       const backendMsg = err.response?.data?.message || err.message || "Failed to add property.";
       setError(backendMsg);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const inputStyle = {
     padding: "12px 16px",
-    border: "2px solid #e1e5e9",
+    border: `0.15em solid ${Colors.grey}`,
     borderRadius: "8px",
     fontSize: "14px",
     outline: "none",
     transition: "border-color 0.2s ease",
     fontFamily: "inherit",
+    backgroundColor: Colors.background,
   };
 
   const focusStyle = {
@@ -175,10 +202,10 @@ const AddPropertyPage = () => {
   };
 
   const legendStyle = {
-    fontSize: "16px",
+    fontSize: "20px",
     fontWeight: "600",
-    color: "#f9f9f9ff",
-    padding: "0 12px",
+    color: Colors.white,
+    padding: "2px 12px",
     backgroundColor: "rgb(226,117,45)",
     borderRadius: "6px",
   };
@@ -191,11 +218,10 @@ const AddPropertyPage = () => {
             alignItems: "center",
             gap: "20px",
             justifyContent: "center",
+            fontSize: "2em",
             color: Colors.textOrange,
             }}>
-            <img src={logo} alt="Logo" style={{ height: "60px", width: "auto" }} />
             <span>Add New Property</span>
-            <img src={logo} alt="Logo" style={{ height: "60px", width: "auto" }} />
         </h2>
         
         <div style={{ width: "100%" }}>
@@ -367,9 +393,9 @@ const AddPropertyPage = () => {
                 onBlur={(e) => Object.assign(e.target.style, { borderColor: "#e1e5e9", boxShadow: "none" })}
               >
                 <option value="">Select Furnishing</option>
-                <option value="FURNISHED">Fully Furnished</option>
-                <option value="SEMI_FURNISHED">Semi Furnished</option>
-                <option value="UNFURNISHED">Unfurnished</option>
+                <option value="Fully Furnished">Fully Furnished</option>
+                <option value="Semi Furnished">Semi Furnished</option>
+                <option value="Unfurnished">Unfurnished</option>
               </select>
               <input
                 type="text"
@@ -450,7 +476,7 @@ const AddPropertyPage = () => {
                 type="number" 
                 name="pincode" 
                 placeholder="Pincode" 
-                value={form.pincode} 
+                value={ form.pincode } 
                 onChange={handleChange} 
                 style={{ ...inputStyle, flex: 1, minWidth: 150, boxSizing: "border-box", marginLeft: "10px" }}
                 onFocus={(e) => Object.assign(e.target.style, focusStyle)}
@@ -464,24 +490,38 @@ const AddPropertyPage = () => {
                 step="any"
                 name="latitude" 
                 placeholder="Latitude" 
-                value={form.latitude} 
-                onChange={handleChange} 
-                style={{ ...inputStyle, flex: 1, minWidth: 150, boxSizing: "border-box", marginLeft: "10px" }}
+                value={ form.latitude } 
+                onChange={ handleChange } 
+                style={{ ...inputStyle, flex: 1, minWidth: 150, borderColor: Colors.lightest, boxSizing: "border-box", marginLeft: "10px" }}
                 onFocus={(e) => Object.assign(e.target.style, focusStyle)}
                 onBlur={(e) => Object.assign(e.target.style, { borderColor: "#e1e5e9", boxShadow: "none" })}
+                disabled
               />
               <input 
                 type="number" 
                 step="any"
                 name="longitude" 
                 placeholder="Longitude" 
-                value={form.longitude} 
-                onChange={handleChange} 
-                style={{ ...inputStyle, flex: 1, minWidth: 150, boxSizing: "border-box", marginLeft: "10px" }}
+                value={ form.longitude } 
+                onChange={ handleChange } 
+                style={{ ...inputStyle, flex: 1, minWidth: 150, borderColor: Colors.lightest, boxSizing: "border-box", marginLeft: "10px" }}
                 onFocus={(e) => Object.assign(e.target.style, focusStyle)}
                 onBlur={(e) => Object.assign(e.target.style, { borderColor: "#e1e5e9", boxShadow: "none" })}
+                disabled
+              />
+
+              <SizedBox width={20} />
+
+              <CustomButton 
+                title="Current location"
+                startIcon={ <LocationOn /> }
+                onPress={ () => getLocation(setIsLoading, setForm, setLocationError) }
+                fullWidth={false}
               />
             </Row>
+            <Typography sx={{ color: Colors.error, textAlign: "end", mt: 1 }} >
+              {locationError}
+            </Typography>
           </fieldset>
 
             {/* Availability */}
@@ -489,8 +529,8 @@ const AddPropertyPage = () => {
             <legend style={legendStyle}>Availability</legend>
             <Row style={{ gap: 16, flexWrap: "wrap" }}>
               <select
-                  name="isAvailable"
-                  value={form.isAvailable ? "true" : "false"}
+                  name="available"
+                  value={form.available ? "true" : "false"}
                   onChange={handleChange}
                   style={{ ...inputStyle, flex: 1, minWidth: 200}}
                   onFocus={(e) => Object.assign(e.target.style, focusStyle)}
@@ -557,6 +597,7 @@ const AddPropertyPage = () => {
                         objectFit: "cover",
                     }}
                     />
+                    
                     <button
                     type="button"
                     onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
@@ -591,16 +632,16 @@ const AddPropertyPage = () => {
 
           <CustomButton
             title="Add Property"
-            onClick={handleSubmit}
-            disabled={loading}
+            onPress={ handleSubmit }
+            disabled={ isLoading }
             style={{ 
               width: "100%",
-              backgroundColor: loading ? "#6c757d" : "#28a745",
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.8 : 1
+              backgroundColor: isLoading ? "#6c757d" : "#28a745",
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading ? 0.8 : 1
             }}
           >
-            {loading ? "Adding Property..." : "Add Property"}
+            {isLoading ? "Adding Property..." : "Add Property"}
           </CustomButton>
 
           {error && (
@@ -622,6 +663,10 @@ const AddPropertyPage = () => {
             </>
           )}
         </div>
+
+        <Backdrop open={ isLoading } >
+          <CircularProgress />
+        </Backdrop>
     </Container>
   );
 };

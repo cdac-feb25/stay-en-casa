@@ -1,6 +1,6 @@
 import ApiCaller from "./ApiCaller";
 import ApiActionHelper from "../utils/ApiActionHelper";
-import { getResponseError } from "../types/ResponseError";
+import { getResponseError } from "../types/ResponseType";
 import SupabaseHelper from "./SupabaseHelper";
 import { isObjEmpty } from "./JsUtils";
 

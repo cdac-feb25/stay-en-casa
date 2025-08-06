@@ -7,6 +7,7 @@ import Colors from "../utils/Colors";
 import Navigate from "../services/NavigationService";
 import AppRoutes from "../utils/AppRoutes";
 import ApiCaller from "../services/ApiCaller";
+import LocalStorageHelper from "../utils/LocalStorageHelper";
 
 function LoggedInUserMenu({ anchorEl, setAnchorEl }) {
     const toOpen = Boolean(anchorEl);
@@ -56,6 +57,14 @@ function LoggedInUserMenu({ anchorEl, setAnchorEl }) {
                 }
             }}
         >
+            <MenuItem onClick={ onEditProfile } >
+                <React.Fragment>
+                    <AccountCircle style={iconStyle} />
+                    <SizedBox width={10} />
+                    <Typography style={textStyle} >{ LocalStorageHelper.getUserProfile().email }</Typography>
+                </React.Fragment>
+            </MenuItem>
+
             <MenuItem onClick={ onDashboard } >
                 <React.Fragment>
                     <DashboardCustomize style={iconStyle} />
@@ -64,13 +73,13 @@ function LoggedInUserMenu({ anchorEl, setAnchorEl }) {
                 </React.Fragment>
             </MenuItem>
 
-            <MenuItem onClick={ onEditProfile } >
+            {/* <MenuItem onClick={ onEditProfile } >
                 <React.Fragment>
                     <AccountCircle style={iconStyle} />
                     <SizedBox width={10} />
                     <Typography style={textStyle} >Profile</Typography>
                 </React.Fragment>
-            </MenuItem>
+            </MenuItem> */}
 
             <MenuItem onClick={ onMyBooking } >
                 <React.Fragment>

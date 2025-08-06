@@ -1,4 +1,5 @@
 import { v4 as randomUuid } from 'uuid';
+import { User } from '../types/User';
 
 class LocalStorageHelper {
     
@@ -66,7 +67,7 @@ class LocalStorageHelper {
     /**
      * fetching user profile and parsing 
      * 
-     * @returns {Object} profile
+     * @returns {User} profile
      */
     static getUserProfile() {
         const profile = localStorage.getItem(this.#userProfile);

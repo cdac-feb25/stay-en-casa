@@ -1,4 +1,5 @@
 const Colors = {
+    transparent: '#fdfdfd',
     appBgBlack: '#0E151B',
     textOrange: '#F16F02',
     primary: '#F16F02',           // Brand Orange
@@ -20,6 +21,7 @@ const Colors = {
     blue: '#003479ff',
     grey: '#645e5eff',
     lightGrey: '#494444ff',
+    lightest: '#333333b2',
 };
 
 export default Colors;

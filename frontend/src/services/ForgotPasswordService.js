@@ -1,4 +1,4 @@
-import { getResponseError } from "../types/ResponseError";
+import { getResponseError } from "../types/ResponseType";
 import ApiCaller from "./ApiCaller";
 
 /**

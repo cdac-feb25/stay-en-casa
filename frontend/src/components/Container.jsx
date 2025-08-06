@@ -4,7 +4,7 @@ import Column from "./Column.jsx";
 
 function Container({ 
     children, 
-    height="auto", width="auto", maxWidth=400,
+    height="auto", width="auto", maxWidth="auto",
     marginLeft = "10px", marginRight = "10px", marginTop = "10px", marginBottom = "10px",
     paddingLeft = "30px", paddingRight = "30px", paddingTop = "30px", paddingBottom = "30px",
 }) {

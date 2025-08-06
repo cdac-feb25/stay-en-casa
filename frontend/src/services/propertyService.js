@@ -1,5 +1,8 @@
 // Property Service
 // This service handles API calls related to properties.
+import { getResponseError } from "../types/ResponseType";
+import Endpoints from "../utils/ApiEndpoints";
+import ApiCaller from "./ApiCaller";
 import AxiosHelper from "./AxiosHelper";
 
 const BASE_URL = import.meta.env.VITE_PROPERTY_API_URL;
@@ -28,15 +31,35 @@ export const getAllProperties = async () => {
  * @returns {Promise} - Promise resolving to the response of the API call.
  * @throws {Error} - Throws an error if the API call fails.
  */
-export const createProperty = async (propertyDetails) => {
+export const createProperty = async (propertyDetails, setError) => {
     try {
-        const response = await AxiosHelper.POST({ url: BASE_URL, body: propertyDetails });
+        const response = await AxiosHelper.POST({ url: Endpoints.postProperty, body: propertyDetails, isAuthHeader: true });
         return response.data;
-    } catch (error) {
-       if (error.response && error.response.data && error.response.data.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error(error.message || "Something went wrong while creating property");
+    } 
+    catch (error) {
+      return await ApiCaller.onErrorCallRefreshAndRepeatProcess(error, setError, async () => {
+        const retryRes = await AxiosHelper.POST({ url: Endpoints.postProperty, body: propertyDetails, isAuthHeader: true });
+        return retryRes.data;
+      });
+
+      // const resError = getResponseError(error);
+      // try {
+      //   if(resError.errorCode && resError.errorCode === 1002) {
+          
+      //     return await ApiCaller.callRefreshAndRepeatProcess(async () => {
+      //       const response = await AxiosHelper.POST({ url: Endpoints.postProperty, body: propertyDetails, isAuthHeader: true });
+          
+      //       return response.data;
+      //     });
+      //   }
+      // } catch(error) {
+      //   setError(error.response.data?.message || "Oops !!! Something went wrong");
+      // }
+
+      // if (error.response && error.response.data && error.response.data.message) {
+      //    throw new Error(error.response.data.message);
+      // }
+      // throw new Error(error.message || "Something went wrong while creating property");
     }
 }
 
@@ -47,18 +70,24 @@ export const createProperty = async (propertyDetails) => {
  * @returns {Promise} - Promise resolving to the response of the API call.
  * @throws {Error} - Throws an error if the API call fails.
  */
-export const updatePropertyImages = async (propertyId, imageUrls) => {
+export const updatePropertyImages = async (propertyId, imageUrls, setError) => {
+  const url = `${Endpoints.propertyBase}/${propertyId}${Endpoints.imagesEnd}`;
+
   try {
-    const response = await AxiosHelper.PUT({
-      url: `${BASE_URL}/${propertyId}/images`,
-      body: imageUrls,
-    });
+    const response = await AxiosHelper.PUT({ url: url, body: imageUrls, isAuthHeader: true });
+
     return response.data; // APIResponse with message
   } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error(error.message || "Error updating property images");
+    return await ApiCaller.onErrorCallRefreshAndRepeatProcess(error, setError, async () => {
+      const retryRes = await AxiosHelper.PUT({ url: url, body: imageUrls, isAuthHeader: true });
+
+      return retryRes.data;
+    });
+
+    // if (error.response && error.response.data && error.response.data.message) {
+    //   throw new Error(error.response.data.message);
+    // }
+    // throw new Error(error.message || "Error updating property images");
   }
 };
 

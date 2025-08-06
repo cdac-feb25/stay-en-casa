@@ -4,6 +4,7 @@ const paths = {
     authUrl: '/api/v1/auth',
     authTokenUrl: '/api/v1/auth/token',
     usersUrl: '/api/v1/users',
+    propertyUrl: '/api/v1/properties',
 }
 
 const Endpoints = {
@@ -32,6 +33,14 @@ const Endpoints = {
      * PUT : updating existing profile
      */
     profile: `${appDomain}${paths.usersUrl}/profile`,
+
+    /**
+     * Property related urls
+     */
+    propertyBase: `${appDomain}${paths.propertyUrl}`,
+    postProperty: `${appDomain}${paths.propertyUrl}`,
+    // updatePropertyImages: `${appDomain}/${propertyUrl}/${propertyId}/images`,
+    imagesEnd: `/images`,
 }
 
 export default Endpoints;

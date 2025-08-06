@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Endpoints from "../utils/ApiEndpoints";
 import PayloadHelper from "../utils/PayloadHelper";
 import LocalStorageHelper from "../utils/LocalStorageHelper";
@@ -6,6 +6,7 @@ import AxiosHelper from "./AxiosHelper";
 import ApiActionHelper from "../utils/ApiActionHelper";
 import Navigate from "./NavigationService";
 import AppRoutes from "../utils/AppRoutes";
+import { getResponseError } from "../types/ResponseType";
 
 class ApiCaller {
 
@@ -93,10 +94,10 @@ class ApiCaller {
             .catch( async (_) => {
                 await this.refreshToken();
                 await AxiosHelper.POST({ url: logoutURL, isAuthHeader: true, withCredentials: false });
-            })
-            .finally(() => {
-                Navigate.to({ path: AppRoutes.login, clearBrowserStack: true });
             });
+            // .finally(() => {
+            // });
+        Navigate.to({ path: AppRoutes.login, clearBrowserStack: true });
     }
 
     static async generateSignupOtp({ email }) {
@@ -134,17 +135,59 @@ class ApiCaller {
 
     static async refreshToken() {
         const url = Endpoints.refreshToken;
-        
-        await AxiosHelper
-            .POST({ url, isAuthHeader: false, withCredentials: true })
-            .then((response) => {
-                ApiActionHelper.tokenResponseHelper(response);
 
-                return response;
-            })
-            .catch((error) => {
-                ApiActionHelper.logoutHelper();
-            });
+        try {
+            const response = await AxiosHelper.POST({ url, isAuthHeader: false, withCredentials: true });
+
+            ApiActionHelper.tokenResponseHelper(response);
+
+            return response;
+        } catch(error) {
+            ApiActionHelper.logoutHelper();
+        }
+
+        // await AxiosHelper
+        //     .POST({ url, isAuthHeader: false, withCredentials: true })
+        //     .then((response) => {
+        //         ApiActionHelper.tokenResponseHelper(response);
+
+        //         return response;
+        //     })
+        //     .catch((error) => {
+        //         ApiActionHelper.logoutHelper();
+        //     });
+    }
+
+   
+    /**
+     * 
+     * @param {Error} error 
+     * @param {function} callback 
+     * @param {function} setError 
+     * @returns 
+     */
+    static async onErrorCallRefreshAndRepeatProcess(error, setError, callback) {
+        console.log(error);
+        try {
+            const resError = getResponseError(error);
+            console.log("resError : ", resError);
+
+            if(resError.errorCode && resError.errorCode === 1002) {
+                await this.refreshToken();
+
+                return await callback();
+                // console.log("true");
+            }
+        } 
+        catch(error) {
+            setError(error.response.data?.message || "Oops !!! Something went wrong");
+        }
+        // try {
+        //     await this.refreshToken();
+        //     return callback();
+        // } catch(error) {
+        //     return error;
+        // }
     }
 
 }

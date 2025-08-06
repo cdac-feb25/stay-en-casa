@@ -1,7 +1,7 @@
 import ApiCaller from "./ApiCaller";
 import AppRoutes from "../utils/AppRoutes";
 import Navigate from "./NavigationService";
-import { getResponseError } from "../types/ResponseError";
+import { getResponseError } from "../types/ResponseType";
 
 function handleGenerateSignupOtp(setIsLoading, setShowSignup, setErrorMsg) {
 
