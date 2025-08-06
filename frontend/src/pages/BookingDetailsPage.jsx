@@ -11,6 +11,7 @@ import Column from "../components/Column";
 import Row from "../components/Row";
 import SizedBox from "../components/SizedBox";
 import CustomButton from "../components/CustomButton";
+import Colors from '../utils/Colors';
 
 const BookingDetailsPage = () => {
 
@@ -63,9 +64,9 @@ const BookingDetailsPage = () => {
 
     return (
         <>
-            <Container style={{ maxWidth: 500, margin: "60px auto", padding: 24 }}>
-                <Column align="center">
-                    <h2>Booking Details</h2>
+            <Container style={{ maxWidth: 800, margin: "60px auto", padding: 24 }}>
+                <Column align="center" >
+                    <h2 style = {{color: Colors.textOrange}}>Booking Details</h2>
                     <SizedBox height={16} />
                     {/* Loading State */}
                     {loading && <p>Loading...</p>}
@@ -81,19 +82,19 @@ const BookingDetailsPage = () => {
                             width: "100%"
                         }}>
                             <Row>
-                                <strong>Booking ID:</strong>&nbsp;{booking.bookingId}
+                                <strong style = {{color: Colors.textOrange}}>Booking ID:</strong>&nbsp;{booking.bookingId}
                             </Row>
                             <Row>
-                                <strong>Buyer ID:</strong>&nbsp;{booking.buyerId}
+                                <strong style = {{color: Colors.textOrange}}>Buyer ID:</strong>&nbsp;{booking.buyerId}
                             </Row>
                             <Row>
-                                <strong>Property ID:</strong>&nbsp;{booking.propertyId}
+                                <strong style = {{color: Colors.textOrange}}>Property ID:</strong>&nbsp;{booking.propertyId}
                             </Row>
                             <Row>
-                                <strong>Booking Date:</strong>&nbsp;{booking.bookingDate}
+                                <strong style = {{color: Colors.textOrange}}>Booking Date:</strong>&nbsp;{booking.bookingDate}
                             </Row>
                             <Row>
-                                <strong>Booking Status:</strong>&nbsp;
+                                <strong style = {{color: Colors.textOrange}}>Booking Status:</strong>&nbsp;
                                 <span style={{ color: getStatusColor(booking.status), fontWeight: 600 }}>
                                     {booking.status}
                                 </span>
@@ -105,7 +106,7 @@ const BookingDetailsPage = () => {
                     <CustomButton
                         variant="outlined"
                         color="secondary"
-                        onClick={() => navigate(-1)}
+                        onPress={() => navigate(-1)}
                         style={{ width: "100%" }}
                     >
                         Back

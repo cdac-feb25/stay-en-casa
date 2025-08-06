@@ -23,7 +23,7 @@ const AppRoutes = {
     editProfile: "/edit-profile",
     
     //
-    bookingPage: "/booking-page",
+    bookingPage: "/booking-page/:propertyId",
     myBookings: "/my-bookings/:propertyId",
     bookingById: "/booking/:bookingId",
     updateBookingById: "/update-booking/:bookingId",
