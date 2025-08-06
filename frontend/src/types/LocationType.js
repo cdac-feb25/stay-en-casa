@@ -5,6 +5,7 @@
  * @property {string} state
  * @property {string} country
  * @property {string} pincode
+ * @property {string} address
  */
 
 /**

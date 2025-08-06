@@ -61,7 +61,7 @@ function LoggedInUserMenu({ anchorEl, setAnchorEl }) {
                 <React.Fragment>
                     <AccountCircle style={iconStyle} />
                     <SizedBox width={10} />
-                    <Typography style={textStyle} >{ LocalStorageHelper.getUserProfile().email }</Typography>
+                    <Typography style={textStyle} >{ LocalStorageHelper.getUserProfile()?.email }</Typography>
                 </React.Fragment>
             </MenuItem>
 

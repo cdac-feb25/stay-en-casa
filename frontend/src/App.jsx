@@ -27,6 +27,8 @@ import AddPropertyPage from './pages/AddPropertyPage';
 import PropertyDetailsPage from './pages/PropertyDetailsPage';
 import MyPropertiesPage from './pages/MyPropertiesPage';
 import EditPropertyPage from './pages/EditPropertyPage';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 function App() {
   const navigate = useNavigate();

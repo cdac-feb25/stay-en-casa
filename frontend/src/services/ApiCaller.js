@@ -86,18 +86,33 @@ class ApiCaller {
     static async logout() {
         const logoutURL = Endpoints.logout;
 
-        await AxiosHelper
-            .POST({ url: logoutURL, isAuthHeader: true, withCredentials: false })
-            .then((_) => {
-                ApiActionHelper.logoutHelper();
-            })
-            .catch( async (_) => {
-                await this.refreshToken();
+        try {
+            await AxiosHelper.POST({ url: logoutURL, isAuthHeader: true, withCredentials: false });
+
+            ApiActionHelper.logoutHelper();
+        } 
+        catch(error) {
+            await ApiCaller.onErrorCallRefreshAndRepeatProcess(error, ()=>{}, async () => {
                 await AxiosHelper.POST({ url: logoutURL, isAuthHeader: true, withCredentials: false });
+
+                ApiActionHelper.logoutHelper();
             });
-            // .finally(() => {
-            // });
-        Navigate.to({ path: AppRoutes.login, clearBrowserStack: true });
+        }
+        finally {
+            Navigate.to({ path: AppRoutes.login, clearBrowserStack: true });
+        }
+        // await AxiosHelper
+        //     .POST({ url: logoutURL, isAuthHeader: true, withCredentials: false })
+        //     .then((_) => {
+        //         ApiActionHelper.logoutHelper();
+        //     })
+        //     .catch( async (_) => {
+        //         await this.refreshToken();
+        //         await AxiosHelper.POST({ url: logoutURL, isAuthHeader: true, withCredentials: false });
+        //     });
+        //     // .finally(() => {
+        //     // });
+        // Navigate.to({ path: AppRoutes.login, clearBrowserStack: true });
     }
 
     static async generateSignupOtp({ email }) {

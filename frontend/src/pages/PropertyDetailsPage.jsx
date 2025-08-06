@@ -11,14 +11,69 @@ import Colors from "../utils/Colors";
 import UserContext from "../utils/UserContext";
 import RedirectionHelper from "../services/RedirectionHelper";
 import LocalStorageHelper from "../utils/LocalStorageHelper";
+import ImageCarousel from "../components/ImageCarousel";
+
+import {
+  Box,
+  Tabs,
+  Tab,
+  Typography,
+  Grid,
+  Paper,
+  Stack,
+  SvgIcon,
+  Card,
+  CardContent,
+  Divider,
+} from "@mui/material";
+
+import {
+  Bed as BedIcon,
+  Bathtub as BathIcon,
+  SquareFoot as AreaIcon,
+  Home as HomeIcon,
+  Wifi as WifiIcon,
+  LocalParking as ParkingIcon,
+  Elevator as ElevatorIcon,
+  Yard as GardenIcon,
+  FitnessCenter as GymIcon,
+  Spa as SpaIcon,
+  Pool as PoolIcon,
+  OutdoorGrill as BBQIcon,
+  SportsBasketball as PlaygroundIcon,
+  LocalBar as BarIcon,
+  Weekend as LoungeIcon,
+} from "@mui/icons-material";
+
+// Icon mapper for known amenities and fields
+const iconMap = {
+  Bedrooms: <BedIcon />,
+  Bathrooms: <BathIcon />,
+  Area: <AreaIcon />,
+  Category: <HomeIcon />,
+  "Free Wifi": <WifiIcon />,
+  Parking: <ParkingIcon />,
+  Lift: <ElevatorIcon />,
+  Elevator: <ElevatorIcon />,
+  Garden: <GardenIcon />,
+  Gym: <GymIcon />,
+  Spa: <SpaIcon />,
+  Pool: <PoolIcon />,
+  "BBQ Area": <BBQIcon />,
+  Playground: <PlaygroundIcon />,
+  Bar: <BarIcon />,
+  Lounge: <LoungeIcon />,
+};
+
 
 const PropertyDetailsPage = () => {
   const { propertyId } = useParams(); // propertyId from route
 
   RedirectionHelper.fromSpecificPropertyPage(propertyId);
 
-  const [property, setProperty] = useState(null);
-  const [error, setError] = useState(null);
+  /** @type { [ Property, Function ] } */
+  const [ property, setProperty ] = useState(null);
+  const [ error, setError ] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -92,88 +147,74 @@ const PropertyDetailsPage = () => {
 //   console.log("Property Details: ", property);
 
   return (
-    <Container maxWidth = {1100} >
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: "32px",
-      alignItems: "start",
-    }}
-    >
-    {/* Left Column - Details */}
-    <div>
-      <h2 style={{ marginBottom: "20px", color: "orange" }}>
-        {property.propertyName}
-      </h2>
+    <>
+        <ImageCarousel images={ property.images } />
 
-      {/* Details Section */}
-      <div style={{ marginBottom: "24px",  color: "white", textAlign: "left" }}>
-        <fieldset style={ fieldsetStyle }>
-        <legend style={ legendStyle }>Details</legend>
-            <p><b>Description: </b> {property.propertyDescription}</p>
-            <p><b>Type: </b> {property.listingType
-            ? property.listingType.charAt(0).toUpperCase() + property.listingType.slice(1).toLowerCase() : "N/A"}
-            </p>
-            <p><b>Category: </b>
-            {property.propertyCategory 
-             ? property.propertyCategory.charAt(0).toUpperCase() + property.propertyCategory.slice(1).toLowerCase() : "N/A"}
-            </p>
-            <p><b>Price: </b> ₹{property.price.toLocaleString()}</p>
-            <p><b>Area: </b> {property.area} {property.unit}</p>
-            <p><b>Bedrooms: </b> {property.bedrooms}</p>
-            <p><b>Bathrooms: </b> {property.bathrooms}</p>
-            <p><b>Furnishing: </b> {property.furnishing}</p>
-        </fieldset>
-
-      </div>
-
-      {/* Location Section */}
-      <div style={{ marginBottom: "24px", color: "white", textAlign: "left" }}>
-        <fieldset style={ fieldsetStyle }>
-        <legend style={ legendStyle }>Location</legend>
-        <p><b>Address: </b>{property.location?.address}, {property.location?.locality}</p>
-        <p>{property.location?.city}, {property.location?.state}, {property.location?.country}</p>
-        <p><b>Pincode:</b> {property.location?.pincode}</p>
-        </fieldset>
-      </div>
-
-      <CustomButton
-        title="Back to Properties"
-        onPress={() => navigate(AppRoutes.showAllProperties)}
-        bgColor="#f5f5f5"
-        textColor="black"
-        width="220px"
-        height="48px"
-      />
-    </div>
-
-    {/* Right Column - Images */}
-    <div>
-      {property.images?.length > 0 ? (
+        <Container maxWidth = {"auto"} >
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "32px",
+          alignItems: "start",
+        }}
+        >
+        {/* Left Column - Details */}
         <div>
-          <fieldset style={ fieldsetStyle }>
-          <legend style={ legendStyle }>Property Images</legend>
-          <Row style={{ flexWrap: "wrap", gap: "16px" }}>
-            {property.images?.length > 0 && (
-                <PropertyImages images={property.images} />
-            )}
+          <h2 style={{ marginBottom: "20px", color: "orange" }}>
+            {property.propertyName}
+          </h2>
+
+          <Row justifyContent="space-between" >
+            {/* Details Section */}
+            <div style={{ marginBottom: "24px",  color: "white", textAlign: "left" }}>
+              <fieldset style={ fieldsetStyle }>
+              <legend style={ legendStyle }>Details</legend>
+                  <p><b>Description: </b> {property.propertyDescription}</p>
+                  <p><b>Type: </b> {property.listingType
+                  ? property.listingType.charAt(0).toUpperCase() + property.listingType.slice(1).toLowerCase() : "N/A"}
+                  </p>
+                  <p><b>Category: </b>
+                  {property.propertyCategory 
+                  ? property.propertyCategory.charAt(0).toUpperCase() + property.propertyCategory.slice(1).toLowerCase() : "N/A"}
+                  </p>
+                  <p><b>Price: </b> ₹{property.price.toLocaleString()}</p>
+                  <p><b>Area: </b> {property.area} {property.unit}</p>
+                  <p><b>Bedrooms: </b> {property.bedrooms}</p>
+                  <p><b>Bathrooms: </b> {property.bathrooms}</p>
+                  <p><b>Furnishing: </b> {property.furnishing}</p>
+              </fieldset>
+
+              {/* Location Section */}
+              <div style={{ marginBottom: "24px", color: "white", textAlign: "left" }}>
+                <fieldset style={ fieldsetStyle }>
+                <legend style={ legendStyle }>Location</legend>
+                <p><b>Address: </b>{property.location?.address}, {property.location?.locality}</p>
+                <p>{property.location?.city}, {property.location?.state}, {property.location?.country}</p>
+                <p><b>Pincode:</b> {property.location?.pincode}</p>
+                </fieldset>
+              </div>
+            </div>
+
+            
           </Row>
-          </fieldset>
+
+          <CustomButton
+            title="Back to Properties"
+            onPress={() => navigate(AppRoutes.showAllProperties)}
+            bgColor="#f5f5f5"
+            textColor="black"
+            width="220px"
+            height="48px"
+          />
         </div>
-      ) : (
-        <p style={{ color: "#777" }}>No images available.</p>
-      )}
-    <CustomButton 
-        title="Book Property"
-        onPress={ handleBooking }
-        bgColor="#f5f5f5"
-        textColor="black"
-  />
-    </div>
-  </div>
-</Container>
-);
+
+      </div>
+    </Container>
+  </>
+  );
 };
+
+
 
 export default PropertyDetailsPage;
 
