@@ -7,6 +7,7 @@ import com.stayen.casa.userservice.constant.EnvConstant;
 import com.stayen.casa.userservice.filter.ApiGatewayAccessFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 
 @Component
 public class AppConfig {
@@ -33,6 +34,11 @@ public class AppConfig {
     @Bean
     public ApiGatewayAccessFilter apiGatewayAccessFilter(EnvConstant envConstant, ObjectMapper mapper) {
         return new ApiGatewayAccessFilter(envConstant, mapper);
+    }
+
+    @Bean
+    public AntPathMatcher antPathMatcher() {
+        return new AntPathMatcher();
     }
 
 }

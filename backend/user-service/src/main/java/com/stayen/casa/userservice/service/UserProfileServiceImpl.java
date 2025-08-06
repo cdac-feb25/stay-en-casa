@@ -1,5 +1,7 @@
 package com.stayen.casa.userservice.service;
 
+import com.stayen.casa.userservice.dto.OwnerAndPropertyDTO;
+import com.stayen.casa.userservice.dto.SimpleResponseDTO;
 import com.stayen.casa.userservice.dto.UserProfileDTO;
 import com.stayen.casa.userservice.entity.UserProfile;
 import com.stayen.casa.userservice.enums.ProfileError;
@@ -20,6 +22,28 @@ public class UserProfileServiceImpl implements UserProfileService {
     public UserProfileServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
+    @Override
+    public SimpleResponseDTO isProfileExists(String uid) {
+        userRepository
+                .findById(uid)
+                .orElseThrow(() -> new ProfileException(ProfileError.NO_PROFILE_FOUND));
+
+        return new SimpleResponseDTO("User exists.");
+    }
+
+//    @Override
+//    public SimpleResponseDTO isPropertyExists(String uid, String propertyId) {
+//        UserProfile userProfile = userRepository
+//                .findById(uid)
+//                .orElseThrow(() -> new ProfileException(ProfileError.NO_PROFILE_FOUND));
+//
+//        if(userProfile.isPropertyIdExists(propertyId) == false) {
+//            throw new ProfileException(ProfileError.NO_PROPERTY_FOUND);
+//        }
+//
+//        return new SimpleResponseDTO("Property exists.");
+//    }
 
     @Override
     public UserProfileDTO fetchUserProfile(String uid) {
@@ -51,7 +75,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         if(optionalProfile.isPresent()) {
             userProfile = optionalProfile.get();
 
-            userProfile.updateTimestamp(updatedUserProfileDTO);
+            userProfile.updateProfile(updatedUserProfileDTO);
         } else {
             updatedUserProfileDTO.setUid(loggedInUser.getUid());
             updatedUserProfileDTO.setEmail(loggedInUser.getEmail());
@@ -63,4 +87,36 @@ public class UserProfileServiceImpl implements UserProfileService {
         return new UserProfileDTO(userProfile);
     }
 
+    /**
+     *
+     */
+    @Override
+    public OwnerAndPropertyDTO addNewPropertyId(OwnerAndPropertyDTO ownerAndPropertyDTO) {
+        UserProfile userProfile = userRepository
+                .findById(ownerAndPropertyDTO.getOwnerId())
+                .orElseThrow(() -> new ProfileException(ProfileError.NO_PROFILE_FOUND));
+
+        userProfile.addNewPropertyId(ownerAndPropertyDTO);
+
+        userRepository.save(userProfile);
+        return ownerAndPropertyDTO;
+    }
+
+    /**
+     *
+     */
+    @Override
+    public OwnerAndPropertyDTO deletePropertyId(OwnerAndPropertyDTO ownerAndPropertyDTO) {
+        UserProfile userProfile = userRepository
+                .findById(ownerAndPropertyDTO.getOwnerId())
+                .orElseThrow(() -> new ProfileException(ProfileError.NO_PROFILE_FOUND));
+
+        boolean isDeleted = userProfile.deletePropertyId(ownerAndPropertyDTO.getPropertyId());
+        if(!isDeleted) {
+            throw new ProfileException(ProfileError.NO_PROPERTY_ID_FOUND);
+        }
+
+        userRepository.save(userProfile);
+        return ownerAndPropertyDTO;
+    }
 }
