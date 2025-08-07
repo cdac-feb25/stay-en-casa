@@ -2,7 +2,11 @@ package com.stayen.casa.gatewayservice.constant;
 
 public class Endpoints {
 
+
     public static class Auth {
+
+        public static final String TEST = "/test";
+
         public static final String BASE_URL = "/api/v1/auth";
 
         public static final String UID_EXISTS = "/{uid}/exists";

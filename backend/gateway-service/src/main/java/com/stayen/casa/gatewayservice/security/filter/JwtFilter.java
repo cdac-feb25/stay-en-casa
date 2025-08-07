@@ -68,6 +68,11 @@ public class JwtFilter extends OncePerRequestFilter {
         PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put("/swagger-ui.html", List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
 
         /**
+         * Test URLs
+         */
+        PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.TEST), List.of("GET"));
+
+        /**
          * Auth Service Allowlisted URL
          */
         PATH_AND_METHOD_EXCLUDED_FROM_JWT_FILTER.put((Endpoints.Auth.BASE_URL + Endpoints.Auth.LOGIN), List.of("POST"));

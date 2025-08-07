@@ -35,9 +35,12 @@ public class AuthServiceController {
         this.restTemplateHelper = restTemplateHelper;
     }
 
-    @PostMapping("/test")
+    @GetMapping(Endpoints.Auth.TEST)
     public ResponseEntity<?> test() {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Some message");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("code", 200, "message", "Success !!!"));
     }
 
 //    /**
