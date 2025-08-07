@@ -99,7 +99,8 @@ const PropertyDetailsPage = () => {
     const user = UserContext.getLoggedInUser();
     if (user && user.uid) {
       // Redirect to BookingPage with propertyId
-      navigate(AppRoutes.bookingPage, { state: { propertyId } });
+      // navigate(AppRoutes.bookingPage, { state: { propertyId } });
+      navigate(`/booking-page/${property.propertyId}`);
     } else {
       // Redirect to LoginPage
       navigate(AppRoutes.login, { state: { from: AppRoutes.showPropertyById_param.replace(":propertyId", propertyId) } });
@@ -201,6 +202,14 @@ const PropertyDetailsPage = () => {
           <CustomButton
             title="Back to Properties"
             onPress={() => navigate(AppRoutes.showAllProperties)}
+            bgColor="#f5f5f5"
+            textColor="black"
+            width="220px"
+            height="48px"
+          />
+          <CustomButton
+            title="Book this Property"
+            onPress={ handleBooking }
             bgColor="#f5f5f5"
             textColor="black"
             width="220px"

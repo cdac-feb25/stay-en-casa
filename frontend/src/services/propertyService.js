@@ -108,7 +108,7 @@ export const updatePropertyImages = async (propertyId, imageUrls, setError) => {
  */
 export const getPropertyDetailsById = async (propertyId) => {
     try {
-        const response = await AxiosHelper.GET({ url: `${BASE_URL}/${propertyId}` });
+        const response = await AxiosHelper.GET({ url: Endpoints.getPropertyById(propertyId), isAuthHeader: false });
         return response.data;
     } catch (error) {
         if (error.response && error.response.data && error.response.data.message) {
@@ -125,11 +125,16 @@ export const getPropertyDetailsById = async (propertyId) => {
  * @throws {Error} - Throws an error if the API call fails.
  */
 export const getMyProperties = async (ownerId) => {
+  const url = `${Endpoints.getMyProperties}${Endpoints.myPropertiesEnd}/${ownerId}`;
   try {
-    const response = await AxiosHelper.GET({
-      url: `${BASE_URL}/owner/${ownerId}`,
+   const response = await AxiosHelper.GET({ 
+      url: url, 
+      isAuthHeader: true 
     });
-    return response.data;
+
+    const myProperties = Array.isArray(response.data) ? response.data : [];
+
+    return myProperties;
   } catch (error) {
     console.error("Error fetching user properties:", error);
     throw error;
@@ -144,10 +149,9 @@ export const getMyProperties = async (ownerId) => {
  */
 export const deleteProperty = async (propertyId) => {
   try {
-    const response = await AxiosHelper.DELETE({
-      url: `${BASE_URL}/properties/${propertyId}`,
+    const response = await AxiosHelper.DELETE({url: Endpoints.deleteProperty(propertyId), isAuthHeader: true
     });
-    return response.data;
+    return response.data; 
   } catch (error) {
     console.error("Error deleting property:", error);
     throw error;
@@ -164,8 +168,9 @@ export const deleteProperty = async (propertyId) => {
 export const updateProperty = async (propertyId, propertyData) => {
   try {
     const response = await AxiosHelper.PUT({
-      url: `${BASE_URL}/properties/${propertyId}`,
+      url: Endpoints.updateProperty(propertyId),
       body: propertyData,
+      isAuthHeader: true
     });
     return response.data;
   } catch (error) {
@@ -184,7 +189,8 @@ export const updateProperty = async (propertyId, propertyData) => {
 export const toggleAvailability = async (propertyId) => {
   try {
     const response = await AxiosHelper.PATCH({
-      url: `${BASE_URL}/properties/${propertyId}/availability`,
+      url: Endpoints.toggleAvailability(propertyId),
+      isAuthHeader: true
     });
     return response.data;
   } catch (error) {

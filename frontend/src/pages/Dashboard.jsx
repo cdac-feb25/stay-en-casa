@@ -38,6 +38,7 @@ import SizedBox from "../components/SizedBox";
 import Colors from "../utils/Colors";
 import UserContext from "../utils/UserContext";
 import { getMyProperties } from "../services/propertyService";
+import AppRoutes from "../utils/AppRoutes";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ const DashboardPage = () => {
   const unavailable = total - available;
 
   return (
-    <Container maxWidth={1200}>
+    <>
       <h1 style={{ color: Colors.textOrange, textAlign: "center" }}>
         Welcome back, {user?.name || "User"} 👋
       </h1>
@@ -133,13 +134,20 @@ const DashboardPage = () => {
               <p>Price: ₹{p.price}</p>
               <CustomButton
                 title="View Details"
-                onClick={() => navigate(`/property/${p.propertyId}`)}
+                onPress={() => navigate(AppRoutes.myProperties)}
               />
             </div>
           ))}
         </Row>
       )}
-    </Container>
+      <Row style={{ justifyContent: "center", marginTop: "20px" }}>
+          <CustomButton
+            title="Add New Property"
+            onPress={() => navigate(AppRoutes.addProperty)}
+            style={{ backgroundColor: Colors.primary, color: "#fff", padding: "10px 20px", marginTop: "10px" }}
+          />
+      </Row>  
+    </>
   );
 };
 

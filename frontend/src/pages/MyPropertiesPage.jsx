@@ -16,18 +16,25 @@ const MyPropertiesPage = () => {
   const navigate = useNavigate();
   const ownerId = UserContext.getLoggedInUser().id;
 
+  console.log("Owner ID:", ownerId);
+  
+
   useEffect(() => {
     if (!ownerId) {
       navigate(AppRoutes.login, { state: { from: AppRoutes.myProperties } });
       return;
     }
     fetchProperties();
+
+    console.log(data);
   }, [ownerId, navigate]);
 
   const fetchProperties = async () => {
     try {
       setLoading(true);
       const data = await getMyProperties(ownerId);
+      
+      
       setProperties(data);
     } catch (err) {
       setError("Failed to load your properties.");
@@ -62,7 +69,7 @@ const MyPropertiesPage = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <Container style={{ marginTop: 40 }}>
+    <>
       <h2>My Properties</h2>
       <SizedBox height={20} />
       {properties.length === 0 ? (
@@ -120,7 +127,7 @@ const MyPropertiesPage = () => {
           ))}
         </Column>
       )}
-    </Container>
+    </>
   );
 };
 

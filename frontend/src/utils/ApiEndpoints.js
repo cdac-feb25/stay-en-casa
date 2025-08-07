@@ -41,7 +41,13 @@ const Endpoints = {
     getAllProperty: `${appDomain}${paths.propertyUrl}`,
     postProperty: `${appDomain}${paths.propertyUrl}`,
     // updatePropertyImages: `${appDomain}/${propertyUrl}/${propertyId}/images`,
+    getMyProperties: `${appDomain}${paths.propertyUrl}`,
+    getPropertyById: (propertyId) => `${appDomain}${paths.propertyUrl}/${propertyId}`,
+    updateProperty: (propertyId) => `${appDomain}${paths.propertyUrl}/${propertyId}`,
+    deleteProperty: (propertyId) => `${appDomain}${paths.propertyUrl}/${propertyId}`,
+    toggleAvailability: (propertyId) => `${appDomain}${paths.propertyUrl}/${propertyId}/toggle-availability`,
     imagesEnd: `/images`,
+    myPropertiesEnd: `/my-properties`,
 }
 
 export default Endpoints;
