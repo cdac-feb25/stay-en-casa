@@ -79,7 +79,7 @@ export const createProperty = async (propertyDetails, setError) => {
  * @throws {Error} - Throws an error if the API call fails.
  */
 export const updatePropertyImages = async (propertyId, imageUrls, setError) => {
-  const url = `${Endpoints.propertyBase}/${propertyId}${Endpoints.imagesEnd}`;
+  const url = Endpoints.updatePropertyImages(propertyId);
 
   try {
     const response = await AxiosHelper.PUT({ url: url, body: imageUrls, isAuthHeader: true });
@@ -110,10 +110,15 @@ export const getPropertyDetailsById = async (propertyId) => {
     try {
         const response = await AxiosHelper.GET({ url: Endpoints.getPropertyById(propertyId), isAuthHeader: false });
         return response.data;
-    } catch (error) {
+    } 
+    catch (error) {
+        // ApiCaller.onErrorCallRefreshAndRepeatProcess(error, );
+
+
+
         if (error.response && error.response.data && error.response.data.message) {
-      throw new Error(error.response.data.message);
-    }
+          throw new Error(error.response.data.message);
+        }
     throw new Error(error.message || "Error fetching property details by ID");
     }
 }
@@ -125,19 +130,24 @@ export const getPropertyDetailsById = async (propertyId) => {
  * @throws {Error} - Throws an error if the API call fails.
  */
 export const getMyProperties = async (ownerId) => {
-  const url = `${Endpoints.getMyProperties}${Endpoints.myPropertiesEnd}/${ownerId}`;
+  // const url = `${Endpoints.getMyProperties}${Endpoints.myPropertiesEnd}/${ownerId}`;
+  const url = `${Endpoints.getMyProperties}`; 
   try {
-   const response = await AxiosHelper.GET({ 
-      url: url, 
-      isAuthHeader: true 
-    });
+    const response = await AxiosHelper.GET({ url: url, isAuthHeader: true });
 
     const myProperties = Array.isArray(response.data) ? response.data : [];
 
     return myProperties;
   } catch (error) {
-    console.error("Error fetching user properties:", error);
-    throw error;
+    return await ApiCaller.onErrorCallRefreshAndRepeatProcess(error, ()=>{}, async () => {
+      const response = await AxiosHelper.GET({ url: url, isAuthHeader: true });
+
+      const myProperties = Array.isArray(response.data) ? response.data : [];
+
+      return myProperties;
+    });
+    // console.error("Error fetching user properties:", error);
+    // throw error;
   }
 };
 

@@ -31,7 +31,7 @@ const AppRoutes = {
     //
     showAllProperties: "/properties",
     addProperty: "/add-property",
-    showPropertyById_param: "/properties/:propertyId",
+    showPropertyById_param: (propertyId) => propertyId ? `/properties/${propertyId}` : "/properties/:propertyId",
     myProperties: "/my-properties",
     editProperty: "/edit-property/:propertyId",
     

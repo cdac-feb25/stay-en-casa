@@ -39,6 +39,7 @@ import Colors from "../utils/Colors";
 import UserContext from "../utils/UserContext";
 import { getMyProperties } from "../services/propertyService";
 import AppRoutes from "../utils/AppRoutes";
+import PropertyCard from "../components/PropertyCard";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const DashboardPage = () => {
         return;
       }
       try {
-        const data = await getMyProperties(user.id);
+        const data = await getMyProperties(user.uid);
         setProperties(data);
         setFiltered(data);
       } catch (err) {
@@ -100,15 +101,21 @@ const DashboardPage = () => {
       {/* Property Stats */}
       <Row style={{ justifyContent: "space-around", marginBottom: "30px" }}>
         <div style={cardStyle}>
-          <h3>Total Properties</h3>
+          <h3>Total Properties Posted</h3>
           <p>{total}</p>
         </div>
+        
+        <SizedBox width={20} />
+
         <div style={cardStyle}>
-          <h3>Available</h3>
+          <h3>Live Property Post</h3>
           <p>{available}</p>
         </div>
+
+        <SizedBox width={20} />
+        
         <div style={cardStyle}>
-          <h3>Not Available</h3>
+          <h3>Property Marked as Sold</h3>
           <p>{unavailable}</p>
         </div>
       </Row>
@@ -124,19 +131,27 @@ const DashboardPage = () => {
           No properties found.
         </p>
       ) : (
-        <Row style={{ flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
+        <Row marginTop="20px" marginBottom="30px" style={{ flexWrap: "wrap", gap: "20px", justifyContent: "center" }}>
           {filtered.map((p) => (
-            <div key={p.propertyId} style={propertyCardStyle}>
-              <h3 style={{ color: Colors.textOrange }}>{p.propertyName}</h3>
-              <p>
-                {p.location?.city}, {p.location?.state}
-              </p>
-              <p>Price: ₹{p.price}</p>
-              <CustomButton
-                title="View Details"
-                onPress={() => navigate(AppRoutes.myProperties)}
+
+            <PropertyCard
+                key={p.propertyId}
+                property={p}
+                onClick={ () => navigate(`/properties/${p.propertyId}`) }
               />
-            </div>
+
+
+            // <div key={p.propertyId} style={propertyCardStyle}>
+            //   <h3 style={{ color: Colors.textOrange }}>{p.propertyName}</h3>
+            //   <p>
+            //     {p.location?.city}, {p.location?.state}
+            //   </p>
+            //   <p>Price: ₹{p.price}</p>
+            //   <CustomButton
+            //     title="View Details"
+            //     onPress={() => navigate(AppRoutes.myProperties)}
+            //   />
+            // </div>
           ))}
         </Row>
       )}
@@ -145,6 +160,7 @@ const DashboardPage = () => {
             title="Add New Property"
             onPress={() => navigate(AppRoutes.addProperty)}
             style={{ backgroundColor: Colors.primary, color: "#fff", padding: "10px 20px", marginTop: "10px" }}
+            width={300}
           />
       </Row>  
     </>
@@ -164,6 +180,7 @@ const cardStyle = {
 };
 
 const propertyCardStyle = {
+  margin: '10px 10px 40px 10px',
   width: "280px",
   background: "#fff",
   borderRadius: "12px",

@@ -25,6 +25,7 @@ import {
   Card,
   CardContent,
   Divider,
+  TextField,
 } from "@mui/material";
 
 import {
@@ -146,29 +147,21 @@ const PropertyDetailsPage = () => {
   }
 
 //   console.log("Property Details: ", property);
+  /** @type {import("@mui/material").SxProps<Theme>} */
+  const typoStyle = {
+    width: "180px",
+    textAlign: "start",
+    fontSize: "18px",
+  }
 
   return (
     <>
         <ImageCarousel images={ property.images } />
 
-        <Container maxWidth = {"auto"} >
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "32px",
-          alignItems: "start",
-        }}
-        >
-        {/* Left Column - Details */}
-        <div>
-          <h2 style={{ marginBottom: "20px", color: "orange" }}>
-            {property.propertyName}
-          </h2>
-
-          <Row justifyContent="space-between" >
-            {/* Details Section */}
-            <div style={{ marginBottom: "24px",  color: "white", textAlign: "left" }}>
-              <fieldset style={ fieldsetStyle }>
+        <Container>
+          <Row width="100%" justifyContent="space-evenly" >
+            
+            <fieldset style={ fieldsetStyle }>
               <legend style={ legendStyle }>Details</legend>
                   <p><b>Description: </b> {property.propertyDescription}</p>
                   <p><b>Type: </b> {property.listingType
@@ -185,40 +178,15 @@ const PropertyDetailsPage = () => {
                   <p><b>Furnishing: </b> {property.furnishing}</p>
               </fieldset>
 
-              {/* Location Section */}
-              <div style={{ marginBottom: "24px", color: "white", textAlign: "left" }}>
-                <fieldset style={ fieldsetStyle }>
+              <fieldset style={ fieldsetStyle }>
                 <legend style={ legendStyle }>Location</legend>
                 <p><b>Address: </b>{property.location?.address}, {property.location?.locality}</p>
                 <p>{property.location?.city}, {property.location?.state}, {property.location?.country}</p>
                 <p><b>Pincode:</b> {property.location?.pincode}</p>
                 </fieldset>
-              </div>
-            </div>
 
-            
           </Row>
-
-          <CustomButton
-            title="Back to Properties"
-            onPress={() => navigate(AppRoutes.showAllProperties)}
-            bgColor="#f5f5f5"
-            textColor="black"
-            width="220px"
-            height="48px"
-          />
-          <CustomButton
-            title="Book this Property"
-            onPress={ handleBooking }
-            bgColor="#f5f5f5"
-            textColor="black"
-            width="220px"
-            height="48px"
-          />
-        </div>
-
-      </div>
-    </Container>
+        </Container>
   </>
   );
 };

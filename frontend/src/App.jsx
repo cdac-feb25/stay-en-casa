@@ -77,7 +77,7 @@ function App() {
           <Route path={AppRoutes.addProperty} element={ <AddPropertyPage /> } /> 
           <Route path={AppRoutes.showAllProperties} element={ <AllPropertiesPage /> } />
           
-          <Route path={AppRoutes.showPropertyById_param} element={ <PropertyDetailsPage /> } />
+          <Route path={AppRoutes.showPropertyById_param()} element={ <PropertyDetailsPage /> } />
 
           <Route path={AppRoutes.myProperties} element={ <MyPropertiesPage /> } />
           <Route path={AppRoutes.editProperty} element={ <EditPropertyPage /> } />

@@ -9,6 +9,8 @@ import PropertyCard from '../components/PropertyCard';
 import Colors from '../utils/Colors';
 import { Backdrop, Button, CircularProgress } from '@mui/material';
 import LocalStorageHelper from '../utils/LocalStorageHelper';
+import Navigate from '../services/NavigationService';
+import AppRoutes from '../utils/AppRoutes';
 
 /**
  * AllPropertiesPage component
@@ -87,7 +89,7 @@ const AllPropertiesPage = () => {
               <PropertyCard
                 key={property.propertyId}
                 property={property}
-                onClick={ () => navigate(`/properties/${property.propertyId}`) }
+                onClick={ () => Navigate.to({ path: AppRoutes.showPropertyById_param(property.propertyId) }) }
               />
 
             ))}

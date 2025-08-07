@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Row from "../components/Row";
 import CustomButton from "../components/CustomButton";
 import Colors from "../utils/Colors";
+import { TextField } from "@mui/material";
 
 const DashboardSearch = ({ onSearch }) => {
   const [query, setQuery] = useState("");
@@ -18,7 +19,13 @@ const DashboardSearch = ({ onSearch }) => {
       margin: "20px auto",
       maxWidth: "600px",
     }}>
-      <input
+      <TextField 
+        type="text"
+        placeholder="Search by property name, city or locality..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      {/* <input
         type="text"
         placeholder="Search by property name, city or locality..."
         value={query}
@@ -29,12 +36,14 @@ const DashboardSearch = ({ onSearch }) => {
           border: "2px solid #e1e5e9",
           borderRadius: "8px",
           fontSize: "14px",
+          backgroundColor: Colors.background
         }}
-      />
+      /> */}
       <CustomButton 
         title="Search" 
         type="submit" 
-        style={{ backgroundColor: Colors.textOrange }}
+        width={150}
+        fullWidth={false}
       />
     </form>
   );

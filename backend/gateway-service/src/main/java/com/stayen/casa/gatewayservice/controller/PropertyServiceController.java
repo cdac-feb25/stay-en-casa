@@ -154,7 +154,7 @@ public class PropertyServiceController {
     // http://localhost:9093/api/v1/properties
     @PostMapping
     public ResponseEntity<?> postNewProperty(@RequestBody Map<String, Object> payloadReceived) {
-        System.out.println("New Property called...");
+        System.out.println("New Property called... ");
         User loggedInUser = UserContext.getLoggedInUser();
 
         String ownerId = loggedInUser.getUid();
