@@ -50,7 +50,7 @@ function Signup() {
 
     return (
         <>
-            <Container width='100%'>
+            <Container>
                 <Box
                     component="img"
                     src={AssetHelper.appIconWithName}
